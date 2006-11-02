@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- queXML.xsd
+
+	Copyright Deakin University 2005,2006
+
+	The queXML schema and stylesheets are developed by DCARF at Deakin University
+	under the guidance of Associate Prof. Dr. Ken Reed.
+
+	See http://www.deakin.edu.au/dcarf/ for more information. 
+
+	Written by Adam Zammit (adam.zammit@deakin.edu.au) and Bridget O'Brien (bridget.obrien@deakin.edu.au)
+
+	This file is part of queXML.
+
+	queXML is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
+
+	queXML is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with Foobar; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+	
+	queXML Schema
+
+	A Schema for tagging questionnaires
+
+	Version 1.0
+
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:annotation>
+		<xsd:documentation>This schema is intended for use in producing electronic versions of questionnaires</xsd:documentation>
+	</xsd:annotation>
+	<xsd:element name="questionnaire">
+		<xsd:annotation>
+			<xsd:documentation>root element</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="title" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>The title of the questionnaire</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="subtitle" type="xsd:string" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation>The subtitle of the questionnaire (if relevant)</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="investigator" maxOccurs="unbounded">
+					<xsd:annotation>
+						<xsd:documentation>Details of the investigator</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="name">
+								<xsd:annotation>
+									<xsd:documentation>The investigator's name</xsd:documentation>
+								</xsd:annotation>
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="salutation" type="xsd:string" minOccurs="0"/>
+										<xsd:element name="firstName" type="xsd:string"/>
+										<xsd:element name="lastName" type="xsd:string"/>
+									</xsd:sequence>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element name="organisation" type="xsd:string" minOccurs="0">
+								<xsd:annotation>
+									<xsd:documentation>The investigator's organisation (if relevant)</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="address" minOccurs="0">
+								<xsd:complexType>
+									<xsd:all>
+										<xsd:element name="street" type="xsd:string"/>
+										<xsd:element name="suburb" type="xsd:string"/>
+										<xsd:element name="postcode" type="xsd:integer"/>
+										<xsd:element name="country" type="xsd:string"/>
+									</xsd:all>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element name="phoneNumber" type="xsd:string" minOccurs="0"/>
+							<xsd:element name="faxNumber" type="xsd:string" minOccurs="0"/>
+							<xsd:element name="emailAddress" type="xsd:anyURI" minOccurs="0"/>
+							<xsd:element name="website" type="xsd:anyURI" minOccurs="0"/>
+						</xsd:sequence>
+						<xsd:attribute name="id" type="xsd:integer" use="optional"/>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="dataCollector" maxOccurs="unbounded">
+					<xsd:annotation>
+						<xsd:documentation>Details of the data collector (the person and organisation assigned to collect data on behalf of the investigator)</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="name">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="salutation" type="xsd:string" minOccurs="0"/>
+										<xsd:element name="firstName" type="xsd:string"/>
+										<xsd:element name="lastName" type="xsd:string"/>
+									</xsd:sequence>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element name="organisation" type="xsd:string" minOccurs="0"/>
+							<xsd:element name="address" minOccurs="0">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="street" type="xsd:string"/>
+										<xsd:element name="suburb" type="xsd:string"/>
+										<xsd:element name="postcode" type="xsd:integer"/>
+										<xsd:element name="country" type="xsd:string"/>
+									</xsd:sequence>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element name="phoneNumber" type="xsd:string" minOccurs="0"/>
+							<xsd:element name="faxNumber" type="xsd:string" minOccurs="0"/>
+							<xsd:element name="emailAddress" type="xsd:anyURI" minOccurs="0"/>
+							<xsd:element name="website" type="xsd:anyURI" minOccurs="0"/>
+						</xsd:sequence>
+						<xsd:attribute name="id" type="xsd:integer" use="optional"/>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="questionnaireInfo" minOccurs="0" maxOccurs="unbounded">
+					<xsd:annotation>
+						<xsd:documentation>Information applying to the questionnaire (overall)</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="position" default="before">
+								<xsd:annotation>
+									<xsd:documentation>The position within the instrument where the information is made available.</xsd:documentation>
+								</xsd:annotation>
+								<xsd:simpleType>
+									<xsd:restriction base="xsd:string">
+										<xsd:enumeration value="before"/>
+										<xsd:enumeration value="during"/>
+										<xsd:enumeration value="after"/>
+										<xsd:enumeration value="appendix"/>
+									</xsd:restriction>
+								</xsd:simpleType>
+							</xsd:element>
+							<xsd:element name="text" maxOccurs="unbounded">
+								<xsd:complexType mixed="true">
+									<xsd:sequence>
+										<xsd:element name="bold" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+									</xsd:sequence>
+									<xsd:attribute name="indent" type="xsd:boolean" use="optional" default="false"/>
+									<xsd:attribute name="title" type="xsd:boolean" use="optional" default="false"/>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element name="administration">
+								<xsd:annotation>
+									<xsd:documentation>The mode where the information will be displayed. "self" for self administered questionnaires such as web based and paper based. "interviewer" for interviewer administered questionnaires such as CATI and CAPI</xsd:documentation>
+								</xsd:annotation>
+								<xsd:simpleType>
+									<xsd:restriction base="xsd:string">
+										<xsd:enumeration value="self"/>
+										<xsd:enumeration value="interviewer"/>
+									</xsd:restriction>
+								</xsd:simpleType>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="section" maxOccurs="unbounded">
+					<xsd:annotation>
+						<xsd:documentation>A logical section in the questionnaire (for example: a demographic section)</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="sectionInfo" minOccurs="0" maxOccurs="unbounded">
+								<xsd:annotation>
+									<xsd:documentation>Information about this section of the questionnaire</xsd:documentation>
+								</xsd:annotation>
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="position" default="before">
+											<xsd:annotation>
+												<xsd:documentation>The position within the section where the information is made available.</xsd:documentation>
+											</xsd:annotation>
+											<xsd:simpleType>
+												<xsd:restriction base="xsd:string">
+													<xsd:enumeration value="title"/>
+													<xsd:enumeration value="before"/>
+													<xsd:enumeration value="during"/>
+													<xsd:enumeration value="after"/>
+												</xsd:restriction>
+											</xsd:simpleType>
+										</xsd:element>
+										<xsd:element name="text" maxOccurs="unbounded">
+											<xsd:annotation>
+												<xsd:documentation>The text of the information (for example: Demographics)</xsd:documentation>
+											</xsd:annotation>
+											<xsd:complexType>
+												<xsd:simpleContent>
+													<xsd:extension base="xsd:string"/>
+												</xsd:simpleContent>
+											</xsd:complexType>
+										</xsd:element>
+										<xsd:element name="administration">
+											<xsd:annotation>
+												<xsd:documentation>The mode where the information will be displayed. "self" for self administered questionnaires such as web based and paper based. "interviewer" for interviewer administered questionnaires such as CATI and CAPI</xsd:documentation>
+											</xsd:annotation>
+											<xsd:simpleType>
+												<xsd:restriction base="xsd:string">
+													<xsd:enumeration value="self"/>
+													<xsd:enumeration value="interviewer"/>
+												</xsd:restriction>
+											</xsd:simpleType>
+										</xsd:element>
+									</xsd:sequence>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element name="question" maxOccurs="unbounded">
+								<xsd:annotation>
+									<xsd:documentation>A question</xsd:documentation>
+								</xsd:annotation>
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="text" maxOccurs="unbounded">
+											<xsd:annotation>
+												<xsd:documentation>The text of the question. If repeated, may be used to add carriage returns in some stylesheets</xsd:documentation>
+											</xsd:annotation>
+											<xsd:complexType>
+												<xsd:simpleContent>
+													<xsd:extension base="xsd:string"/>
+												</xsd:simpleContent>
+											</xsd:complexType>
+										</xsd:element>
+										<xsd:element name="qualifier" type="xsd:string" minOccurs="0">
+											<xsd:annotation>
+												<xsd:documentation>A qualifier to the text of the question</xsd:documentation>
+											</xsd:annotation>
+										</xsd:element>
+										<xsd:element name="specifier" type="xsd:string" minOccurs="0">
+											<xsd:annotation>
+												<xsd:documentation>A specifier to the text of the question</xsd:documentation>
+											</xsd:annotation>
+										</xsd:element>
+										<xsd:element name="directive" minOccurs="0" maxOccurs="unbounded">
+											<xsd:annotation>
+												<xsd:documentation>A directive to the administrator of the questionnaire</xsd:documentation>
+											</xsd:annotation>
+											<xsd:complexType>
+												<xsd:all>
+													<xsd:element name="position" default="before">
+														<xsd:annotation>
+															<xsd:documentation>The position within the question where the information is made available.</xsd:documentation>
+														</xsd:annotation>
+														<xsd:simpleType>
+															<xsd:restriction base="xsd:string">
+																<xsd:enumeration value="before"/>
+																<xsd:enumeration value="during"/>
+																<xsd:enumeration value="after"/>
+															</xsd:restriction>
+														</xsd:simpleType>
+													</xsd:element>
+													<xsd:element name="text">
+														<xsd:annotation>
+															<xsd:documentation>The text of the directive (for example: Enter numbers only)</xsd:documentation>
+														</xsd:annotation>
+														<xsd:complexType mixed="true">
+															<xsd:sequence>
+																<xsd:element name="bold" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+															</xsd:sequence>
+															<xsd:attribute name="indent" type="xsd:boolean" use="optional" default="false">
+																<xsd:annotation>
+																	<xsd:documentation>If the text should be indented</xsd:documentation>
+																</xsd:annotation>
+															</xsd:attribute>
+														</xsd:complexType>
+													</xsd:element>
+													<xsd:element name="administration">
+														<xsd:annotation>
+															<xsd:documentation>The mode where the directive will be displayed. "self" for self administered questionnaires such as web based and paper based. "interviewer" for interviewer administered questionnaires such as CATI and CAPI</xsd:documentation>
+														</xsd:annotation>
+														<xsd:simpleType>
+															<xsd:restriction base="xsd:string">
+																<xsd:enumeration value="self"/>
+																<xsd:enumeration value="interviewer"/>
+															</xsd:restriction>
+														</xsd:simpleType>
+													</xsd:element>
+												</xsd:all>
+											</xsd:complexType>
+										</xsd:element>
+										<xsd:element name="subQuestion" minOccurs="0" maxOccurs="unbounded">
+											<xsd:annotation>
+												<xsd:documentation>If subQuestion elements are defined, the question is assumed to be a matrix question. Each subQuestion becomes a new entry in the matrix. A varName must be defined for each subQuestion</xsd:documentation>
+											</xsd:annotation>
+											<xsd:complexType>
+												<xsd:all>
+													<xsd:element name="text">
+														<xsd:annotation>
+															<xsd:documentation>The text of the sub question</xsd:documentation>
+														</xsd:annotation>
+														<xsd:complexType>
+															<xsd:simpleContent>
+																<xsd:extension base="xsd:string"/>
+															</xsd:simpleContent>
+														</xsd:complexType>
+													</xsd:element>
+													<xsd:element name="skip" minOccurs="0">
+														<xsd:annotation>
+															<xsd:documentation>Used to skip from a particular sub question</xsd:documentation>
+														</xsd:annotation>
+														<xsd:complexType>
+															<xsd:all>
+																<xsd:element name="ifValue" type="xsd:string">
+																	<xsd:annotation>
+																		<xsd:documentation>Skip to the target defined below only if the value of the response is defined here </xsd:documentation>
+																	</xsd:annotation>
+																</xsd:element>
+																<xsd:element name="to" type="xsd:IDREF">
+																	<xsd:annotation>
+																		<xsd:documentation>The skip target - the varName attribute</xsd:documentation>
+																	</xsd:annotation>
+																</xsd:element>
+															</xsd:all>
+														</xsd:complexType>
+													</xsd:element>
+												</xsd:all>
+												<xsd:attribute name="varName" type="xsd:ID" use="required">
+													<xsd:annotation>
+														<xsd:documentation>A unique name for the variable to be associated with this matrix question.</xsd:documentation>
+													</xsd:annotation>
+												</xsd:attribute>
+											</xsd:complexType>
+										</xsd:element>
+										<xsd:element name="response" maxOccurs="unbounded">
+											<xsd:annotation>
+												<xsd:documentation>A response to the question. If subQuestions are defined, each sub question will have the same response but the varName will be taken from the subQuestion element, not this element</xsd:documentation>
+											</xsd:annotation>
+											<xsd:complexType>
+												<xsd:choice>
+													<xsd:element name="free" minOccurs="0">
+														<xsd:annotation>
+															<xsd:documentation>A free response is an open field</xsd:documentation>
+														</xsd:annotation>
+														<xsd:complexType>
+															<xsd:all>
+																<xsd:element name="format" default="text">
+																	<xsd:annotation>
+																		<xsd:documentation>Defines the type of data that may be entered</xsd:documentation>
+																	</xsd:annotation>
+																	<xsd:simpleType>
+																		<xsd:restriction base="xsd:string">
+																			<xsd:enumeration value="text"/>
+																			<xsd:enumeration value="longtext"/>
+																			<xsd:enumeration value="integer"/>
+																			<xsd:enumeration value="date"/>
+																			<xsd:enumeration value="currency"/>
+																		</xsd:restriction>
+																	</xsd:simpleType>
+																</xsd:element>
+																<xsd:element name="length" type="xsd:integer">
+																	<xsd:annotation>
+																		<xsd:documentation>The maximum length of the data</xsd:documentation>
+																	</xsd:annotation>
+																</xsd:element>
+																<xsd:element name="label" minOccurs="0">
+																	<xsd:annotation>
+																		<xsd:documentation>A label for the field</xsd:documentation>
+																	</xsd:annotation>
+																	<xsd:complexType>
+																		<xsd:simpleContent>
+																			<xsd:extension base="xsd:string"/>
+																		</xsd:simpleContent>
+																	</xsd:complexType>
+																</xsd:element>
+																<xsd:element name="min" type="xsd:string" minOccurs="0">
+																	<xsd:annotation>
+																		<xsd:documentation>A minimum value</xsd:documentation>
+																	</xsd:annotation>
+																</xsd:element>
+																<xsd:element name="max" type="xsd:string" minOccurs="0">
+																	<xsd:annotation>
+																		<xsd:documentation>A maximum value</xsd:documentation>
+																	</xsd:annotation>
+																</xsd:element>
+																<xsd:element name="skipTo" type="xsd:IDREF" minOccurs="0">
+																	<xsd:annotation>
+																		<xsd:documentation>A skip target</xsd:documentation>
+																	</xsd:annotation>
+																</xsd:element>
+															</xsd:all>
+														</xsd:complexType>
+													</xsd:element>
+													<xsd:element name="fixed" minOccurs="0">
+														<xsd:annotation>
+															<xsd:documentation>A fixed response has categories defined</xsd:documentation>
+														</xsd:annotation>
+														<xsd:complexType>
+															<xsd:sequence>
+																<xsd:element name="category" maxOccurs="unbounded">
+																	<xsd:annotation>
+																		<xsd:documentation>A category that may be selected</xsd:documentation>
+																	</xsd:annotation>
+																	<xsd:complexType>
+																		<xsd:all>
+																			<xsd:element name="label">
+																				<xsd:annotation>
+																					<xsd:documentation>A label</xsd:documentation>
+																				</xsd:annotation>
+																				<xsd:complexType>
+																					<xsd:simpleContent>
+																						<xsd:extension base="xsd:string"/>
+																					</xsd:simpleContent>
+																				</xsd:complexType>
+																			</xsd:element>
+																			<xsd:element name="value" type="xsd:anySimpleType">
+																				<xsd:annotation>
+																					<xsd:documentation>The value to assign to the label</xsd:documentation>
+																				</xsd:annotation>
+																			</xsd:element>
+																			<xsd:element name="contingentQuestion" minOccurs="0">
+																				<xsd:annotation>
+																					<xsd:documentation>A free response question that is to be asked only if this category is chosen. For example: Please specify</xsd:documentation>
+																				</xsd:annotation>
+																				<xsd:complexType>
+																					<xsd:all>
+																						<xsd:element name="text">
+																							<xsd:annotation>
+																								<xsd:documentation>The text of the contingent question. For example: Please specify</xsd:documentation>
+																							</xsd:annotation>
+																							<xsd:complexType>
+																								<xsd:simpleContent>
+																									<xsd:extension base="xsd:string"/>
+																								</xsd:simpleContent>
+																							</xsd:complexType>
+																						</xsd:element>
+																						<xsd:element name="length" type="xsd:integer">
+																							<xsd:annotation>
+																								<xsd:documentation>The maximum length of the data</xsd:documentation>
+																							</xsd:annotation>
+																						</xsd:element>
+																					</xsd:all>
+																					<xsd:attribute name="varName" type="xsd:ID" use="required">
+																						<xsd:annotation>
+																							<xsd:documentation>A unique name for the variable to be associated with this contingent question</xsd:documentation>
+																						</xsd:annotation>
+																					</xsd:attribute>
+																				</xsd:complexType>
+																			</xsd:element>
+																			<xsd:element name="skipTo" type="xsd:IDREF" minOccurs="0">
+																				<xsd:annotation>
+																					<xsd:documentation>A target to skip to if this category is selected. Be wary of the use of this element where subQuestions are defined, as it will apply to each sub question. Use the skip element of the subQuesstion tag instead</xsd:documentation>
+																				</xsd:annotation>
+																			</xsd:element>
+																		</xsd:all>
+																	</xsd:complexType>
+																</xsd:element>
+															</xsd:sequence>
+															<xsd:attribute name="id" type="xsd:integer" use="optional"/>
+															<xsd:attribute name="rotate" type="xsd:boolean" use="optional">
+																<xsd:annotation>
+																	<xsd:documentation>If the response is a matrix question (subQuestions defined) then rotate the matrix</xsd:documentation>
+																</xsd:annotation>
+															</xsd:attribute>
+														</xsd:complexType>
+													</xsd:element>
+												</xsd:choice>
+												<xsd:attribute name="varName" type="xsd:ID" use="required">
+													<xsd:annotation>
+														<xsd:documentation>A unique name for the variable to be associated with this response. Will appear in the data output.</xsd:documentation>
+													</xsd:annotation>
+												</xsd:attribute>
+											</xsd:complexType>
+										</xsd:element>
+									</xsd:sequence>
+									<xsd:attribute name="id" type="xsd:integer" use="optional"/>
+									<xsd:attribute name="randomise" type="xsd:boolean" use="optional" default="false"/>
+								</xsd:complexType>
+							</xsd:element>
+						</xsd:sequence>
+						<xsd:attribute name="last" type="xsd:boolean" use="optional"/>
+						<xsd:attribute name="respondentselection" type="xsd:boolean" use="optional">
+							<xsd:annotation>
+								<xsd:documentation>If this section is the respondent selection part of the questionnaire</xsd:documentation>
+							</xsd:annotation>
+						</xsd:attribute>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

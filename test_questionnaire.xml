@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<questionnaire xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="quexml.xsd">
+	<title>DCARF Example Questionnaire</title>
+	<subtitle>Example</subtitle>
+	<investigator id="1">
+		<name>
+			<salutation>Dr</salutation>
+			<firstName>Betsy</firstName>
+			<lastName>Blunsdon</lastName>
+		</name>
+		<organisation>Deakin University</organisation>
+		<address>
+			<street>221 Burwood Highway</street>
+			<suburb>BURWOOD</suburb>
+			<postcode>3125</postcode>
+			<country>Australia</country>
+		</address>
+		<website>http://www.deakin.edu.au/dcarf/</website>
+	</investigator>
+	<dataCollector id="1">
+		<name>
+			<salutation>Associate Professor</salutation>
+			<firstName>Ken</firstName>
+			<lastName>Reed</lastName>
+		</name>
+		<organisation>Deakin University</organisation>
+		<address>
+			<street>221 Burwood Highway</street>
+			<suburb>BURWOOD</suburb>
+			<postcode>3125</postcode>
+			<country>Australia</country>
+		</address>
+		<phoneNumber>61 3 9244 6911</phoneNumber>
+		<website>http://www.deakin.edu.au/dcarf/</website>
+	</dataCollector>
+	<questionnaireInfo>
+		<position>before</position>
+		<text>Please complete all questions</text>
+		<administration>self</administration>
+	</questionnaireInfo>
+	<questionnaireInfo>
+		<position>after</position>
+		<text>Thank you for completing the questionnaire!</text>
+		<administration>self</administration>
+	</questionnaireInfo>
+	<section>
+		<sectionInfo>
+			<position>before</position>
+			<text>This is the first section</text>
+			<administration>self</administration>
+		</sectionInfo>
+		<question>
+			<text>What do you think about...</text>
+			<directive>
+				<position>during</position>
+				<text>Please cross the most appropriate box</text>
+				<administration>self</administration>
+			</directive>
+			<directive>
+				<position>during</position>
+				<text>Please select from the following options</text>
+				<administration>interviewer</administration>
+			</directive>
+			<subQuestion varName="matrix1">
+				<text>The first part of a matrix question</text>
+			</subQuestion>
+			<subQuestion varName="matrix2">
+				<text>The second question in a matrix question</text>
+			</subQuestion>
+			<response varName="matrixr1">
+				<fixed>
+					<category>
+						<label>They are not useful</label>
+						<value>1</value>
+					</category>
+					<category>
+						<label>They are useful</label>
+						<value>2</value>
+					</category>
+					<category>
+						<label>Don't Know</label>
+						<value>3</value>
+					</category>
+				</fixed>
+			</response>
+		</question>
+	</section>
+	<section>
+		<sectionInfo>
+			<position>before</position>
+			<text>this is section 2</text>
+			<administration>self</administration>
+		</sectionInfo>
+		<question>
+			<text>How much do you trust...</text>
+			<subQuestion varName="pcomun">
+				<text>People in your community</text>
+			</subQuestion>
+			<subQuestion varName="stategov">
+				<text>State Government</text>
+			</subQuestion>
+			<subQuestion varName="locgov">
+				<text>Local Government</text>
+			</subQuestion>
+			<response varName="matrixr2">
+				<fixed>
+					<category>
+						<label>Not at all</label>
+						<value>1</value>
+					</category>
+					<category>
+						<label>A little</label>
+						<value>2</value>
+					</category>
+					<category>
+						<label>A great amount</label>
+						<value>3</value>
+					</category>
+					<category>
+						<label>Unsure</label>
+						<value>4</value>
+					</category>
+				</fixed>
+			</response>
+		</question>
+		<question>
+			<text>Please provide you details</text>
+			<response varName="fname">
+				<free>
+					<label>First Name</label>
+					<format>text</format>
+					<length>24</length>
+				</free>
+			</response>
+			<response varName="sname">
+				<free>
+					<label>Surname</label>
+					<format>text</format>
+					<length>24</length>
+				</free>
+			</response>
+		</question>
+		<question>
+			<text>Do you use the internet anywhere else?</text>
+			<response varName="uineto">
+				<fixed>
+					<category>
+						<label>No</label>
+						<value>2</value>
+						<skipTo>lang</skipTo>
+					</category>
+					<category>
+						<label>Yes</label>
+						<value>1</value>
+						<contingentQuestion varName="otheneto">
+							<text>Please specify other location</text>
+							<length>24</length>
+						</contingentQuestion>
+					</category>
+				</fixed>
+			</response>
+		</question>
+		<question>
+			<text>How much do you spend on internet access per month?</text>
+			<response varName="intspend">
+				<free>
+					<format>currency</format>
+					<label>AUD</label>
+					<length>4</length>
+				</free>
+			</response>
+		</question>
+	</section>
+	<section>
+		<sectionInfo>
+			<position>before</position>
+			<text>Demographics</text>
+			<administration>self</administration>
+		</sectionInfo>
+		<sectionInfo>
+			<position>before</position>
+			<text>Information about you</text>
+			<administration>interviewer</administration>
+		</sectionInfo>
+		<question>
+			<text>Do you speak a language other than English at home?</text>
+			<specifier>If you speak multiple languages other than English at home, what is the main one?</specifier>
+			<response varName="lang">
+				<fixed>
+					<category>
+						<label>No</label>
+						<value>2</value>
+					</category>
+					<category>
+						<label>Yes</label>
+						<value>1</value>
+						<contingentQuestion varName="lango">
+							<text>Please specify other language</text>
+							<length>24</length>
+						</contingentQuestion>
+					</category>
+				</fixed>
+			</response>
+		</question>
+		<question>
+			<text>What is your gender?</text>
+			<response varName="sex">
+				<fixed>
+					<category>
+						<label>Male</label>
+						<value>1</value>
+					</category>
+					<category>
+						<label>Female</label>
+						<value>2</value>
+					</category>
+				</fixed>
+			</response>
+		</question>
+	</section>
+</questionnaire>
