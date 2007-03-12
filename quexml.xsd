@@ -23,7 +23,7 @@
 	GNU General Public License for more details.
 
 	You should have received a copy of the GNU General Public License
-	along with Foobar; if not, write to the Free Software
+	along with queXML; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	
 	queXML Schema
@@ -167,6 +167,11 @@
 									</xsd:restriction>
 								</xsd:simpleType>
 							</xsd:element>
+							<xsd:element name="image" type="xsd:anyURI" minOccurs="0">
+								<xsd:annotation>
+									<xsd:documentation>Display an image</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
 						</xsd:sequence>
 					</xsd:complexType>
 				</xsd:element>
@@ -215,6 +220,11 @@
 													<xsd:enumeration value="interviewer"/>
 												</xsd:restriction>
 											</xsd:simpleType>
+										</xsd:element>
+										<xsd:element name="image" type="xsd:anyURI" minOccurs="0">
+											<xsd:annotation>
+												<xsd:documentation>Display an image</xsd:documentation>
+											</xsd:annotation>
 										</xsd:element>
 									</xsd:sequence>
 								</xsd:complexType>
@@ -419,6 +429,11 @@
 																			<xsd:element name="value" type="xsd:anySimpleType">
 																				<xsd:annotation>
 																					<xsd:documentation>The value to assign to the label</xsd:documentation>
+																				</xsd:annotation>
+																			</xsd:element>
+																			<xsd:element name="image" type="xsd:anyURI" minOccurs="0">
+																				<xsd:annotation>
+																					<xsd:documentation>An image to assign to the category</xsd:documentation>
 																				</xsd:annotation>
 																			</xsd:element>
 																			<xsd:element name="contingentQuestion" minOccurs="0">
