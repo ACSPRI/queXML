@@ -77,7 +77,17 @@
 		</xsl:if>
 
 	</xsl:template>
-	
+
+
+	<!-- template for images -->
+	<xsl:template match="//image">
+		<fo:block>
+				<fo:external-graphic>
+					<!--<xsl:attribute name ="content-height"><xsl:value-of select="@height"/></xsl:attribute>-->
+					<xsl:attribute name="src"><xsl:value-of select="."/></xsl:attribute>
+			</fo:external-graphic>
+			</fo:block>
+	</xsl:template>
 		
 	<!-- template for text -->
 	<xsl:template match="//text/bold">
@@ -222,6 +232,7 @@
 				</fo:block>
 		</fo:block-container>
 
+		<xsl:if test="count(/questionnaire/investigator/phoneNumber)>=1">
 		
 		<!-- The help box -->
 		<fo:block-container xsl:use-attribute-sets="helpContainer">
@@ -252,10 +263,24 @@
 			</fo:block>			
 		</fo:block-container>
 
+		</xsl:if>
+
 	</xsl:template>
 	
 	<!-- For each section ... -->
 	<xsl:template name="sections">
+
+		<!-- start of the survey info -->
+		<xsl:if test="count(/questionnaire/questionnaireInfo[position='before' and administration='self'])>=1">
+			<fo:block-container xsl:use-attribute-sets="questionnaireInfoAfterContainer">
+				<xsl:for-each select="/questionnaire/questionnaireInfo[position='before' and administration='self']">
+					<xsl:call-template name="questionnaireInfoAfter"/>
+				</xsl:for-each>
+			</fo:block-container>
+		</xsl:if>
+
+		
+
 
 		<xsl:apply-templates select="/questionnaire/section[@last = 'false' or not(@last)]"/>
 		
@@ -287,12 +312,14 @@
 	<!-- Draw up a box with the questionnaire info text centered -->
 	<xsl:template name="questionnaireInfoAfter">
 			<fo:block xsl:use-attribute-sets="questionnaireInfoAfterFont">
+			<xsl:apply-templates select="image"/>	
 				<xsl:apply-templates select="text"/>
 			</fo:block>		
 	</xsl:template>
 
 	<!-- Draw up a box with the questionnaire info text centered -->
 	<xsl:template name="questionnaireInfoBefore">
+			<xsl:apply-templates select="image"/>	
 			<fo:block xsl:use-attribute-sets="questionnaireInfoBeforeFont">
 				<xsl:apply-templates select="text"/>
 			</fo:block>		
@@ -464,7 +491,7 @@
 					<xsl:when test="response/fixed/@rotate='true'">
 						<xsl:call-template name="matrixRotate"/>
 					</xsl:when>
-					<xsl:when test="count(response/fixed/category)>=8">
+					<xsl:when test="count(response/fixed/category)>=15">
 						<xsl:call-template name="matrixRotate"/>
 					</xsl:when>
 					<xsl:otherwise>
@@ -564,6 +591,7 @@
 					<fo:table-row xsl:use-attribute-sets="tableRow">
 						<fo:table-cell padding="0">
 							<fo:block-container xsl:use-attribute-sets="category_labelContainer">
+								<xsl:apply-templates select="image"/>
 								<fo:block xsl:use-attribute-sets="category_labelFont">
 									<xsl:value-of select="label"/>
 								</fo:block>
@@ -646,8 +674,10 @@
 				<xsl:for-each select="category">
 					<fo:table-cell>
 						<fo:block-container xsl:use-attribute-sets="labelContainer">
+								<xsl:apply-templates select="image"/>
 							<fo:block xsl:use-attribute-sets="labelFont">
 								<xsl:value-of select="label"/>
+								
 							</fo:block>
 						</fo:block-container>
 					</fo:table-cell>
@@ -1217,6 +1247,7 @@
 
 					<fo:table-cell>
 						<fo:block-container xsl:use-attribute-sets="labelContainer">
+								<xsl:apply-templates select="image"/>
 							<fo:block xsl:use-attribute-sets="labelFont">
 								<xsl:value-of select="label"/>
 							</fo:block>
@@ -1393,6 +1424,7 @@
 				<fo:table-row xsl:use-attribute-sets="tableRow">
 					<fo:table-cell>
 						<fo:block-container xsl:use-attribute-sets="subquestionContainer">
+								<xsl:apply-templates select="image"/>
 							<fo:block xsl:use-attribute-sets="subquestionFont">
 								<xsl:value-of select="label"/>
 							</fo:block>
