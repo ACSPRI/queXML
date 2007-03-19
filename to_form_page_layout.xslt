@@ -19,7 +19,7 @@
 	GNU General Public License for more details.
 
 	You should have received a copy of the GNU General Public License
-	along with Foobar; if not, write to the Free Software
+	along with queXML; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
@@ -63,6 +63,8 @@
 	<xsl:param name="show_cover_page">true</xsl:param>
 	<xsl:param name="show_first_page">true</xsl:param>
 
+	<xsl:param name="leftalign">false</xsl:param>
+	
 	<!-- put each section on a new page -->
 	<xsl:param name="section_page">false</xsl:param>
 	
@@ -72,6 +74,7 @@
 	<!-- url(file://mnt/iss/quexml/acspri_logo.png) -->
 	<xsl:param name="logo2">false</xsl:param>
 	
+	<xsl:param name="barcode_page_00">true</xsl:param>
 	<xsl:param name="barcode_page_01">false</xsl:param>
 	<xsl:param name="barcode_page_02">false</xsl:param>
 	<xsl:param name="barcode_page_03">false</xsl:param>
@@ -2267,8 +2270,10 @@
 						display-align="center">
 
 						<xsl:call-template name="drawCornerBoxesBottom"/>		
-						
-						<xsl:call-template name="drawBarcodeFormId"/>
+
+						<xsl:if test="$barcode_page_00='true'">
+							<xsl:call-template name="drawBarcodeFormId"/>
+						</xsl:if>
 		
 					</fo:block-container>
 					

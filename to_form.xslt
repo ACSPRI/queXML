@@ -232,6 +232,32 @@
 				</fo:block>
 		</fo:block-container>
 
+
+		<!-- temporary images on front page -->
+		
+		<!--
+		<fo:block-container top="190mm" left="25mm" absolute-position="fixed" width="150mm">
+			<fo:block>
+			<fo:table inline-progression-dimension="100%" table-layout="fixed">
+				<fo:table-column/> 
+				<fo:table-column/> 
+				<fo:table-column/> 
+				<fo:table-body>
+				<fo:table-row>
+					<fo:table-cell text-align="center"><fo:block><fo:external-graphic content-height="25mm" src="url(file://mnt/iss/tmp/walk.png)"/></fo:block></fo:table-cell>
+					<fo:table-cell text-align="center"><fo:block><fo:external-graphic content-height="25mm" src="url(file://mnt/iss/tmp/crossing.png)"/></fo:block></fo:table-cell>
+					<fo:table-cell text-align="center"><fo:block><fo:external-graphic content-height="25mm" src="url(file://mnt/iss/tmp/drive.png)"/></fo:block></fo:table-cell>
+				</fo:table-row>
+				</fo:table-body>
+			</fo:table>		
+			</fo:block>
+		</fo:block-container>
+		-->
+
+
+		
+
+		
 		<xsl:if test="count(/questionnaire/investigator/phoneNumber)>=1">
 		
 		<!-- The help box -->
@@ -576,27 +602,64 @@
 	</xsl:template>
 
 
+
 	<!-- Handle fixed responses that are not rotated-->
 	<xsl:template match="/questionnaire/section/question/response/fixed[@rotate = 'false' or not(@rotate)]">
 		<!-- Draw a vertical table of category labels and response boxes -->
 
 		<fo:table inline-progression-dimension="100%" table-layout="fixed">
-		
-			<fo:table-column/> <!-- for the text -->
-			<fo:table-column xsl:use-attribute-sets="fixedResponseColumn"/> <!-- for the response boxes -->
-			<fo:table-column xsl:use-attribute-sets="skipColumn"/> <!-- for the empty space after -->
+
+			<xsl:choose>
+				<xsl:when test="$leftalign = 'false'">
+					<fo:table-column/> <!-- for the text -->
+					<fo:table-column xsl:use-attribute-sets="fixedResponseColumn"/> <!-- for the response boxes -->
+					<fo:table-column xsl:use-attribute-sets="skipColumn"/> <!-- for the empty space after -->
+
+				</xsl:when>
+				<xsl:otherwise>
+					<fo:table-column xsl:use-attribute-sets="skipColumn"/> 
+					<fo:table-column xsl:use-attribute-sets="fixedResponseColumn"/>
+					<fo:table-column/> <!-- for the text -->
+				</xsl:otherwise>
+			</xsl:choose>
+
 			
 			<fo:table-body>
 				<xsl:for-each select="category">
 					<fo:table-row xsl:use-attribute-sets="tableRow">
-						<fo:table-cell padding="0">
-							<fo:block-container xsl:use-attribute-sets="category_labelContainer">
-								<xsl:apply-templates select="image"/>
-								<fo:block xsl:use-attribute-sets="category_labelFont">
-									<xsl:value-of select="label"/>
-								</fo:block>
-							</fo:block-container>
-						</fo:table-cell>
+
+
+					<xsl:choose>
+						<xsl:when test="$leftalign = 'false'">
+							<fo:table-cell padding="0">
+								<fo:block-container xsl:use-attribute-sets="category_labelContainer">
+									<xsl:apply-templates select="image"/>
+									<fo:block xsl:use-attribute-sets="category_labelFont">
+										<xsl:value-of select="label"/>
+									</fo:block>
+								</fo:block-container>
+							</fo:table-cell>
+						</xsl:when>
+						<xsl:otherwise>
+							<!-- If there is a question to skip to -->
+							<xsl:choose>
+								<xsl:when test="count(skipTo)=1">
+									<fo:table-cell>
+										<xsl:call-template name="drawSkipTo">
+											<xsl:with-param name="variableName" select="skipTo"/>
+										</xsl:call-template>
+									</fo:table-cell>
+								</xsl:when>
+								<xsl:otherwise>
+									<fo:table-cell empty-cells="show"/>
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:otherwise>
+					</xsl:choose>
+
+
+						
+						
 						<fo:table-cell padding="0">
 							<fo:block-container xsl:use-attribute-sets="category_boxContainer">
 								<fo:block>
@@ -624,22 +687,36 @@
 							</fo:block-container>
 						</fo:table-cell>
 
-						<!-- If there is a question to skip to -->
-						<xsl:choose>
 
-							<xsl:when test="count(skipTo)=1">
-								<fo:table-cell>
-									<xsl:call-template name="drawSkipTo">
-										<xsl:with-param name="variableName" select="skipTo"/>
-									</xsl:call-template>
-								</fo:table-cell>
-							</xsl:when>
-							
-							<xsl:otherwise>
-								<fo:table-cell empty-cells="show"/>
-							</xsl:otherwise>
-							
-						</xsl:choose>
+					<xsl:choose>
+						<xsl:when test="$leftalign = 'false'">
+							<!-- If there is a question to skip to -->
+							<xsl:choose>
+								<xsl:when test="count(skipTo)=1">
+									<fo:table-cell>
+										<xsl:call-template name="drawSkipTo">
+											<xsl:with-param name="variableName" select="skipTo"/>
+										</xsl:call-template>
+									</fo:table-cell>
+								</xsl:when>
+								<xsl:otherwise>
+									<fo:table-cell empty-cells="show"/>
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:when>
+						<xsl:otherwise>
+							<fo:table-cell padding="0">
+								<fo:block-container xsl:use-attribute-sets="category_labelContainer">
+									<xsl:apply-templates select="image"/>
+									<fo:block xsl:use-attribute-sets="category_labelFont">
+										<xsl:value-of select="label"/>
+									</fo:block>
+								</fo:block-container>
+							</fo:table-cell>
+						</xsl:otherwise>
+					</xsl:choose>
+
+						
 
 				
 					</fo:table-row>
@@ -654,21 +731,39 @@
 
 
 
+
+
 	<!-- Handle fixed responses that ARE rotated-->
 	<xsl:template match="/questionnaire/section/question/response/fixed[@rotate = 'true']">
 		<!-- Draw a HORIZONTAL table of category labels and response boxes -->
 
 		<fo:table inline-progression-dimension="100%" table-layout="fixed" table-omit-header-at-break="false">
-			<fo:table-column/> <!-- the empty cell -->
-			<xsl:for-each select="category">
-				<fo:table-column xsl:use-attribute-sets="matrixResponseColumn"/>
-			</xsl:for-each>
+
+			<xsl:choose>
+				<xsl:when test="$leftalign = 'false'">
+					<fo:table-column/> <!-- the empty cell -->
+					<xsl:for-each select="category">	
+						<fo:table-column xsl:use-attribute-sets="matrixResponseColumn"/>
+					</xsl:for-each>	
+					<fo:table-column xsl:use-attribute-sets="matrixSkipColumn"/> <!-- The empty space cell for skips -->
+
+				</xsl:when>
+				<xsl:otherwise>
+					<fo:table-column xsl:use-attribute-sets="matrixSkipColumn"/> <!-- The empty space cell for skips -->
+					<xsl:for-each select="category">	
+						<fo:table-column xsl:use-attribute-sets="matrixResponseColumn"/>
+					</xsl:for-each>	
+					<fo:table-column/> <!-- the empty cell -->
+				</xsl:otherwise>
+			</xsl:choose>
+
 			
-			<fo:table-column xsl:use-attribute-sets="matrixSkipColumn"/> <!-- The empty space cell for skips -->
 			
 			<fo:table-header>
 				<fo:table-row>
+
 				<fo:table-cell empty-cells="show"></fo:table-cell> <!-- the empty corner cell -->
+				
 	
 				<!-- draw in the category labels -->
 				<xsl:for-each select="category">
@@ -682,6 +777,11 @@
 						</fo:block-container>
 					</fo:table-cell>
 				</xsl:for-each>
+
+
+				<fo:table-cell empty-cells="show"></fo:table-cell> <!-- the empty corner cell -->
+
+				
 				</fo:table-row>
 			</fo:table-header>
 	
@@ -690,7 +790,16 @@
 			<!-- Now draw the response boxes-->
 			<fo:table-row xsl:use-attribute-sets="tableRow">
 
-				<fo:table-cell empty-cells="show"/>
+				<xsl:choose>
+				<xsl:when test="$leftalign = 'false'">
+	
+				</xsl:when>
+				<xsl:otherwise>
+					<fo:table-cell empty-cells="show"/>
+				</xsl:otherwise>
+				</xsl:choose>
+
+				
 
 				<!-- When there is only one category - no lines are needed -->
 				<xsl:choose>
@@ -733,8 +842,17 @@
 
 						</xsl:otherwise>
 					</xsl:choose>
-					
+
+
+				<xsl:choose>
+				<xsl:when test="$leftalign = 'false'">
 					<fo:table-cell empty-cells="show"/>
+				</xsl:when>
+				<xsl:otherwise>
+				</xsl:otherwise>
+				</xsl:choose>
+
+
 					
 					
 				</fo:table-row>
@@ -745,6 +863,9 @@
 	</xsl:template>
 
 
+
+
+	
 	<!-- Loop template (recursive loop) for free response length -->
 	<xsl:template name="drawFreeResponseLoop">
 		 <xsl:param name="repeat">0</xsl:param>
@@ -754,7 +875,7 @@
 			
 			<!-- Draw a delimiter box in a table cell -->
 			<fo:table-cell >
-				<fo:block xsl:use-attribute-sets="category_labelFont category_labelContainer">
+				<fo:block xsl:use-attribute-sets="category_labelContainer">
 
 					<!-- If this is the first ...etc-->
 					
@@ -1064,8 +1185,16 @@
 
 		<fo:table inline-progression-dimension="100%" table-layout="fixed">
 		
-			<fo:table-column/> <!-- for the empty space before -->
-			
+			<xsl:choose>
+				<xsl:when test="$leftalign = 'false'">
+					<fo:table-column/> <!-- for the empty space before -->
+				</xsl:when>
+				<xsl:otherwise>
+					<fo:table-column xsl:use-attribute-sets="skipColumn"/> <!-- for the empty space after -->
+				</xsl:otherwise>
+			</xsl:choose>
+		
+		
 			<xsl:choose>
 				<xsl:when test="format='longtext'">
 						<fo:table-column column-width="145mm"/>
@@ -1092,7 +1221,17 @@
 			</xsl:choose>
 			
 
-			<fo:table-column xsl:use-attribute-sets="skipColumn"/> <!-- for the empty space after -->
+			<xsl:choose>
+				<xsl:when test="$leftalign = 'false'">
+					<fo:table-column xsl:use-attribute-sets="skipColumn"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<fo:table-column/> 
+				</xsl:otherwise>
+			</xsl:choose>
+
+			
+
 			
 			<fo:table-body>
 	
@@ -1176,7 +1315,14 @@
 		
 		<fo:table inline-progression-dimension="100%" table-layout="fixed">
 		
-			<fo:table-column/> <!-- for the empty space before -->
+			<xsl:choose>
+				<xsl:when test="$leftalign = 'false'">
+					<fo:table-column/> <!-- for the empty space before -->
+				</xsl:when>
+				<xsl:otherwise>
+					<fo:table-column xsl:use-attribute-sets="skipColumn"/> <!-- for the empty space after -->
+				</xsl:otherwise>
+			</xsl:choose>
 			
 			<xsl:call-template name="defineFreeResponseLoop">
 				<xsl:with-param name="repeat">
@@ -1194,7 +1340,17 @@
 				</xsl:with-param>
 			</xsl:call-template> <!-- for the response boxes -->
 
-			<fo:table-column xsl:use-attribute-sets="skipColumn"/> <!-- for the empty space after -->
+			<xsl:choose>
+				<xsl:when test="$leftalign = 'false'">
+					<fo:table-column xsl:use-attribute-sets="skipColumn"/> <!-- for the empty space after -->
+				</xsl:when>
+				<xsl:otherwise>
+					<fo:table-column/> <!-- for the empty space before -->
+
+				</xsl:otherwise>
+			</xsl:choose>
+
+
 			
 			<fo:table-body>
 	

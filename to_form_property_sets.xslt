@@ -390,9 +390,13 @@
 		<xsl:attribute name="font-weight">normal</xsl:attribute>
 		<xsl:attribute name="font-style">italic</xsl:attribute>
 		<xsl:attribute name="text-align">left</xsl:attribute>
-		<xsl:attribute name="color">black</xsl:attribute>
-		
-		<xsl:attribute name="margin-left">1mm</xsl:attribute>
+		<xsl:attribute name="color">black</xsl:attribute>	
+		<xsl:attribute name="margin-left">
+			<xsl:choose>
+				<xsl:when test="$leftalign = 'false'">1mm</xsl:when>
+				<xsl:otherwise>3mm</xsl:otherwise>
+			</xsl:choose>
+		</xsl:attribute>
 	</xsl:attribute-set>	
 	
 	<xsl:attribute-set name="freeLabelTextFont">
@@ -438,12 +442,27 @@
 		<xsl:attribute name="font-size">10pt</xsl:attribute>
 		<xsl:attribute name="font-weight">normal</xsl:attribute>
 		<xsl:attribute name="font-style">normal</xsl:attribute>
-		<xsl:attribute name="text-align">right</xsl:attribute>
-		<xsl:attribute name="color">black</xsl:attribute>	
-		
-		<xsl:attribute name="margin-right">2mm</xsl:attribute>
-		
+		<xsl:attribute name="text-align">
+			<xsl:choose>
+				<xsl:when test="$leftalign = 'false'">right</xsl:when>
+				<xsl:otherwise>left</xsl:otherwise>
+			</xsl:choose>
+		</xsl:attribute>
+		<xsl:attribute name="color">black</xsl:attribute>		
+		<xsl:attribute name="margin-right">
+			<xsl:choose>
+				<xsl:when test="$leftalign = 'false'">2mm</xsl:when>
+				<xsl:otherwise>0mm</xsl:otherwise>
+			</xsl:choose>
+		</xsl:attribute>
+		<xsl:attribute name="margin-left">
+			<xsl:choose>
+				<xsl:when test="$leftalign = 'false'">0mm</xsl:when>
+				<xsl:otherwise>2mm</xsl:otherwise>
+			</xsl:choose>
+		</xsl:attribute>
 	</xsl:attribute-set>
+
 	
 	<xsl:attribute-set name="skiptoFont">
 		<xsl:attribute name="font-family">sans-serif</xsl:attribute>
