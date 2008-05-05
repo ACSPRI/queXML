@@ -482,6 +482,73 @@
 															</xsd:attribute>
 														</xsd:complexType>
 													</xsd:element>
+													<xsd:element name="vas">
+														<xsd:annotation>
+															<xsd:documentation>A Visual Analog Scale element to be displayed exactly 100mm long.</xsd:documentation>
+														</xsd:annotation>
+														<xsd:complexType>
+															<xsd:all>
+																<xsd:element name="labelleft">
+																	<xsd:annotation>
+																		<xsd:documentation>Left hand side label</xsd:documentation>
+																	</xsd:annotation>
+																</xsd:element>
+																<xsd:element name="labelright">
+																	<xsd:annotation>
+																		<xsd:documentation>Right hand side label</xsd:documentation>
+																	</xsd:annotation>
+																</xsd:element>
+															</xsd:all>
+														</xsd:complexType>
+													</xsd:element>
+													<xsd:element name="dvas">
+														<xsd:annotation>
+															<xsd:documentation>A Discrete Visual Analog scale where categories are defined instead of making a selection along a line</xsd:documentation>
+														</xsd:annotation>
+														<xsd:complexType>
+															<xsd:sequence>
+																<xsd:element name="labelleft">
+																	<xsd:annotation>
+																		<xsd:documentation>Left hand side label</xsd:documentation>
+																	</xsd:annotation>
+																</xsd:element>
+																<xsd:element name="labelright">
+																	<xsd:annotation>
+																		<xsd:documentation>Right hand side label</xsd:documentation>
+																	</xsd:annotation>
+																</xsd:element>
+																<xsd:element name="category" maxOccurs="unbounded">
+																	<xsd:annotation>
+																		<xsd:documentation>A category that may be selected</xsd:documentation>
+																	</xsd:annotation>
+																	<xsd:complexType>
+																		<xsd:all>
+																			<xsd:element name="label">
+																				<xsd:annotation>
+																					<xsd:documentation>A label</xsd:documentation>
+																				</xsd:annotation>
+																				<xsd:complexType>
+																					<xsd:simpleContent>
+																						<xsd:extension base="xsd:string"/>
+																					</xsd:simpleContent>
+																				</xsd:complexType>
+																			</xsd:element>
+																			<xsd:element name="value" type="xsd:anySimpleType">
+																				<xsd:annotation>
+																					<xsd:documentation>The value to assign to the label</xsd:documentation>
+																				</xsd:annotation>
+																			</xsd:element>
+																			<xsd:element name="image" type="xsd:anyURI" minOccurs="0">
+																				<xsd:annotation>
+																					<xsd:documentation>An image to assign to the category</xsd:documentation>
+																				</xsd:annotation>
+																			</xsd:element>
+																		</xsd:all>
+																	</xsd:complexType>
+																</xsd:element>
+															</xsd:sequence>
+														</xsd:complexType>
+													</xsd:element>
 												</xsd:choice>
 												<xsd:attribute name="varName" type="xsd:ID" use="required">
 													<xsd:annotation>
