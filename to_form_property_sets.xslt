@@ -2,7 +2,7 @@
 
 <!-- to_form_property_sets
 
-	Copyright Deakin University 2005,2006
+	Copyright Deakin University 2005,2006,2008
 	Written by Adam Zammit - adam.zammit@deakin.edu.au
 	For the Deakin Computer Assisted Research Facility: http://www.deakin.edu.au/dcarf/
 
@@ -75,6 +75,7 @@
 			<xsl:when test="$matrixBoxWidth = '15mm'">-3mm</xsl:when>
 			<xsl:otherwise>0mm</xsl:otherwise>
 		</xsl:choose>
+
 	</xsl:variable>
 
 	<!-- Attribute sets for fonts -->
@@ -198,7 +199,7 @@
 	
 	<xsl:attribute-set name="section_info_beforeFont">
 		<xsl:attribute name="font-family">sans-serif</xsl:attribute>
-		<xsl:attribute name="font-size">14pt</xsl:attribute>
+		<xsl:attribute name="font-size">12pt</xsl:attribute>
 		<xsl:attribute name="font-weight">normal</xsl:attribute>
 		<xsl:attribute name="font-style">normal</xsl:attribute>
 		<xsl:attribute name="text-align">left</xsl:attribute>
@@ -234,16 +235,30 @@
 	
 	<xsl:attribute-set name="directive_beforeFont">
 		<xsl:attribute name="font-family">sans-serif</xsl:attribute>
-		<xsl:attribute name="font-size">9pt</xsl:attribute>
+		<xsl:attribute name="font-size"><xsl:value-of select="$questionFontSize"/></xsl:attribute>
 		<xsl:attribute name="font-weight">normal</xsl:attribute>
-		<xsl:attribute name="font-style">italic</xsl:attribute>
+		<xsl:attribute name="font-style">normal</xsl:attribute>
 		<xsl:attribute name="text-align">left</xsl:attribute>
 		<xsl:attribute name="color">black</xsl:attribute>
 		
-		<xsl:attribute name="margin-left">3mm</xsl:attribute>
-		<xsl:attribute name="margin-right">1mm</xsl:attribute>
-		
+		<xsl:attribute name="margin-left">12mm</xsl:attribute>
+		<!--<xsl:attribute name="margin-right">1mm</xsl:attribute>-->
+		<xsl:attribute name="margin-right"><xsl:value-of select="$skipColumnWidth"/></xsl:attribute>	
 	</xsl:attribute-set>
+
+	<xsl:attribute-set name="directive_duringFont">
+		<xsl:attribute name="font-family">sans-serif</xsl:attribute>
+		<xsl:attribute name="font-size">9pt</xsl:attribute>
+		<xsl:attribute name="font-weight">normal</xsl:attribute>
+		<xsl:attribute name="font-style">italic</xsl:attribute>
+		<xsl:attribute name="text-align">right</xsl:attribute>
+		<xsl:attribute name="color">black</xsl:attribute>
+		
+		<xsl:attribute name="margin-left">3mm</xsl:attribute>
+		<!--<xsl:attribute name="margin-right">1mm</xsl:attribute>-->
+		<xsl:attribute name="margin-right"><xsl:value-of select="$skipColumnWidth"/></xsl:attribute>	
+	</xsl:attribute-set>
+
 
 	<xsl:attribute-set name="directive_afterFont">
 		<xsl:attribute name="font-family">sans-serif</xsl:attribute>
@@ -351,13 +366,20 @@
 	
 	<xsl:attribute-set name="questionSpecifierFont">
 		<xsl:attribute name="font-family">serif</xsl:attribute>
+		<xsl:attribute name="font-size"><xsl:value-of select="$questionFontSize"/></xsl:attribute>
+		<xsl:attribute name="font-weight">normal</xsl:attribute>
+		<xsl:attribute name="font-style">normal</xsl:attribute>
+		<xsl:attribute name="text-align">left</xsl:attribute>
+		<xsl:attribute name="color">black</xsl:attribute>
+		<!--
+		<xsl:attribute name="font-family">serif</xsl:attribute>
 		<xsl:attribute name="font-size">10pt</xsl:attribute>
 		<xsl:attribute name="font-weight">bold</xsl:attribute>
 		<xsl:attribute name="font-style">normal</xsl:attribute>
 		<xsl:attribute name="text-align">left</xsl:attribute>
 		<xsl:attribute name="color">black</xsl:attribute>
 		<xsl:attribute name="margin-top">4mm</xsl:attribute>
-		<xsl:attribute name="margin-right">1mm</xsl:attribute>
+		<xsl:attribute name="margin-right">1mm</xsl:attribute>-->
 	</xsl:attribute-set>		
 
 	
@@ -418,8 +440,8 @@
 		<xsl:attribute name="font-style">normal</xsl:attribute>
 		<xsl:attribute name="text-align">right</xsl:attribute>
 		<xsl:attribute name="color">black</xsl:attribute>
-		
-			<xsl:attribute name="margin-right"><xsl:value-of select="$subQuestionMargin"/></xsl:attribute>
+		<xsl:attribute name="margin-right"><xsl:value-of select="$subQuestionMargin"/></xsl:attribute>
+		<xsl:attribute name="margin-bottom">2mm</xsl:attribute>
 		
 		
 	</xsl:attribute-set>
@@ -429,10 +451,27 @@
 		<xsl:attribute name="font-size">10pt</xsl:attribute>
 		<xsl:attribute name="font-weight">normal</xsl:attribute>
 		<xsl:attribute name="font-style">normal</xsl:attribute>
-		<xsl:attribute name="text-align">right</xsl:attribute>
+		<xsl:attribute name="text-align">
+			<xsl:choose>
+				<xsl:when test="$leftalign = 'false'">right</xsl:when>
+				<xsl:otherwise>left</xsl:otherwise>
+			</xsl:choose>
+		</xsl:attribute>
 		<xsl:attribute name="color">black</xsl:attribute>
-				
-		<xsl:attribute name="margin-right">2mm</xsl:attribute>
+
+		<xsl:attribute name="margin-right">
+			<xsl:choose>
+				<xsl:when test="$leftalign = 'false'">2mm</xsl:when>
+				<xsl:otherwise>0mm</xsl:otherwise>
+			</xsl:choose>
+		</xsl:attribute>
+		<xsl:attribute name="margin-left">
+			<xsl:choose>
+				<xsl:when test="$leftalign = 'false'">0mm</xsl:when>
+				<xsl:otherwise>2mm</xsl:otherwise>
+			</xsl:choose>
+		</xsl:attribute>
+		
 		
 	</xsl:attribute-set>
 
@@ -505,9 +544,9 @@
 	
 	<xsl:attribute-set name="titleContainer">
 		<xsl:attribute name="absolute-position">fixed</xsl:attribute>
-		<xsl:attribute name="top">30mm</xsl:attribute>	
-		<xsl:attribute name="left">25mm</xsl:attribute>
-		<xsl:attribute name="width">100mm</xsl:attribute>
+		<xsl:attribute name="top">15mm</xsl:attribute>	
+		<xsl:attribute name="left">15mm</xsl:attribute>
+		<xsl:attribute name="width">140mm</xsl:attribute>
 		<xsl:attribute name="height">80mm</xsl:attribute>
 	</xsl:attribute-set>
 
@@ -576,9 +615,9 @@
 	<xsl:attribute-set name="sectionContainer">
 		<xsl:attribute name="border-top-style">solid</xsl:attribute>
 		<xsl:attribute name="border-top-width">5pt</xsl:attribute>
-		<xsl:attribute name="border-top-color">(rgb(255,255,255))</xsl:attribute>	
+		<xsl:attribute name="border-top-color">rgb(255, 255, 255)</xsl:attribute>	
 		<xsl:attribute name="padding-bottom">5mm</xsl:attribute>
-		<xsl:attribute name="background-color">(rgb(221,221,221))</xsl:attribute>
+		<xsl:attribute name="background-color">rgb(221, 221, 221)</xsl:attribute>
 		<xsl:attribute name="break-before">
 			<xsl:choose>
 				<xsl:when test="$section_page = 'true'">page</xsl:when>
@@ -617,7 +656,7 @@
 			
 		<xsl:attribute name="border-top-style">solid</xsl:attribute>
 		<xsl:attribute name="border-top-width">3pt</xsl:attribute>
-		<xsl:attribute name="border-top-color">(rgb(255,255,255))</xsl:attribute>
+		<xsl:attribute name="border-top-color">rgb(255, 255, 255)</xsl:attribute>
 				
 	</xsl:attribute-set>
 	
@@ -633,7 +672,7 @@
 		<!--
 		<xsl:attribute name="border-top-style">solid</xsl:attribute>
 		<xsl:attribute name="border-top-width">1pt</xsl:attribute>
-		<xsl:attribute name="border-top-color">(rgb(0,0,0))</xsl:attribute>	-->
+		<xsl:attribute name="border-top-color">rgb(0, 0, 0,)</xsl:attribute>	-->
 		<xsl:attribute name="margin-top">10mm</xsl:attribute>
 		
 	</xsl:attribute-set>	
@@ -642,7 +681,7 @@
 		
 		<xsl:attribute name="border-style">solid</xsl:attribute>
 		<xsl:attribute name="border-width">2pt</xsl:attribute>
-		<xsl:attribute name="border-color">(rgb(0,0,0))</xsl:attribute>	
+		<xsl:attribute name="border-color">rgb(0, 0, 0)</xsl:attribute>	
 
 		
 		
@@ -706,7 +745,8 @@
 
 	<xsl:attribute-set name="skipSVG">
 		<xsl:attribute name="width"><xsl:value-of select="$triangleWidth"/></xsl:attribute>
-		<xsl:attribute name="height"><xsl:value-of select="$responseContainerWidth"/></xsl:attribute>
+		<xsl:attribute name="height">5mm</xsl:attribute>
+		<xsl:attribute name="top">2mm</xsl:attribute>
 	</xsl:attribute-set>
 
 	<xsl:attribute-set name="boxarrowSVG">
@@ -729,11 +769,11 @@
 	</xsl:attribute-set>
 
 	<xsl:attribute-set name="delimiterLineBeforeESVG">
-		<xsl:attribute name="x1"><xsl:value-of select="$delimiterWidth"/></xsl:attribute>
+		<xsl:attribute name="x1">5.8mm</xsl:attribute>
 		<xsl:attribute name="y1">0</xsl:attribute>
-		<xsl:attribute name="x2"><xsl:value-of select="$delimiterWidth"/></xsl:attribute>
+		<xsl:attribute name="x2">5.8mm</xsl:attribute>
 		<xsl:attribute name="y2"><xsl:value-of select="$delimiterHeight"/></xsl:attribute>
-		<xsl:attribute name="style">stroke-dasharray: 4, 4;stroke: black; stroke-width: 0.5pt;</xsl:attribute>
+		<xsl:attribute name="style">stroke-dasharray: 2, 2;stroke: black; stroke-width: 0.5pt;</xsl:attribute>
 	</xsl:attribute-set>
 
 	<xsl:attribute-set name="delimiterLineBeforeSSVG">
@@ -795,11 +835,11 @@
 	</xsl:attribute-set>
 
 	<xsl:attribute-set name="delimiterLineMiddleESVG">
-		<xsl:attribute name="x1"><xsl:value-of select="$delimiterWidth"/></xsl:attribute>
+		<xsl:attribute name="x1">5.8mm</xsl:attribute>
 		<xsl:attribute name="y1">0</xsl:attribute>
-		<xsl:attribute name="x2"><xsl:value-of select="$delimiterWidth"/></xsl:attribute>
+		<xsl:attribute name="x2">5.8mm</xsl:attribute>
 		<xsl:attribute name="y2"><xsl:value-of select="$delimiterHeight"/></xsl:attribute>
-		<xsl:attribute name="style">stroke-dasharray: 4, 4;stroke: black; stroke-width: 0.5pt;</xsl:attribute>
+		<xsl:attribute name="style">stroke-dasharray: 2, 2;stroke: black; stroke-width: 0.5pt;</xsl:attribute>
 	</xsl:attribute-set>
 
 	<xsl:attribute-set name="delimiterLineMiddleSSVG">
@@ -889,6 +929,12 @@
 		<xsl:attribute name="height"><xsl:value-of select="$responseBoxWidth"/></xsl:attribute>
 	</xsl:attribute-set>
 
+	<xsl:attribute-set name="matrixSVGshort">
+		<xsl:attribute name="width">7mm</xsl:attribute>
+		<xsl:attribute name="height"><xsl:value-of select="$responseBoxWidth"/></xsl:attribute>
+	</xsl:attribute-set>
+
+	
 
 	<xsl:attribute-set name="matrixboxSVG">
 		<xsl:attribute name="width"><xsl:value-of select="$responseBoxWidth"/></xsl:attribute>
@@ -900,6 +946,18 @@
 		<xsl:attribute name="y">0</xsl:attribute>
 		<xsl:attribute name="style">fill:rgb(255,255,255);stroke-width:0.5pt;stroke:rgb(0,0,0)</xsl:attribute>
 	</xsl:attribute-set>
+
+	<xsl:attribute-set name="matrixboxSVGshort">
+		<xsl:attribute name="width"><xsl:value-of select="$responseBoxWidth"/></xsl:attribute>
+		<xsl:attribute name="height"><xsl:value-of select="$responseBoxWidth"/></xsl:attribute>
+		
+			<!--draw the box starting $lineLength  the way in -->
+		
+		<xsl:attribute name="x">1mm</xsl:attribute>
+		<xsl:attribute name="y">0</xsl:attribute>
+		<xsl:attribute name="style">fill:rgb(255,255,255);stroke-width:0.5pt;stroke:rgb(0,0,0)</xsl:attribute>
+	</xsl:attribute-set>
+
 	
 	<xsl:attribute-set name="linebeforeSVG">
 		<xsl:attribute name="x1">0</xsl:attribute>
@@ -914,6 +972,24 @@
 		<xsl:attribute name="x1"><xsl:value-of select="$lineLengthAndBoxWidth"/></xsl:attribute>
 		<xsl:attribute name="y1">2.5mm</xsl:attribute>
 		<xsl:attribute name="x2"><xsl:value-of select="$matrixBoxWidth"/></xsl:attribute>
+		<xsl:attribute name="y2">2.5mm</xsl:attribute>
+		<xsl:attribute name="style">stroke-dasharray: 4, 4;stroke: black; stroke-width: 0.5pt;</xsl:attribute>
+	</xsl:attribute-set>
+
+
+	<xsl:attribute-set name="linebeforeSVGshort">
+		<xsl:attribute name="x1">0</xsl:attribute>
+		<xsl:attribute name="y1">2.5mm</xsl:attribute>
+		<xsl:attribute name="x2">1mm</xsl:attribute>
+		<xsl:attribute name="y2">2.5mm</xsl:attribute>
+		<xsl:attribute name="style">stroke-dasharray: 4, 4;stroke: black; stroke-width: 0.5pt;</xsl:attribute>
+	</xsl:attribute-set>
+	
+	<xsl:attribute-set name="lineafterSVGshort">
+		
+		<xsl:attribute name="x1">6mm</xsl:attribute>
+		<xsl:attribute name="y1">2.5mm</xsl:attribute>
+		<xsl:attribute name="x2">7mm</xsl:attribute>
 		<xsl:attribute name="y2">2.5mm</xsl:attribute>
 		<xsl:attribute name="style">stroke-dasharray: 4, 4;stroke: black; stroke-width: 0.5pt;</xsl:attribute>
 	</xsl:attribute-set>
@@ -938,7 +1014,7 @@
 	
 	
 	<xsl:attribute-set name="triangleSVG">
-		<xsl:attribute name="points">0,0.9mm <xsl:value-of select="$triangleWidth"/>,3.5mm 0,6.1mm</xsl:attribute>
+		<xsl:attribute name="points">0,0 1,1 0,2</xsl:attribute>
 		<xsl:attribute name="style">fill: black;</xsl:attribute>
 	</xsl:attribute-set>
 

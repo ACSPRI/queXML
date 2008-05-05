@@ -2,7 +2,7 @@
 
 <!-- to_form_page_layout
 
-	Copyright Deakin University 2005,2006
+	Copyright Deakin University 2005,2006,2008
 	Written by Adam Zammit - adam.zammit@deakin.edu.au
 	For the Deakin Computer Assisted Research Facility: http://www.deakin.edu.au/dcarf/
 
@@ -36,17 +36,12 @@
 
 <!-- This is the page layout stylesheet -->
 
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 	xmlns:svg="http://www.w3.org/2000/svg" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:dcarf="http://www.deakin.edu.au/dcarf">
-
-    <!-- Import barcode generator templates -->
-  <xsl:import href="barcode/2of5i.xsl"/>
-   <!--<xsl:import href="barcode/code128.xsl"/>-->
-
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 	xmlns:svg="http://www.w3.org/2000/svg" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:dcarf="http://www.deakin.edu.au/dcarf" xmlns:barcode="http://barcode4j.krysalis.org/ns">
 
    <!-- **PARAMETERS** -->
    
 	<!-- The form ID for the barcode -->
-	<xsl:param name="questionnaireId"/> <!-- this is the questionnaire ID for our database - 6 digits -->	
+	<xsl:param name="questionnaireId">1</xsl:param> <!-- this is the questionnaire ID for our database - 6 digits -->	
 		<!-- The page number makes up the remaining 2 digits -->		
 		
 	<xsl:param name="formId"/> <!-- this is the case ID - 6 digits -->
@@ -62,6 +57,8 @@
 	
 	<xsl:param name="show_cover_page">true</xsl:param>
 	<xsl:param name="show_first_page">true</xsl:param>
+	
+	<xsl:param name="show_information_symbol">false</xsl:param>
 
 	<xsl:param name="leftalign">false</xsl:param>
 	
@@ -211,2102 +208,192 @@
 	<xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes"/>
 
 
-	<xsl:attribute-set name="pagepadding">
-		<xsl:attribute name="padding-top">12mm</xsl:attribute>
-		<xsl:attribute name="padding-bottom">12mm</xsl:attribute>
-		<xsl:attribute name="padding-left">12mm</xsl:attribute>
-		<xsl:attribute name="padding-right">12mm</xsl:attribute>
-	</xsl:attribute-set>												  
+										  
 
 	<xsl:attribute-set name="coverpage">
-		<xsl:attribute name="background-color">(rgb(200,200,200))</xsl:attribute>
+		<xsl:attribute name="background-color">rgb(200, 200, 200)</xsl:attribute>
 	</xsl:attribute-set>
 
 	<xsl:attribute-set name="restpage">
-		<xsl:attribute name="background-color">(rgb(241,241,241))</xsl:attribute>
+		<xsl:attribute name="background-color">rgb(241, 241, 241)</xsl:attribute>
 	</xsl:attribute-set>
 
 
 	<xsl:attribute-set name="coverpageteleform">
-		<xsl:attribute name="background-color">(rgb(255,255,255))</xsl:attribute>
+		<xsl:attribute name="background-color">rgb(255, 255, 255)</xsl:attribute>
 	</xsl:attribute-set>
 
 	<xsl:attribute-set name="restpageteleform">
-		<xsl:attribute name="background-color">(rgb(255,255,255))</xsl:attribute>
+		<xsl:attribute name="background-color">rgb(255, 255, 255)</xsl:attribute>
 	</xsl:attribute-set>
 	
 	
 	<xsl:template name="drawCornerBoxesLeft">
 	
-		<fo:block>
-			<fo:instream-foreign-object>
-				<svg:svg width="12mm" height="285mm">
-					<svg:line x1="12mm" y1="10.94mm" x2="12mm" y2="30.94mm" style="stroke:rgb(0,0,0);stroke-width:1mm"/>	
-					<svg:line x1="12mm" y1="252.84mm" x2="12mm" y2="272.84mm" style="stroke:rgb(0,0,0);stroke-width:1mm"/>
-				</svg:svg>
-			</fo:instream-foreign-object>	
-		</fo:block>
+	
+		<fo:block-container  width="15.5mm" top="260.5mm" height="20mm" absolute-position="absolute" border-width="0.5mm" border-color="rgb(0,0,0)" border-style="solid" border-left-color="rgb(255,255,255)" border-top-color="rgb(255,255,255)" border-bottom-color="rgb(255,255,255)">
+		     <fo:block/>
+	      </fo:block-container>
+
+	     <fo:block-container  width="15.5mm" top="15.5mm" height="20mm" absolute-position="absolute" border-width="0.5mm" border-color="rgb(0,0,0)" border-style="solid" border-left-color="rgb(255,255,255)" border-top-color="rgb(255,255,255)" border-bottom-color="rgb(255,255,255)">
+		     <fo:block/>
+	      </fo:block-container>
+
 	</xsl:template>
 
 	<xsl:template name="drawCornerBoxesRight">
-		<fo:block>
-			<fo:instream-foreign-object>
-				<svg:svg width="12mm" height="285mm">
+	  <fo:block-container  left = "0.5mm" width="15.5mm" top="260.5mm" height="20mm" absolute-position="absolute" border-width="0.5mm" border-color="rgb(0,0,0)" border-style="solid" border-right-color="rgb(255,255,255)" border-top-color="rgb(255,255,255)" border-bottom-color="rgb(255,255,255)">
+		     <fo:block/>
+	      </fo:block-container>
 
-					<svg:line x1="0" y1="10.94mm" x2="0" y2="30.94mm" style="stroke:rgb(0,0,0);stroke-width:1mm"/>	
-					<svg:line x1="0" y1="252.84mm" x2="0" y2="272.84mm" style="stroke:rgb(0,0,0);stroke-width:1mm"/>
+	     <fo:block-container  left = "0.5mm" width="15.5mm" top="15.5mm" height="20mm" absolute-position="absolute" border-width="0.5mm" border-color="rgb(0,0,0)" border-style="solid" border-right-color="rgb(255,255,255)" border-top-color="rgb(255,255,255)" border-bottom-color="rgb(255,255,255)">
+		     <fo:block/>
+	      </fo:block-container>
 
-				</svg:svg>
-			</fo:instream-foreign-object>	
-		</fo:block>
 	</xsl:template>
 
 	<xsl:template name="drawCornerBoxesTop">
 		
-		<fo:block-container    
-		   left="18mm"
-		   top="14.9mm"
-           width="174mm"
-			height="1mm"
-           absolute-position="fixed">
-           <fo:block>
-			<fo:instream-foreign-object>
-				<svg:svg width="174mm" height="1mm">
-					<svg:line x1="0" y1="0" x2="20mm" y2="0" style="stroke:rgb(0,0,0);stroke-width:1mm"/>
-					<svg:line x1="154mm" y1="0" x2="174mm" y2="0" style="stroke:rgb(0,0,0);stroke-width:1mm"/>	
-				</svg:svg>
-			</fo:instream-foreign-object>
-			</fo:block>
-		</fo:block-container>
+		    <fo:block-container top="15.5mm" absolute-position="absolute">
+<fo:table table-layout="fixed" width="100%">
+        <fo:table-column column-width="20mm"/>
+	<fo:table-column column-width="proportional-column-width(1)"/>
+        <fo:table-column column-width="20mm"/>
+        <fo:table-body>
+          <fo:table-row>
+            <fo:table-cell column-number="1">
+		<fo:block border-top-width="0.5mm" border-color="rgb(0,0,0)" border-top-style="solid"/>
+            </fo:table-cell>
+            <fo:table-cell column-number="3">
+              <fo:block border-top-width="0.5mm" border-color="rgb(0,0,0)" border-top-style="solid"/>
+            </fo:table-cell>
+	    </fo:table-row>
+        </fo:table-body>
+      </fo:table>
+</fo:block-container>
+
 	</xsl:template>
 
 	<xsl:template name="drawCornerBoxesBottom">
 		
-		<fo:block-container
-			left="18mm"
-		  top="276.3mm"
-           width="174mm"
-           height="1mm"
-           absolute-position="fixed">
-           <fo:block>
-			<fo:instream-foreign-object>
-				<svg:svg width="174mm" height="1mm">
-					<svg:line x1="0" y1="0" x2="20mm" y2="0" style="stroke:rgb(0,0,0);stroke-width:1mm"/>
-					<svg:line x1="154mm" y1="0" x2="174mm" y2="0" style="stroke:rgb(0,0,0);stroke-width:1mm"/>	
-				</svg:svg>
-			</fo:instream-foreign-object>
-			</fo:block>
-		</fo:block-container>
-		
+		    <fo:block-container top="0" absolute-position="absolute">
+<fo:table table-layout="fixed" width="100%">
+        <fo:table-column column-width="20mm"/>
+	<fo:table-column column-width="proportional-column-width(1)"/>
+        <fo:table-column column-width="20mm"/>
+        <fo:table-body>
+          <fo:table-row>
+            <fo:table-cell column-number="1">
+		<fo:block border-top-width="0.5mm" border-color="rgb(0,0,0)" border-top-style="solid"/>
+            </fo:table-cell>
+            <fo:table-cell column-number="3">
+              <fo:block border-top-width="0.5mm" border-color="rgb(0,0,0)" border-top-style="solid"/>
+            </fo:table-cell>
+	    </fo:table-row>
+        </fo:table-body>
+      </fo:table>
+</fo:block-container>
+
 	</xsl:template>
 
 
 	<xsl:template name="drawBarcode">
-		<xsl:param name="page">00</xsl:param>
-		
-		<fo:block-container absolute-position="fixed" left="133mm" top="5mm">
-		<fo:block>
-			<fo:instream-foreign-object content-width="100%" content-height="12mm" top="0">
-              <xsl:call-template name="barcode-2of5i">
-                <xsl:with-param name="value">
-					<xsl:number value="($questionnaireId * 100) + ($page)" format="00000001"/>
-                </xsl:with-param>
-                <xsl:with-param name="print-text">'false'</xsl:with-param>                
-              </xsl:call-template>
-			</fo:instream-foreign-object>
-		</fo:block>
-		</fo:block-container>
+
+<fo:block-container top="5.5mm" left="117mm" absolute-position="absolute">
+<fo:block>
+  <fo:instream-foreign-object>
+	  
+	  <barcode:barcode xmlns:barcode="http://barcode4j.krysalis.org/ns">
+		  <xsl:attribute name="message"><xsl:number value="$questionnaireId" format="000000"/>#page-number:00#</xsl:attribute>
+		 <barcode:intl2of5>
+			 <barcode:height>6mm</barcode:height>
+			 <barcode:module-width>0.6mm</barcode:module-width>
+			 <barcode:human-readable><barcode:placement>none</barcode:placement></barcode:human-readable>
+		 </barcode:intl2of5>
+   	</barcode:barcode>
+
+  </fo:instream-foreign-object>
+</fo:block>
+</fo:block-container>
 
 	</xsl:template>
 
 	<xsl:template name="drawBarcodeFormId">
-				
-		<fo:block-container absolute-position="fixed" left="19mm" top="278mm">
-			<fo:block>
-			<fo:instream-foreign-object content-width="100%" content-height="12mm" top="0">
-              <xsl:call-template name="barcode-2of5i">
-                <xsl:with-param name="value">
-					<xsl:number value="($questionnaireId * 1000000) + ($formId)" format="000000000001"/>
-                </xsl:with-param>
 
-             </xsl:call-template>
-			</fo:instream-foreign-object>
-			</fo:block>
-		</fo:block-container>
+
 
 	</xsl:template>
 
 
 	
 	<xsl:template match="/">
-	
-
-	
-	
+		
 		<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
-			<fo:layout-master-set>
-				
-				<!-- Cover page layout -->
-				<fo:simple-page-master
-					master-name="cover"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-					
 
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding coverpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding coverpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
 
-						
-						<fo:region-before 	extent="12mm" region-name="cover-before"/>
-						<fo:region-after 	extent="12mm" region-name="cover-after"/>
-						<fo:region-start 	extent="12mm" region-name="cover-start"/>
-						<fo:region-end 	extent="12mm" region-name="cover-end"/>
-				
-				</fo:simple-page-master>
-			
-				<!-- first page layout -->
-				<fo:simple-page-master
-					master-name="first"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-						
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
+ <fo:layout-master-set>
+    <fo:simple-page-master master-name="cover" page-height="29.7cm" page-width="21.0cm">
+      <fo:region-body margin="16mm" background-color="rgb(200, 200, 200)"/>      
+      <fo:region-before extent="16mm" region-name="cover-before" background-color="rgb(255,255,255)" />
+      <fo:region-after extent="16mm" region-name="cover-after" background-color="rgb(255,255,255)"/>
+      <fo:region-start extent="16mm" region-name="cover-start" background-color="rgb(255,255,255)" />
+      <fo:region-end extent="16mm" region-name="cover-end" background-color="rgb(255,255,255)" />
+    </fo:simple-page-master>
+    <fo:simple-page-master master-name="qpage" page-height="29.7cm" page-width="21.0cm">
+      <fo:region-body margin="16mm" background-color="rgb(241, 241, 241)"/>      
+      <fo:region-before extent="16mm" region-name="qpage-before" background-color="rgb(255,255,255)" />
+      <fo:region-after extent="16mm" region-name="qpage-after" background-color="rgb(255,255,255)"/>
+      <fo:region-start extent="16mm" region-name="qpage-start" background-color="rgb(255,255,255)" />
+      <fo:region-end extent="16mm" region-name="qpage-end" background-color="rgb(255,255,255)" />
+    </fo:simple-page-master>
+    <fo:page-sequence-master master-name="coverpage">
+      <fo:single-page-master-reference master-reference="cover"/>
+    </fo:page-sequence-master>
+    <fo:page-sequence-master master-name="rest">
+      <fo:repeatable-page-master-reference master-reference="qpage"/>
+    </fo:page-sequence-master>	    
+
+  </fo:layout-master-set>
 
-
-						
-						<fo:region-before 	extent="12mm" region-name="first-before"/>
-							<fo:region-after 	extent="12mm" region-name="first-after"/>							
-						<fo:region-start 	extent="12mm" region-name="first-start"/>
-						<fo:region-end 	extent="12mm" region-name="first-end"/>
-						
-				</fo:simple-page-master>
-	
-	
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q01"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-	
-						
-						<fo:region-before 	extent="12mm" region-name="q01-before"/>
-						<xsl:choose>
-							<xsl:when test="$barcode_page_01='true'">
-								<fo:region-after 	extent="12mm" region-name="barcode-after"/>							
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-after 	extent="12mm" region-name="q-after"/>
-							</xsl:otherwise>
-						</xsl:choose>						
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q02"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q02-before"/>
-						<xsl:choose>
-							<xsl:when test="$barcode_page_02='true'">
-								<fo:region-after 	extent="12mm" region-name="barcode-after"/>							
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-after 	extent="12mm" region-name="q-after"/>
-							</xsl:otherwise>
-						</xsl:choose>						
-
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q03"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-					
-						<fo:region-before 	extent="12mm" region-name="q03-before"/>
-						<xsl:choose>
-							<xsl:when test="$barcode_page_03='true'">
-								<fo:region-after 	extent="12mm" region-name="barcode-after"/>							
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-after 	extent="12mm" region-name="q-after"/>
-							</xsl:otherwise>
-						</xsl:choose>						
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q04"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-					
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q04-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q05"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q05-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q06"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-										<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-						
-						<fo:region-before 	extent="12mm" region-name="q06-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q07"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-						
-						<fo:region-before 	extent="12mm" region-name="q07-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q08"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q08-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q09"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q09-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q10"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q10-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q11"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q11-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q12"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q12-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q13"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q13-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q14"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q14-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q15"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q15-before"/>
-						<xsl:choose>
-							<xsl:when test="$barcode_page_15='true'">
-								<fo:region-after 	extent="12mm" region-name="barcode-after"/>							
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-after 	extent="12mm" region-name="q-after"/>
-							</xsl:otherwise>
-						</xsl:choose>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q16"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q16-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q17"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q17-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q18"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q18-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q19"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q19-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q20"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q20-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q21"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q21-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q22"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q22-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q23"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q23-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q24"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q24-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q25"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-						
-						<fo:region-before 	extent="12mm" region-name="q25-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q26"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q26-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q27"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-						
-						<fo:region-before 	extent="12mm" region-name="q27-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q28"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q28-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q29"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q29-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q30"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-						
-						<fo:region-before 	extent="12mm" region-name="q30-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q31"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-	
-						
-						<fo:region-before 	extent="12mm" region-name="q31-before"/>
-						<xsl:choose>
-							<xsl:when test="$barcode_page_01='true'">
-								<fo:region-after 	extent="12mm" region-name="barcode-after"/>							
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-after 	extent="12mm" region-name="q-after"/>
-							</xsl:otherwise>
-						</xsl:choose>						
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q32"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q32-before"/>
-						<xsl:choose>
-							<xsl:when test="$barcode_page_02='true'">
-								<fo:region-after 	extent="12mm" region-name="barcode-after"/>							
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-after 	extent="12mm" region-name="q-after"/>
-							</xsl:otherwise>
-						</xsl:choose>						
-
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q33"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-					
-						<fo:region-before 	extent="12mm" region-name="q33-before"/>
-						<xsl:choose>
-							<xsl:when test="$barcode_page_03='true'">
-								<fo:region-after 	extent="12mm" region-name="barcode-after"/>							
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-after 	extent="12mm" region-name="q-after"/>
-							</xsl:otherwise>
-						</xsl:choose>						
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q34"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-					
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q34-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q35"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q35-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q36"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-										<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-						
-						<fo:region-before 	extent="12mm" region-name="q36-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q37"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-						
-						<fo:region-before 	extent="12mm" region-name="q37-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q38"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q38-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q39"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q39-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q40"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q40-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q41"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q41-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q42"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q42-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q43"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q43-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q44"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q44-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q45"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q45-before"/>
-						<xsl:choose>
-							<xsl:when test="$barcode_page_15='true'">
-								<fo:region-after 	extent="12mm" region-name="barcode-after"/>							
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-after 	extent="12mm" region-name="q-after"/>
-							</xsl:otherwise>
-						</xsl:choose>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q46"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q46-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q47"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q47-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q48"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q48-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q49"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q49-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q50"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q50-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q51"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q51-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q52"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q52-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q53"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q53-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q54"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q54-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q55"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-						
-						<fo:region-before 	extent="12mm" region-name="q55-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q56"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q56-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q57"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-						
-						<fo:region-before 	extent="12mm" region-name="q57-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q58"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q58-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q59"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-
-						
-						<fo:region-before 	extent="12mm" region-name="q59-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-
-				<!-- questionnaire page layout - for barcoding uniquely -->
-				<fo:simple-page-master
-					master-name="q60"
-					page-height="29.7cm"
-					page-width="21.0cm"
-					margin-top="6mm"
-					margin-bottom="6mm"
-					margin-left="6mm"
-					margin-right="6mm">
-	
-	
-						<xsl:choose>
-							<xsl:when test="$toteleform = 0">
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpage"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<fo:region-body xsl:use-attribute-sets="pagepadding restpageteleform"/>
-							</xsl:otherwise>
-						</xsl:choose>
-						
-						<fo:region-before 	extent="12mm" region-name="q60-before"/>
-						<fo:region-after 	extent="12mm" region-name="q-after"/>
-						<fo:region-start 	extent="12mm" region-name="q-start"/>
-						<fo:region-end 	extent="12mm" region-name="q-end"/>
-										
-				</fo:simple-page-master>
-				
-				
-	
-				<!-- Define a page sequence for a questionnaire -->
-				
-				<!-- The sequence here is Cover page, even, odd, even, odd ... etc-->
-				<fo:page-sequence-master master-name="coverpage">
-						<fo:single-page-master-reference master-reference="cover"/>
-				
-				</fo:page-sequence-master>
-
-				<fo:page-sequence-master master-name="firstpage">
-				
-					<fo:single-page-master-reference master-reference="first"/>
-				</fo:page-sequence-master>
-
-
-				<fo:page-sequence-master master-name="rest">
-					
-					<fo:single-page-master-reference master-reference="q02"/>
-					<fo:single-page-master-reference master-reference="q03"/>
-					<fo:single-page-master-reference master-reference="q04"/>
-					<fo:single-page-master-reference master-reference="q05"/>
-					<fo:single-page-master-reference master-reference="q06"/>
-					<fo:single-page-master-reference master-reference="q07"/>
-					<fo:single-page-master-reference master-reference="q08"/>
-					<fo:single-page-master-reference master-reference="q09"/>
-					<fo:single-page-master-reference master-reference="q10"/>
-					<fo:single-page-master-reference master-reference="q11"/>
-					<fo:single-page-master-reference master-reference="q12"/>
-					<fo:single-page-master-reference master-reference="q13"/>
-					<fo:single-page-master-reference master-reference="q14"/>
-					<fo:single-page-master-reference master-reference="q15"/>
-					<fo:single-page-master-reference master-reference="q16"/>
-					<fo:single-page-master-reference master-reference="q17"/>
-					<fo:single-page-master-reference master-reference="q18"/>
-					<fo:single-page-master-reference master-reference="q19"/>
-					<fo:single-page-master-reference master-reference="q20"/>
-					<fo:single-page-master-reference master-reference="q21"/>
-					<fo:single-page-master-reference master-reference="q22"/>
-					<fo:single-page-master-reference master-reference="q23"/>
-					<fo:single-page-master-reference master-reference="q24"/>
-					<fo:single-page-master-reference master-reference="q25"/>
-					<fo:single-page-master-reference master-reference="q26"/>
-					<fo:single-page-master-reference master-reference="q27"/>
-					<fo:single-page-master-reference master-reference="q28"/>
-					<fo:single-page-master-reference master-reference="q29"/>
-					<fo:single-page-master-reference master-reference="q30"/>
-					<fo:single-page-master-reference master-reference="q31"/>			
-					<fo:single-page-master-reference master-reference="q32"/>
-					<fo:single-page-master-reference master-reference="q33"/>
-					<fo:single-page-master-reference master-reference="q34"/>
-					<fo:single-page-master-reference master-reference="q35"/>
-					<fo:single-page-master-reference master-reference="q36"/>
-					<fo:single-page-master-reference master-reference="q37"/>
-					<fo:single-page-master-reference master-reference="q38"/>
-					<fo:single-page-master-reference master-reference="q39"/>
-					<fo:single-page-master-reference master-reference="q40"/>
-					<fo:single-page-master-reference master-reference="q41"/>
-					<fo:single-page-master-reference master-reference="q42"/>
-					<fo:single-page-master-reference master-reference="q43"/>
-					<fo:single-page-master-reference master-reference="q44"/>
-					<fo:single-page-master-reference master-reference="q45"/>
-					<fo:single-page-master-reference master-reference="q46"/>
-					<fo:single-page-master-reference master-reference="q47"/>
-					<fo:single-page-master-reference master-reference="q48"/>
-					<fo:single-page-master-reference master-reference="q49"/>
-					<fo:single-page-master-reference master-reference="q50"/>
-					<fo:single-page-master-reference master-reference="q51"/>
-					<fo:single-page-master-reference master-reference="q52"/>
-					<fo:single-page-master-reference master-reference="q53"/>
-					<fo:single-page-master-reference master-reference="q54"/>
-					<fo:single-page-master-reference master-reference="q55"/>
-					<fo:single-page-master-reference master-reference="q56"/>
-					<fo:single-page-master-reference master-reference="q57"/>
-					<fo:single-page-master-reference master-reference="q58"/>
-					<fo:single-page-master-reference master-reference="q59"/>
-					<fo:single-page-master-reference master-reference="q60"/>	
-				</fo:page-sequence-master>
-			
-			</fo:layout-master-set>
-	
 
 
 			<!-- The layout of the questionnaire -->
 	<xsl:if test="$show_cover_page='true'">
 			<fo:page-sequence 
 				master-reference="coverpage">
-			
-				<fo:static-content flow-name="cover-after">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))"
-						display-align="center">
 
+			<fo:title>Cover</fo:title>
+
+				<fo:static-content flow-name="cover-after">
+				
 						<xsl:call-template name="drawCornerBoxesBottom"/>		
 
 						<xsl:if test="$barcode_page_00='true'">
 							<xsl:call-template name="drawBarcodeFormId"/>
 						</xsl:if>
 		
-					</fo:block-container>
-					
-					
+				
 					
 				</fo:static-content>
 
 				<fo:static-content flow-name="cover-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))"
-														display-align="before" top="0">
-
+				
+					<xsl:call-template name="drawBarcode"/>
 						
-
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">00</xsl:with-param>
-						</xsl:call-template>
-
 						<xsl:call-template name="drawCornerBoxesTop"/>
 
-					</fo:block-container>
-					
+									
 				</fo:static-content>
 				
 				<fo:static-content flow-name="cover-start">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
+					
 						<xsl:call-template name="drawCornerBoxesLeft"/>
-					</fo:block-container>
+	
 				</fo:static-content>
 
 				<fo:static-content flow-name="cover-end">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
+					
 						<xsl:call-template name="drawCornerBoxesRight"/>
-					</fo:block-container>
 				</fo:static-content>
 
 
@@ -2318,12 +405,14 @@
 			</fo:page-sequence>
 		</xsl:if>
 
+	<!--
+
 		<xsl:if test="$show_first_page='true'">				
 			<fo:page-sequence initial-page-number="1" master-reference="firstpage">
 
 				<fo:static-content flow-name="first-before">
 					<xsl:call-template name="drawCornerBoxesTop"/>
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
+					<fo:block-container height="100%" width="100%" background-color="(rgb-icc(255, 255, 255, #Grayscale, 1.0))">
 						<xsl:call-template name="drawBarcode">
 							<xsl:with-param name="page">01</xsl:with-param>
 						</xsl:call-template>
@@ -2332,13 +421,13 @@
 				</fo:static-content>
 
 				<fo:static-content flow-name="first-start">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
+					<fo:block-container height="100%" width="100%" background-color="(rgb-icc(255, 255, 255, #Grayscale, 1.0))">
 						<xsl:call-template name="drawCornerBoxesLeft"/>
 					</fo:block-container>
 				</fo:static-content>
 
 				<fo:static-content flow-name="first-end">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
+					<fo:block-container height="100%" width="100%" background-color="(rgb-icc(255, 255, 255, #Grayscale, 1.0))">
 						<xsl:call-template name="drawCornerBoxesRight"/>
 					</fo:block-container>
 				</fo:static-content>
@@ -2346,12 +435,11 @@
 			
 
 
-				<!-- The page numbers -->
 				<xsl:choose>
 					<xsl:when test="$show_page_numbers='true'">
 
 						<fo:static-content flow-name="first-after">
-							<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))"
+							<fo:block-container height="100%" width="100%" background-color="(rgb-icc(255, 255, 255, #Grayscale, 1.0))"
 															display-align="center">
 								<fo:block text-align="center" font-family="sans-serif" font-size="9pt">
 									Page <fo:page-number/>
@@ -2365,12 +453,15 @@
 					<xsl:otherwise>
 
 						<fo:static-content flow-name="first-after">
-							<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))"
+							<fo:block-container height="100%" width="100%" background-color="(rgb-icc(255, 255, 255, #Grayscale, 1.0))"
 						display-align="center">
 
 						<xsl:call-template name="drawCornerBoxesBottom"/>		
-						
-						<xsl:call-template name="drawBarcodeFormId"/>
+
+					<xsl:if test="$barcode_page_01='true'">
+						<xsl:call-template name="drawBarcodeFormId"/>							
+						</xsl:if>
+
 		
 					</fo:block-container>
 									
@@ -2388,643 +479,37 @@
 			
 			</fo:page-sequence>
 			</xsl:if>
-			
+
+
+			-->
+
 								
 			<fo:page-sequence
-				master-reference="rest"
-				initial-page-number="2">
+				master-reference="rest"> 
 
-			<fo:static-content flow-name="barcode-after">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))"
-						display-align="center">
-
-						<xsl:call-template name="drawCornerBoxesBottom"/>		
-						
-						<xsl:call-template name="drawBarcodeFormId"/>
-		
-					</fo:block-container>
-									
-				</fo:static-content>			
-				
+				<fo:title>Questions</fo:title>
 
 
-				<fo:static-content flow-name="q02-before">
+
+				<fo:static-content flow-name="qpage-before">
 					<xsl:call-template name="drawCornerBoxesTop"/>
 						
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">02</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
+					<xsl:call-template name="drawBarcode"/>
+
 					
 				</fo:static-content>
 				
 
-
-				<fo:static-content flow-name="q03-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">03</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q04-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">04</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q05-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">05</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q06-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">06</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q07-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">07</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q08-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">08</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q09-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">09</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q10-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">10</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q11-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">11</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q12-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">12</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q13-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">13</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q14-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">14</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q15-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">15</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q16-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">16</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-	
-				
-				<fo:static-content flow-name="q17-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">17</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q18-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">18</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q19-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">19</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q20-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">20</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q21-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">21</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q22-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">22</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q23-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">23</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q24-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">24</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q25-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">25</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q26-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">26</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q27-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">27</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q28-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">28</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q29-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">29</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q30-before">
-					
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">30</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					
-					<xsl:call-template name="drawCornerBoxesTop"/>
-					
-				</fo:static-content>
-
-
-				<fo:static-content flow-name="q31-before">
-					
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">31</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					
-					<xsl:call-template name="drawCornerBoxesTop"/>
-					
-				</fo:static-content>
-
-				
-				<fo:static-content flow-name="q32-before">
-					<xsl:call-template name="drawCornerBoxesTop"/>
-						
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">32</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					
-				</fo:static-content>
-				
-
-
-				<fo:static-content flow-name="q33-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">33</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q34-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">34</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q35-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">35</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q36-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">36</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q37-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">37</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q38-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">38</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q39-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">39</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q40-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">40</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q41-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">41</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q42-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">42</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q43-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">43</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q44-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">44</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q45-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">45</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q46-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">46</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-	
-				
-				<fo:static-content flow-name="q47-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">47</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q48-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">48</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q49-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">49</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q50-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">50</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q51-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">51</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q52-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">52</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q53-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">53</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q54-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">54</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q55-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">55</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q56-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">56</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q57-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">57</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q58-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">58</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q59-before">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">59</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					<xsl:call-template name="drawCornerBoxesTop"/>
-				</fo:static-content>
-				
-
-				<fo:static-content flow-name="q60-before">
-					
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
-						<xsl:call-template name="drawBarcode">
-							<xsl:with-param name="page">60</xsl:with-param>
-						</xsl:call-template>
-					</fo:block-container>
-					
-					<xsl:call-template name="drawCornerBoxesTop"/>
-					
-				</fo:static-content>
-
-				
-				<fo:static-content flow-name="q-start">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
+				<fo:static-content flow-name="qpage-start">
+			
 						<xsl:call-template name="drawCornerBoxesLeft"/>
-					</fo:block-container>
+			
 				</fo:static-content>
 
-				<fo:static-content flow-name="q-end">
-					<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))">
+				<fo:static-content flow-name="qpage-end">
+		
 						<xsl:call-template name="drawCornerBoxesRight"/>
-					</fo:block-container>
+	
 				</fo:static-content>
 
 
@@ -3032,10 +517,10 @@
 				<xsl:choose>
 					<xsl:when test="$show_page_numbers='true'">
 
-						<fo:static-content flow-name="q-after">
-							<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))"
+						<fo:static-content flow-name="qpage-after">
+							<fo:block-container height="100%" width="100%" background-color="(rgb-icc(255, 255, 255, #Grayscale, 1.0))"
 															display-align="center">
-								<fo:block text-align="center" font-family="sans-serif" font-size="9pt">
+								<fo:block text-align="center" font-family="serif" font-size="9pt">
 									Page <fo:page-number/>
 								</fo:block>
 							</fo:block-container>
@@ -3048,13 +533,7 @@
 				
 					<xsl:otherwise>
 
-						<fo:static-content flow-name="q-after">
-							<fo:block-container height="100%" width="100%" background-color="(rgb(255,255,255))"
-															display-align="center">
-								<fo:block text-align="center" font-family="sans-serif" font-size="9pt">
-									<xsl:text/>
-								</fo:block>
-							</fo:block-container>
+						<fo:static-content flow-name="qpage-after">
 							
 							<xsl:call-template name="drawCornerBoxesBottom"/>
 							

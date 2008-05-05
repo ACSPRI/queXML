@@ -2,7 +2,7 @@
 
 <!-- to_form
 
-	Copyright Deakin University 2005,2006
+	Copyright Deakin University 2005,2006,2008
 	Written by Adam Zammit - adam.zammit@deakin.edu.au
 	For the Deakin Computer Assisted Research Facility: http://www.deakin.edu.au/dcarf/
 	
@@ -67,16 +67,24 @@
 	<!-- The first page that isn't the cover -->
 	<xsl:template name="firstpage">
 
+
 		<!-- 'during' the survey (first page) info -->
-		<xsl:if test="count(/questionnaire/questionnaireInfo[position='during' and administration='self'])>=1">
+		<!--		<xsl:if test="count(/questionnaire/questionnaireInfo[position='during' and administration='self'])>=1">
 			<fo:block-container xsl:use-attribute-sets="questionnaireInfoBeforeContainer">
 				<xsl:for-each select="/questionnaire/questionnaireInfo[position='during' and administration='self']">
 					<xsl:call-template name="questionnaireInfoBefore"/>
 				</xsl:for-each>
 			</fo:block-container>
-		</xsl:if>
+		</xsl:if>-->
+
 
 	</xsl:template>
+
+
+
+
+
+
 
 
 	<!-- template for images -->
@@ -107,7 +115,14 @@
 			<xsl:apply-templates/>
 		</fo:block>
 	</xsl:template>
+
+	<xsl:template match="//text[(@indent = 'false' or not(@indent)) and (@title = 'false' or not(@title))]" mode="information_symbol">
+		<fo:block>
+			<xsl:apply-templates/>
+		</fo:block>
+	</xsl:template>
 	
+
 	<!-- The Front Page -->
 	<xsl:template name="coverpage">
 
@@ -239,9 +254,9 @@
 		<fo:block-container top="190mm" left="25mm" absolute-position="fixed" width="150mm">
 			<fo:block>
 			<fo:table inline-progression-dimension="100%" table-layout="fixed">
-				<fo:table-column/> 
-				<fo:table-column/> 
-				<fo:table-column/> 
+				<fo:table-column column-width="proportional-column-width(1)"/> 
+				<fo:table-column column-width="proportional-column-width(1)"/> 
+				<fo:table-column column-width="proportional-column-width(1)"/> 
 				<fo:table-body>
 				<fo:table-row>
 					<fo:table-cell text-align="center"><fo:block><fo:external-graphic content-height="25mm" src="url(file://mnt/iss/tmp/walk.png)"/></fo:block></fo:table-cell>
@@ -436,11 +451,12 @@
 
 	<!-- Draws the question specifier (new block) -->
 	<xsl:template match="/questionnaire/section/question/specifier">
-		<fo:block-container xsl:use-attribute-sets="questionTextContainer">
+		<!--<fo:block-container xsl:use-attribute-sets="questionTextContainer">-->
 			<fo:block xsl:use-attribute-sets="questionSpecifierFont">
+				<fo:external-graphic content-height="3mm" src="url(file://mnt/iss/quexml/information.svg)"/>
 				<xsl:value-of select="."/>
 			</fo:block>
-		</fo:block-container>
+		<!--</fo:block-container>-->
 	</xsl:template>
 
 
@@ -452,7 +468,15 @@
 			<!-- If there is a before directive -->
 			<xsl:for-each select="directive[position = 'before' and administration = 'self']">
 				<fo:block xsl:use-attribute-sets="directive_beforeFont">
-					<xsl:apply-templates select="text"/>
+					<xsl:choose>
+						<xsl:when test="$show_information_symbol='true'">
+							<xsl:apply-templates select="text" mode="information_symbol"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:apply-templates select="text"/>
+						</xsl:otherwise>
+					</xsl:choose>
+
 				</fo:block>
 			</xsl:for-each>
 
@@ -460,7 +484,7 @@
 			<fo:block xsl:use-attribute-sets="questionTextContainer">
 
 				<!-- If there is a skip to this question, then the font should be bigger -->
-				<fo:list-block>
+				<fo:list-block provisional-label-separation="2mm" provisional-distance-between-starts="11mm">
 					<fo:list-item>
 						<fo:list-item-label end-indent="label-end()">
 						
@@ -486,9 +510,13 @@
 										<xsl:if test="position() = last()">
 											<xsl:apply-templates select="../qualifier"/>									
 										</xsl:if>
-								</fo:block>
+									</fo:block>
 								</xsl:for-each>
 								
+								
+								<!-- If there is a specifier -->
+								<xsl:apply-templates select="specifier"/>
+
 							</fo:list-item-body>
 
 
@@ -499,48 +527,70 @@
 				</fo:list-block>
 			</fo:block>
 
-			<!-- If there is a specifier -->
-			<xsl:apply-templates select="specifier"/>
 			
 			
 			<!-- If there is a during directive -->
 			<xsl:for-each select="directive[position = 'during' and administration = 'self']">
-				<fo:block xsl:use-attribute-sets="directive_beforeFont">
-					<xsl:apply-templates select="text"/>
+				<fo:block xsl:use-attribute-sets="directive_duringFont">
+					<xsl:choose>
+						<xsl:when test="$show_information_symbol='true'">
+							<xsl:apply-templates select="text" mode="information_symbol"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:apply-templates select="text"/>
+						</xsl:otherwise>
+					</xsl:choose>
+
 				</fo:block>
 			</xsl:for-each>
 			
 			<!-- The response choices - matrix, fixed or free -->
-			<xsl:if test="count(subQuestion)>=1 and count(response/fixed)>=1">
-				<!-- matrix -->
-				<xsl:choose>
-					<xsl:when test="response/fixed/@rotate='true'">
-						<xsl:call-template name="matrixRotate"/>
-					</xsl:when>
-					<xsl:when test="count(response/fixed/category)>=15">
-						<xsl:call-template name="matrixRotate"/>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:call-template name="matrix"/>					
-					</xsl:otherwise>
-				</xsl:choose>
+			<xsl:choose>
+				<xsl:when test="count(subQuestion)>=1 and count(response/fixed)>=1">
+					<!-- matrix -->
+					<xsl:choose>
+						<xsl:when test="response/fixed/@rotate='true'">
+							<xsl:call-template name="matrixRotate"/>
+						</xsl:when>
+						<xsl:when test="count(response/fixed/category)>=15">
+							<xsl:call-template name="matrixRotate"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:call-template name="matrix"/>					
+						</xsl:otherwise>
+					</xsl:choose>
+	
+				</xsl:when>
+				
+				<xsl:when test="count(subQuestion)>=1 and count(response/free)>=1">
+					<!-- matrix of free -->
+					<xsl:call-template name="matrixFree"/>
+				</xsl:when>
 
-			</xsl:if>
-			
-			<xsl:if test="count(subQuestion)>=1 and count(response/free)>=1">
-				<!-- matrix of free -->
-				<xsl:call-template name="matrixFree"/>
-			</xsl:if>
-			
-			<xsl:if test="count(subQuestion)=0">
-				<!-- non matrix - apply normal response template -->
-				<xsl:apply-templates select="response"/>
-			</xsl:if>
+				<xsl:when test="count(subQuestion)>=1 and count(response/vas)>=1">
+					<!-- matrix of VAS -->
+					<xsl:call-template name="matrixvas"/>
+				</xsl:when>
 
+
+
+				<xsl:when test="count(subQuestion)=0">
+					<!-- non matrix - apply normal response template -->
+					<xsl:apply-templates select="response"/>
+				</xsl:when>
+			</xsl:choose>
 			<!-- If there is an after directive -->
 			<xsl:for-each select="directive[position = 'after' and administration = 'self']">
 				<fo:block xsl:use-attribute-sets="directive_afterFont">
-					<xsl:apply-templates select="text"/>
+					<xsl:choose>
+						<xsl:when test="$show_information_symbol='true'">
+							<xsl:apply-templates select="text" mode="information_symbol"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:apply-templates select="text"/>
+						</xsl:otherwise>
+					</xsl:choose>
+
 				</fo:block>
 			</xsl:for-each>
 
@@ -588,7 +638,14 @@
 						<xsl:when test="count(fixed)=1">
 							<xsl:apply-templates select="fixed"/>
 						</xsl:when>
-		
+						<xsl:when test="count(vas)=1">
+							<xsl:apply-templates select="vas"/>
+						</xsl:when>
+						<xsl:when test="count(dvas)=1">
+							<xsl:apply-templates select="dvas"/>
+						</xsl:when>
+
+
 					</xsl:choose>
 		
 				</fo:block-container>
@@ -607,11 +664,11 @@
 	<xsl:template match="/questionnaire/section/question/response/fixed[@rotate = 'false' or not(@rotate)]">
 		<!-- Draw a vertical table of category labels and response boxes -->
 
-		<fo:table inline-progression-dimension="100%" table-layout="fixed">
+		<fo:table inline-progression-dimension="100%" table-layout="fixed"  width="100%">
 
 			<xsl:choose>
 				<xsl:when test="$leftalign = 'false'">
-					<fo:table-column/> <!-- for the text -->
+					<fo:table-column column-width="proportional-column-width(1)"/> <!-- for the text -->
 					<fo:table-column xsl:use-attribute-sets="fixedResponseColumn"/> <!-- for the response boxes -->
 					<fo:table-column xsl:use-attribute-sets="skipColumn"/> <!-- for the empty space after -->
 
@@ -619,7 +676,7 @@
 				<xsl:otherwise>
 					<fo:table-column xsl:use-attribute-sets="skipColumn"/> 
 					<fo:table-column xsl:use-attribute-sets="fixedResponseColumn"/>
-					<fo:table-column/> <!-- for the text -->
+					<fo:table-column column-width="proportional-column-width(1)"/> <!-- for the text -->
 				</xsl:otherwise>
 			</xsl:choose>
 
@@ -651,7 +708,7 @@
 									</fo:table-cell>
 								</xsl:when>
 								<xsl:otherwise>
-									<fo:table-cell empty-cells="show"/>
+									<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
 								</xsl:otherwise>
 							</xsl:choose>
 						</xsl:otherwise>
@@ -700,7 +757,7 @@
 									</fo:table-cell>
 								</xsl:when>
 								<xsl:otherwise>
-									<fo:table-cell empty-cells="show"/>
+									<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
 								</xsl:otherwise>
 							</xsl:choose>
 						</xsl:when>
@@ -737,15 +794,31 @@
 	<xsl:template match="/questionnaire/section/question/response/fixed[@rotate = 'true']">
 		<!-- Draw a HORIZONTAL table of category labels and response boxes -->
 
-		<fo:table inline-progression-dimension="100%" table-layout="fixed" table-omit-header-at-break="false">
+		<fo:table inline-progression-dimension="100%" table-layout="fixed" table-omit-header-at-break="false"  width="100%">
 
 			<xsl:choose>
 				<xsl:when test="$leftalign = 'false'">
-					<fo:table-column/> <!-- the empty cell -->
-					<xsl:for-each select="category">	
-						<fo:table-column xsl:use-attribute-sets="matrixResponseColumn"/>
-					</xsl:for-each>	
-					<fo:table-column xsl:use-attribute-sets="matrixSkipColumn"/> <!-- The empty space cell for skips -->
+					<fo:table-column column-width="proportional-column-width(1)"/> <!-- the empty cell -->
+					<xsl:choose>
+						<xsl:when test="count(category)>10">
+		
+							<xsl:for-each select="category">	
+								<fo:table-column column-width="11mm"/>
+							</xsl:for-each>	
+							<fo:table-column xsl:use-attribute-sets="skipColumn"/> <!-- The empty space cell for skips -->
+
+							
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:for-each select="category">	
+								<fo:table-column xsl:use-attribute-sets="matrixResponseColumn"/>
+							</xsl:for-each>	
+							<fo:table-column xsl:use-attribute-sets="matrixSkipColumn"/> <!-- The empty space cell for skips -->
+
+							
+						</xsl:otherwise>
+					</xsl:choose>
+					
 
 				</xsl:when>
 				<xsl:otherwise>
@@ -753,7 +826,7 @@
 					<xsl:for-each select="category">	
 						<fo:table-column xsl:use-attribute-sets="matrixResponseColumn"/>
 					</xsl:for-each>	
-					<fo:table-column/> <!-- the empty cell -->
+					<fo:table-column column-width="proportional-column-width(1)"/> <!-- the empty cell -->
 				</xsl:otherwise>
 			</xsl:choose>
 
@@ -762,9 +835,10 @@
 			<fo:table-header>
 				<fo:table-row>
 
-				<fo:table-cell empty-cells="show"></fo:table-cell> <!-- the empty corner cell -->
+				<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell> <!-- the empty corner cell -->
 				
-	
+
+				
 				<!-- draw in the category labels -->
 				<xsl:for-each select="category">
 					<fo:table-cell>
@@ -779,7 +853,7 @@
 				</xsl:for-each>
 
 
-				<fo:table-cell empty-cells="show"></fo:table-cell> <!-- the empty corner cell -->
+				<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell> <!-- the empty corner cell -->
 
 				
 				</fo:table-row>
@@ -792,10 +866,10 @@
 
 				<xsl:choose>
 				<xsl:when test="$leftalign = 'false'">
-	
+					<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
 				</xsl:when>
 				<xsl:otherwise>
-					<fo:table-cell empty-cells="show"/>
+				<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
 				</xsl:otherwise>
 				</xsl:choose>
 
@@ -816,6 +890,37 @@
 						
 					</xsl:when>
 
+
+					<xsl:when test="count(category)>10">
+
+						<!-- Draw the response boxes -->
+						<xsl:for-each select="category">
+							<fo:table-cell>
+								<fo:block xsl:use-attribute-sets="subquestionboxContainer">
+									<xsl:choose>
+										<xsl:when test="position()=1">
+											<xsl:call-template name="drawboxlineaftershort"/>
+										</xsl:when>
+										<!--<xsl:when test="(position()=last()) and (count(contingentQuestion)=1)">
+											<xsl:call-template name="drawboxarrowbottom"/>
+										</xsl:when>-->
+										<xsl:when test="position()=last()">
+											<xsl:call-template name="drawboxlinebeforeshort"/>
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:call-template name="drawboxlineshort"/>
+										</xsl:otherwise>
+									</xsl:choose>
+								</fo:block>
+							</fo:table-cell>
+						</xsl:for-each>
+
+						
+
+
+					</xsl:when>
+
+						
 					<xsl:otherwise>
 
 						<!-- Draw the response boxes -->
@@ -846,7 +951,7 @@
 
 				<xsl:choose>
 				<xsl:when test="$leftalign = 'false'">
-					<fo:table-cell empty-cells="show"/>
+				<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
 				</xsl:when>
 				<xsl:otherwise>
 				</xsl:otherwise>
@@ -971,10 +1076,12 @@
 		
 		<fo:table-row>
 
-
+			
 			<!-- If this is a matrix question - draw the subquestion else show the subquestion -->
 			<xsl:choose>
-				<xsl:when test="$matrix != 0">
+				<xsl:when test="$matrix = -1"/>
+
+				<xsl:when test="$matrix != 0 and $leftalign = 'false'">
 
 					<fo:table-cell>
 						<fo:block-container xsl:use-attribute-sets="subquestionfreeContainer">
@@ -985,6 +1092,20 @@
 					</fo:table-cell>
 
 				</xsl:when>
+
+				<xsl:when test="$matrix != 0 and $leftalign = 'true'">
+					<xsl:choose>
+						<xsl:when test="count(../response/free/label)=1 and ((../response/free/format) != 'text')">
+							<fo:table-cell>
+								<xsl:apply-templates select="../response/free/label"/>			
+							</fo:table-cell>
+						</xsl:when>
+						<xsl:otherwise>
+							<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell> 
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:when>
+
 				
 				<xsl:when test="$format = 'currency'">
 					<fo:table-cell>
@@ -993,9 +1114,10 @@
 						</fo:block-container>
 					</fo:table-cell>
 				</xsl:when>
-				
+
+						
 				<xsl:otherwise>
-					<fo:table-cell empty-cells="show"/>				
+					<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>				
 				</xsl:otherwise>
 				
 			</xsl:choose>
@@ -1015,7 +1137,9 @@
 			
 
 			<xsl:choose>
-				<xsl:when test="$matrix != 0">
+				<xsl:when test="$matrix = -1"/>
+
+				<xsl:when test="$matrix != 0 and $leftalign = 'false'">
 
 					<xsl:choose>
 						<xsl:when test="count(../response/free/label)=1 and ((../response/free/format) != 'text')">
@@ -1024,12 +1148,27 @@
 							</fo:table-cell>
 						</xsl:when>
 						<xsl:otherwise>
-							<fo:table-cell empty-cells="show"/> 
+							<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell> 
 						</xsl:otherwise>
 					</xsl:choose>
 
 				
 				</xsl:when>
+
+				<xsl:when test="$matrix != 0 and $leftalign = 'true'">
+
+					<fo:table-cell>
+						<fo:block-container xsl:use-attribute-sets="subquestionfreeContainer">
+							<fo:block xsl:use-attribute-sets="subquestionfreeFont">
+								<xsl:value-of select="$matrix"/>
+							</fo:block>
+						</fo:block-container>
+					</fo:table-cell>
+
+				</xsl:when>
+
+				
+
 				
 				<xsl:otherwise>
 
@@ -1040,7 +1179,7 @@
 							</fo:table-cell>
 						</xsl:when>
 						<xsl:otherwise>
-							<fo:table-cell empty-cells="show"/> 
+							<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell> 
 						</xsl:otherwise>
 					</xsl:choose>
 				
@@ -1083,7 +1222,7 @@
 
 
 		<!-- If it is a text free response AND there will be no space on the same line- draw the label beforehand -->
-		<xsl:if test="((count(text)=1) and (length > ($delimiterMaxPerRow div 2)))">
+		<xsl:if test="((count(text)=1) and (length > ($delimiterMaxPerRow div 2))) or format = 'longtext'">
 			<fo:block-container xsl:use-attribute-sets="freeLabelTextContainer">
 				<fo:block xsl:use-attribute-sets="freeLabelTextFont">
 					<xsl:value-of select="text"/>
@@ -1095,11 +1234,18 @@
 	
 		<!-- Draw a horizontal table of delimiter boxes -->
 
-		<fo:table inline-progression-dimension="100%" table-layout="fixed">
+		<fo:table inline-progression-dimension="100%" table-layout="fixed"  width="100%">
 		
-			<fo:table-column/> <!-- for the empty space before -->
+			<fo:table-column column-width="proportional-column-width(1)"/> <!-- for the empty space before -->
 			
 
+			<xsl:choose>
+				<xsl:when test="format='longtext'">
+						<fo:table-column column-width="145mm"/>
+				</xsl:when>
+				<xsl:otherwise>
+
+			
 					<xsl:call-template name="defineFreeResponseLoop">
 						<xsl:with-param name="repeat">
 		
@@ -1113,10 +1259,11 @@
 							</xsl:otherwise>
 						</xsl:choose>
 
-				</xsl:with-param>
-			</xsl:call-template> <!-- for the response boxes -->
+						</xsl:with-param>
+					</xsl:call-template> <!-- for the response boxes -->
 				
-				
+				</xsl:otherwise>
+			</xsl:choose>
 
 			
 
@@ -1127,7 +1274,7 @@
 	
 	
 						<xsl:choose>
-							<xsl:when test="(count(text)=1) and not(length > ($delimiterMaxPerRow div 2))">
+							<xsl:when test="(count(text)=1) and not(length > ($delimiterMaxPerRow div 2)) and format != 'longtext'">
 							<xsl:call-template name="freeResponseRowLoop">
 								<xsl:with-param name="repeat">
 									<xsl:value-of select="floor(length div $delimiterMaxPerRow)+1"/>
@@ -1142,7 +1289,21 @@
 							</xsl:call-template>
 						</xsl:when>
 
-	
+						<xsl:when test="format='longtext'">
+							<fo:table-row>
+								<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
+								<fo:table-cell>
+									<fo:block>
+										<xsl:call-template name="drawbigbox">
+											<xsl:with-param name="length" select="length"/>
+										</xsl:call-template>						
+									</fo:block>
+								</fo:table-cell>
+								<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
+							</fo:table-row>
+						</xsl:when>
+
+						
 						<xsl:otherwise>
 						<xsl:call-template name="freeResponseRowLoop">
 							<xsl:with-param name="repeat">
@@ -1183,11 +1344,11 @@
 	
 		<!-- Draw a horizontal table of delimiter boxes -->
 
-		<fo:table inline-progression-dimension="100%" table-layout="fixed">
+		<fo:table inline-progression-dimension="100%" table-layout="fixed"  width="100%">
 		
 			<xsl:choose>
 				<xsl:when test="$leftalign = 'false'">
-					<fo:table-column/> <!-- for the empty space before -->
+					<fo:table-column column-width="proportional-column-width(1)"/> <!-- for the empty space before -->
 				</xsl:when>
 				<xsl:otherwise>
 					<fo:table-column xsl:use-attribute-sets="skipColumn"/> <!-- for the empty space after -->
@@ -1226,7 +1387,7 @@
 					<fo:table-column xsl:use-attribute-sets="skipColumn"/>
 				</xsl:when>
 				<xsl:otherwise>
-					<fo:table-column/> 
+					<fo:table-column column-width="proportional-column-width(1)"/> 
 				</xsl:otherwise>
 			</xsl:choose>
 
@@ -1257,7 +1418,7 @@
 
 						<xsl:when test="format='longtext'">
 							<fo:table-row>
-								<fo:table-cell empty-cells="show"/>
+								<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
 								<fo:table-cell>
 									<fo:block>
 										<xsl:call-template name="drawbigbox">
@@ -1265,7 +1426,7 @@
 										</xsl:call-template>						
 									</fo:block>
 								</fo:table-cell>
-								<fo:table-cell empty-cells="show"/>
+								<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
 							</fo:table-row>
 						</xsl:when>
 	
@@ -1296,6 +1457,272 @@
 
 
 
+	<!-- Handle free responses within a Free Matrix -->
+	<xsl:template match="/questionnaire/section/question/response/free" mode="matrix">
+	
+		<!-- Draw a horizontal table of delimiter boxes -->
+
+		<fo:table table-layout="fixed"  width="100%">
+		
+		
+			<xsl:choose>
+				<xsl:when test="format='longtext'">
+						<fo:table-column column-width="145mm"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:call-template name="defineFreeResponseLoop">
+						<xsl:with-param name="repeat">
+
+						<!-- makes sure there is not more than the max per row -->
+						<xsl:choose>
+							<xsl:when test="length > $delimiterMaxPerRow">
+								<xsl:value-of select="$delimiterMaxPerRow"/>
+							</xsl:when>
+							<xsl:otherwise>
+							  <xsl:value-of select="length"/>
+							</xsl:otherwise>
+						</xsl:choose>
+
+					</xsl:with-param>
+					<xsl:with-param name="matrix">-1</xsl:with-param>
+			</xsl:call-template> <!-- for the response boxes -->
+				
+				
+				</xsl:otherwise>
+			</xsl:choose>
+			
+
+			
+			<fo:table-body>
+	
+						<xsl:call-template name="freeResponseRowLoop">
+							<xsl:with-param name="repeat">
+								<xsl:value-of select="floor(length div $delimiterMaxPerRow)+1"/>
+							</xsl:with-param>
+							<xsl:with-param name="lastrow">
+								<xsl:value-of select="length mod $delimiterMaxPerRow"/>
+							</xsl:with-param>
+							<xsl:with-param name="format">
+								<xsl:value-of select="format"/>
+							</xsl:with-param>
+							<xsl:with-param name="matrix">-1</xsl:with-param>
+
+						</xsl:call-template>
+					
+			</fo:table-body>
+		</fo:table>
+
+
+
+	</xsl:template>
+
+
+
+
+
+	<xsl:template match="/questionnaire/section/question/response/dvas">
+		<!-- Draw a Discrete Visual Analog scale -->
+
+
+		<fo:table inline-progression-dimension="100%" table-layout="fixed" table-omit-header-at-break="false"  width="100%">
+			<fo:table-column column-width="proportional-column-width(1)"/> <!-- the leftlabel cell -->
+			<xsl:for-each select="category">
+				<fo:table-column xsl:use-attribute-sets="matrixResponseColumn"/>
+			</xsl:for-each>
+			<fo:table-column column-width="proportional-column-width(1)"/> <!-- the rightlabel cell -->
+			<fo:table-column xsl:use-attribute-sets="matrixSkipColumn"/> <!-- The empty space cell for skips -->
+						
+
+			<fo:table-header>
+				<fo:table-row>
+				<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
+	
+				<!-- draw in the category labels -->
+				<xsl:for-each select="category">				
+
+					<fo:table-cell>
+						<fo:block-container xsl:use-attribute-sets="labelContainer">
+								<xsl:apply-templates select="image"/>
+							<fo:block xsl:use-attribute-sets="labelFont">
+								<xsl:value-of select="label"/>
+							</fo:block>
+						</fo:block-container>
+					</fo:table-cell>
+					
+				</xsl:for-each>
+
+				<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
+			</fo:table-row>
+			</fo:table-header>
+
+			<fo:table-body>
+
+			<!-- Now draw the subquestions -->
+			<fo:table-row xsl:use-attribute-sets="tableRow">
+				<fo:table-cell>
+					<fo:block-container xsl:use-attribute-sets="subquestionContainer">
+						<fo:block xsl:use-attribute-sets="subquestionFont">
+							<xsl:value-of select="labelleft"/>
+						</fo:block>
+					</fo:block-container>
+				</fo:table-cell>
+					<!-- When there is only one category - no lines are needed -->
+				<xsl:choose>
+					<xsl:when test="count(category)=1">
+					
+					<!-- Draw the response boxes -->
+					<xsl:for-each select="category">
+						<fo:table-cell>
+							<fo:block xsl:use-attribute-sets="subquestionboxContainer">
+								<xsl:call-template name="drawbox"/>
+							</fo:block>
+						</fo:table-cell>
+					</xsl:for-each>
+	
+					<xsl:if test="position() != last()">
+						<!-- here goes the blank between a double matrix question -->
+					<fo:table-cell>
+						<fo:block xsl:use-attribute-sets="subquestionboxContainer">
+						</fo:block>
+					</fo:table-cell>
+					</xsl:if>
+									
+				
+					</xsl:when>
+					<xsl:otherwise>
+						<!-- Draw the response boxes -->
+					<xsl:for-each select="category">
+						<fo:table-cell>
+							<fo:block xsl:use-attribute-sets="subquestionboxContainer">
+								<xsl:choose>
+									<xsl:when test="position()=1">
+										<xsl:call-template name="drawboxlineafter"/>
+									</xsl:when>
+									<xsl:when test="position()=last()">
+										<xsl:call-template name="drawboxlinebefore"/>
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:call-template name="drawboxline"/>
+									</xsl:otherwise>
+								</xsl:choose>
+							</fo:block>
+						</fo:table-cell>
+					</xsl:for-each>
+				
+					</xsl:otherwise>
+				</xsl:choose>
+					<fo:table-cell>
+					<fo:block-container xsl:use-attribute-sets="subquestionContainer">
+						<fo:block xsl:use-attribute-sets="subquestionFont" text-align="left">
+							<xsl:value-of select="labelright"/>
+						</fo:block>
+					</fo:block-container>
+				</fo:table-cell>
+					<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
+				
+				
+			</fo:table-row>
+
+		</fo:table-body>
+		</fo:table>
+
+
+
+	</xsl:template>
+
+
+
+
+
+
+	<!-- VAS questions -->
+
+	<xsl:template match="/questionnaire/section/question/response/vas">
+	
+	
+		<!-- Draw a horizontal table of delimiter boxes -->
+
+		<fo:table inline-progression-dimension="100%" table-layout="fixed"  width="100%">
+		
+			<xsl:choose>
+				<xsl:when test="$leftalign = 'false'">
+					<fo:table-column column-width="proportional-column-width(1)"/> <!-- for the empty space before -->
+				</xsl:when>
+				<xsl:otherwise>
+					<fo:table-column xsl:use-attribute-sets="skipColumn"/> <!-- for the empty space after -->
+				</xsl:otherwise>
+			</xsl:choose>
+		
+		
+			<!-- define columns text line text -->
+			<fo:table-column column-width="20mm"/>
+			<fo:table-column column-width="85mm"/>
+			<fo:table-column column-width="20mm"/>
+			
+			<xsl:choose>
+				<xsl:when test="$leftalign = 'false'">
+					<fo:table-column xsl:use-attribute-sets="skipColumn"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<fo:table-column column-width="proportional-column-width(1)"/> 
+				</xsl:otherwise>
+			</xsl:choose>
+
+
+			
+			<fo:table-body>
+
+
+					<fo:table-row>
+						<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
+						<fo:table-cell>
+							<fo:block xsl:use-attribute-sets="category_labelFont">
+								<xsl:value-of select="labelleft"/>
+							</fo:block>
+						</fo:table-cell>
+
+						<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
+
+
+						<fo:table-cell>
+							<fo:block xsl:use-attribute-sets="category_labelFont">
+								<xsl:value-of select="labelright"/>
+							</fo:block>
+						</fo:table-cell>
+
+						<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
+					</fo:table-row>
+
+
+					<fo:table-row>
+						<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
+						<fo:table-cell number-columns-spanned="3" text-align="center">
+							<fo:block>
+								<xsl:call-template name="drawvasline"/>
+							</fo:block>
+						</fo:table-cell>
+						<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
+					</fo:table-row>
+					
+			</fo:table-body>
+		</fo:table>
+
+
+
+	</xsl:template>
+
+
+
+
+
+
+
+
+
+
+
+
+
 	<!-- Handles free matrix questions -->
 	<xsl:template name="matrixFree">
 		<!-- on the question level -->
@@ -1313,64 +1740,186 @@
 			</xsl:when>
 		</xsl:choose>	
 		
-		<fo:table inline-progression-dimension="100%" table-layout="fixed">
+		<fo:table inline-progression-dimension="100%" table-layout="fixed"  width="100%">
 		
 			<xsl:choose>
 				<xsl:when test="$leftalign = 'false'">
-					<fo:table-column/> <!-- for the empty space before -->
+					<fo:table-column column-width="proportional-column-width(1)"/> <!-- for the empty space before -->
 				</xsl:when>
 				<xsl:otherwise>
 					<fo:table-column xsl:use-attribute-sets="skipColumn"/> <!-- for the empty space after -->
 				</xsl:otherwise>
 			</xsl:choose>
-			
-			<xsl:call-template name="defineFreeResponseLoop">
-				<xsl:with-param name="repeat">
 
-				<!-- makes sure there is not more than the max per row -->
-				<xsl:choose>
-					<xsl:when test="../response/free/length > $delimiterMaxPerRow">
-						<xsl:value-of select="$delimiterMaxPerRow"/>
-					</xsl:when>
-					<xsl:otherwise>
-					  <xsl:value-of select="../response/free/length"/>
-					</xsl:otherwise>
-				</xsl:choose>
+			<xsl:for-each select="../response/free">
+				<!-- column width = 6mm * number of boxes -->
+				<fo:table-column column-width="6mm"/>
+				<fo:table-column>
+					<xsl:attribute name="column-width"><xsl:call-template name="multiply"><xsl:with-param name="x">6mm</xsl:with-param><xsl:with-param name="y"><xsl:value-of select="length"/></xsl:with-param></xsl:call-template></xsl:attribute>
+				</fo:table-column>
 
-				</xsl:with-param>
-			</xsl:call-template> <!-- for the response boxes -->
+			</xsl:for-each>
 
 			<xsl:choose>
 				<xsl:when test="$leftalign = 'false'">
 					<fo:table-column xsl:use-attribute-sets="skipColumn"/> <!-- for the empty space after -->
 				</xsl:when>
 				<xsl:otherwise>
-					<fo:table-column/> <!-- for the empty space before -->
+					<fo:table-column column-width="proportional-column-width(1)"/> <!-- for the empty space before -->
 
 				</xsl:otherwise>
 			</xsl:choose>
 
 
+			<xsl:if test="position() = 1">
+			<fo:table-header>
+				<fo:table-row>
+			
+					<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
+
+
+					<xsl:for-each select="../response/free">
+							<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
+							<fo:table-cell>
+								<fo:block-container xsl:use-attribute-sets="category_labelContainer">
+							<fo:block xsl:use-attribute-sets="category_labelFont">
+								<xsl:value-of select="label"/>
+							</fo:block>
+							</fo:block-container>
+						</fo:table-cell>
+
+						</xsl:for-each>
+
+						<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
+
+				
+			</fo:table-row>
+			</fo:table-header>
+			</xsl:if>
+
 			
 			<fo:table-body>
-	
-						<xsl:call-template name="freeResponseRowLoop">
-							<xsl:with-param name="repeat">
-								<xsl:value-of select="floor(../response/free/length div $delimiterMaxPerRow)+1"/>
-							</xsl:with-param>
-							<xsl:with-param name="lastrow">
-								<xsl:value-of select="../response/free/length mod $delimiterMaxPerRow"/>
-							</xsl:with-param>
-							<xsl:with-param name="matrix">
-								<xsl:value-of select="text"/> <!-- the subquestion text-->
-							</xsl:with-param>
-						</xsl:call-template>
-						
+
+				<fo:table-row>
+
+				<fo:table-cell>
+						<fo:block-container xsl:use-attribute-sets="subquestionContainer">
+							<fo:block xsl:use-attribute-sets="subquestionFont">
+								<xsl:value-of select="text"/>
+							</fo:block>
+							</fo:block-container>
+				</fo:table-cell>
+			
+				<xsl:for-each select="../response/free">
+					<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
+					<fo:table-cell>
+
+					<xsl:apply-templates select="." mode="matrix"/>
+					</fo:table-cell>
+				
+				</xsl:for-each>
+			
+
+					<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
+			</fo:table-row>
+
 			</fo:table-body>
 		</fo:table>
 		</xsl:for-each>
 		
 	</xsl:template>
+
+
+
+
+
+	<!-- Handles matrix VAS questions -->
+	<xsl:template name="matrixvas">
+		<!-- on the question level -->
+		<!-- Draw the matrix table -->
+		
+		
+		<fo:table inline-progression-dimension="100%" table-layout="fixed" table-omit-header-at-break="false"  width="100%">
+			<fo:table-column column-width="proportional-column-width(1)"/> <!-- the text cell -->
+
+			<fo:table-column column-width="20mm"/>
+			<fo:table-column column-width="85mm"/>
+			<fo:table-column column-width="20mm"/>
+
+			<fo:table-column xsl:use-attribute-sets="matrixSkipColumn"/> <!-- The empty space cell for skips -->
+			
+			
+
+			<fo:table-header>
+				<fo:table-row>
+			
+					<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
+						<fo:table-cell>
+							<fo:block xsl:use-attribute-sets="category_labelFont">
+								<xsl:value-of select="response/vas/labelleft"/>
+							</fo:block>
+						</fo:table-cell>
+
+						<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
+
+
+						<fo:table-cell>
+							<fo:block xsl:use-attribute-sets="category_labelFont">
+								<xsl:value-of select="response/vas/labelright"/>
+							</fo:block>
+						</fo:table-cell>
+
+						<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
+		
+				
+			</fo:table-row>
+			</fo:table-header>
+
+			<fo:table-body>
+
+			<!-- Now draw the subquestions -->
+			<xsl:for-each select="subQuestion">
+
+				<fo:table-row xsl:use-attribute-sets="tableRow">
+					<fo:table-cell>
+						<fo:block-container xsl:use-attribute-sets="subquestionContainer">
+
+							<fo:block xsl:use-attribute-sets="subquestionFont">
+								<xsl:value-of select="text"/>
+							</fo:block>
+							
+							<!-- When variables are to be shown -->
+							<xsl:choose>
+								<xsl:when test="$show_variables = 'true'">
+										<fo:block>
+											<xsl:value-of select="@varName"/>
+										</fo:block>
+								</xsl:when>
+							</xsl:choose>	
+
+						</fo:block-container>
+					</fo:table-cell>
+
+
+					<fo:table-cell number-columns-spanned="3" text-align="center">
+						<fo:block>
+							<xsl:call-template name="drawvasline"/>
+						</fo:block>
+					</fo:table-cell>
+						
+
+					<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
+					
+					
+				</fo:table-row>
+	
+			</xsl:for-each>
+			
+		</fo:table-body>
+		</fo:table>
+		
+	</xsl:template>
+
 
 
 
@@ -1381,8 +1930,8 @@
 		
 		
 
-		<fo:table inline-progression-dimension="100%" table-layout="fixed" table-omit-header-at-break="false">
-			<fo:table-column/> <!-- the text cell -->
+		<fo:table inline-progression-dimension="100%" table-layout="fixed" table-omit-header-at-break="false"  width="100%">
+			<fo:table-column column-width="proportional-column-width(1)"/> <!-- the text cell -->
 			<xsl:for-each select="response">
 				<xsl:for-each select="fixed/category">
 					<fo:table-column xsl:use-attribute-sets="matrixResponseColumn"/>
@@ -1395,7 +1944,7 @@
 
 			<fo:table-header>
 				<fo:table-row>
-				<fo:table-cell empty-cells="show"></fo:table-cell> <!-- the empty corner cell -->
+				<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
 	
 				<!-- draw in the category labels -->
 				<xsl:for-each select="response">
@@ -1513,7 +2062,7 @@
 						</xsl:otherwise>
 					</xsl:choose>
 					
-					<fo:table-cell empty-cells="show"/>
+					<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
 					
 					
 				</fo:table-row>
@@ -1536,8 +2085,8 @@
 
 		
 
-		<fo:table inline-progression-dimension="100%" table-layout="fixed" table-omit-header-at-break="false">
-			<fo:table-column/> <!-- the text cell -->
+		<fo:table inline-progression-dimension="100%" table-layout="fixed" table-omit-header-at-break="false" width="100%">
+			<fo:table-column column-width="proportional-column-width(1)"/> <!-- the text cell -->
 			<xsl:for-each select="subQuestion">
 				<fo:table-column xsl:use-attribute-sets="matrixResponseColumn"/>
 			</xsl:for-each>
@@ -1547,7 +2096,7 @@
 
 			<fo:table-header>
 				<fo:table-row>
-				<fo:table-cell empty-cells="show"></fo:table-cell> <!-- the empty corner cell -->
+				<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
 	
 				<!-- draw in the subquestion texts -->
 				<xsl:for-each select="subQuestion">
@@ -1574,6 +2123,95 @@
 
 			<fo:table-body>
 
+			<!-- if there is a free response, squeeze it in -->
+			<xsl:for-each select="response/free">	
+				<fo:table-row xsl:use-attribute-sets="tableRow">
+					
+					<fo:table-cell>
+						<fo:block-container xsl:use-attribute-sets="subquestionContainer">
+							<fo:block xsl:use-attribute-sets="subquestionFont" margin-right="0mm">
+								<xsl:value-of select="label"/>
+							</fo:block>
+						</fo:block-container>
+					</fo:table-cell>
+					<xsl:for-each select="../../subQuestion">
+							<fo:table-cell>
+							<fo:block-container xsl:use-attribute-sets="category_boxContainer">
+								<fo:block>
+									<!-- draw free box -->
+									<xsl:choose>
+									<xsl:when test="$show_variables = 'true'">
+										<fo:block>
+											<xsl:value-of select="@varName"/>
+										</fo:block>
+									</xsl:when>	
+									</xsl:choose>	
+		
+									<fo:table inline-progression-dimension="100%" table-layout="fixed"  width="100%">
+		
+									<xsl:choose>
+									<xsl:when test="$leftalign = 'false'">
+										<fo:table-column column-width="proportional-column-width(1)"/> <!-- for the empty space before -->
+									</xsl:when>
+									<xsl:otherwise>
+										<fo:table-column xsl:use-attribute-sets="skipColumn"/> <!-- for the empty space after -->
+									</xsl:otherwise>
+									</xsl:choose>
+			
+									<xsl:call-template name="defineFreeResponseLoop">
+									<xsl:with-param name="repeat">
+				
+									<!-- makes sure there is not more than the max per row -->
+									<xsl:choose>
+									<xsl:when test="../response/free/length > $delimiterMaxPerRow">
+						<xsl:value-of select="$delimiterMaxPerRow"/>
+					</xsl:when>
+					<xsl:otherwise>
+					  <xsl:value-of select="../response/free/length"/>
+					</xsl:otherwise>
+				</xsl:choose>
+
+				</xsl:with-param>
+						</xsl:call-template> <!-- for the response boxes -->
+	
+					<xsl:choose>
+						<xsl:when test="$leftalign = 'false'">
+								<fo:table-column column-width="proportional-column-width(1)"/> <!-- for the empty space after -->
+						</xsl:when>
+							<xsl:otherwise>
+								<fo:table-column column-width="proportional-column-width(1)"/> <!-- for the empty space before -->
+			
+							</xsl:otherwise>
+						</xsl:choose>
+
+					
+									
+									<fo:table-body>
+								
+											<xsl:call-template name="freeResponseRowLoop">
+													<xsl:with-param name="repeat">
+														<xsl:value-of select="floor(../response/free/length div $delimiterMaxPerRow)+1"/>
+													</xsl:with-param>
+													<xsl:with-param name="lastrow">
+														<xsl:value-of select="../response/free/length mod $delimiterMaxPerRow"/>
+													</xsl:with-param>
+												</xsl:call-template>
+												
+								</fo:table-body>
+								</fo:table>
+									
+								</fo:block>
+							</fo:block-container>
+							</fo:table-cell>
+						</xsl:for-each>
+						
+					<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
+				
+				</fo:table-row>
+			</xsl:for-each>
+
+
+				
 			<!-- Now draw the labels -->
 			<xsl:for-each select="response/fixed/category">
 
@@ -1617,7 +2255,7 @@
 							</fo:table-cell>
 						</xsl:for-each>
 						
-					<fo:table-cell empty-cells="show"/>
+					<fo:table-cell><fo:block>&#xA0;</fo:block></fo:table-cell>
 				
 				</fo:table-row>
 	
@@ -1703,7 +2341,18 @@
 		</fo:instream-foreign-object>
 	</xsl:template>
 
-	
+	<xsl:template name="drawvasline">
+		<fo:instream-foreign-object>
+			<svg:svg width="105mm" height="8mm">
+				<svg:line x1="2mm" y1="4mm" x2="103mm" y2="4mm" style="stroke: black; stroke-width: 1pt;"/>
+				<svg:line x1="1mm" y1="2mm" x2="1mm" y2="6mm" style="stroke: black; stroke-width: 1pt;"/>
+				<svg:line x1="104mm" y1="2mm" x2="104mm" y2="6mm" style="stroke: black; stroke-width: 1pt;"/>
+			</svg:svg>
+		</fo:instream-foreign-object>
+	</xsl:template>
+
+
+
 	
 	<xsl:template name="drawbigbox">
 		<xsl:param name="length">1</xsl:param>
@@ -1715,7 +2364,7 @@
 					<svg:rect>
 						<xsl:attribute name="width">145mm</xsl:attribute>
 						<xsl:attribute name="height"><xsl:value-of select="concat(string($len),'mm')"/></xsl:attribute>
-						<xsl:attribute name="style">fill:rgb(255,255,255);stroke-width:0.5pt;stroke:rgb(0,0,0)</xsl:attribute>
+						<xsl:attribute name="style">fill:rgb(255,255,255);stroke-width:0.5pt;stroke:rgb(0,0,0);</xsl:attribute>
 					</svg:rect>
 			</svg:svg>
 		</fo:instream-foreign-object>
@@ -1753,6 +2402,39 @@
 		</fo:instream-foreign-object>
 	</xsl:template>
 
+
+	<!-- Draws a box with a line after -->
+	<xsl:template name="drawboxlineaftershort">
+		<fo:instream-foreign-object>
+			<svg:svg xsl:use-attribute-sets="matrixSVGshort">
+				<svg:rect xsl:use-attribute-sets="matrixboxSVGshort"/>
+				<svg:line xsl:use-attribute-sets="lineafterSVGshort"/>
+			</svg:svg>
+		</fo:instream-foreign-object>
+	</xsl:template>
+
+	<!-- Draws a box with a line before -->
+	<xsl:template name="drawboxlinebeforeshort">
+		<fo:instream-foreign-object>
+			<svg:svg xsl:use-attribute-sets="matrixSVGshort">
+				<svg:line xsl:use-attribute-sets="linebeforeSVGshort"/>
+				<svg:rect xsl:use-attribute-sets="matrixboxSVGshort"/>
+			</svg:svg>
+		</fo:instream-foreign-object>
+	</xsl:template>
+
+    <!-- Draws a box with a line before and after-->   
+	<xsl:template name="drawboxlineshort">
+		<fo:instream-foreign-object>
+			<svg:svg xsl:use-attribute-sets="matrixSVGshort">
+				<svg:line xsl:use-attribute-sets="linebeforeSVGshort"/>
+				<svg:rect xsl:use-attribute-sets="matrixboxSVGshort"/>
+				<svg:line xsl:use-attribute-sets="lineafterSVGshort"/>
+			</svg:svg>
+		</fo:instream-foreign-object>
+	</xsl:template>
+
+	
 
 
 	<!-- Draws a box with a line on the bottom -->
@@ -1893,9 +2575,9 @@
 		<xsl:param name="variableName"/>
 
 		<xsl:for-each select="//*[@varName=$variableName]">
-			<fo:table inline-progression-dimension="100%" table-layout="fixed">
+			<fo:table inline-progression-dimension="100%" table-layout="fixed"  width="100%">
 				<fo:table-column xsl:use-attribute-sets="skipTriangleContainer"/>
-				<fo:table-column/>
+				<fo:table-column column-width="proportional-column-width(1)"/>
 			
 				<fo:table-body>
 					<fo:table-row>
@@ -1903,7 +2585,9 @@
 							<fo:block>			
 								<fo:instream-foreign-object>
 									<svg:svg xsl:use-attribute-sets="skipSVG">
-										<svg:polygon xsl:use-attribute-sets="triangleSVG"/>
+										 <svg:g transform="scale(7)">
+											 <svg:polygon xsl:use-attribute-sets="triangleSVG"/>
+										 </svg:g>
 									</svg:svg>
 								</fo:instream-foreign-object>
 							</fo:block>
