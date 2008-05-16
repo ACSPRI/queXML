@@ -67,5 +67,14 @@
 	</xsl:template>
 
 
+<!-- replace all values with ordered values -->
+	<xsl:template match="/questionnaire/section/question/response/fixed/category/value">
+		<xsl:element name="value">
+			<xsl:number count="../category" level="single" format="1"/>		
+		</xsl:element>
+    </xsl:template>
+
+
+
 	
 </xsl:stylesheet>
