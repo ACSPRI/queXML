@@ -320,6 +320,24 @@
 
 	<xsl:template name="drawBarcodeFormId">
 
+<fo:block-container top="2mm" left="0mm" absolute-position="absolute">
+<fo:block>
+  <fo:instream-foreign-object>
+	  
+	  <barcode:barcode xmlns:barcode="http://barcode4j.krysalis.org/ns">
+		  <xsl:attribute name="message"><xsl:number value="$formId" format="000000"/></xsl:attribute>
+		 <barcode:intl2of5>
+			 <barcode:height>9mm</barcode:height>
+			 <barcode:module-width>0.6mm</barcode:module-width>
+			 <barcode:human-readable><barcode:placement>bottom</barcode:placement></barcode:human-readable>
+		 </barcode:intl2of5>
+   	</barcode:barcode>
+
+  </fo:instream-foreign-object>
+</fo:block>
+</fo:block-container>
+
+
 
 
 	</xsl:template>

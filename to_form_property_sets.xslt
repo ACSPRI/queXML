@@ -544,15 +544,15 @@
 	
 	<xsl:attribute-set name="titleContainer">
 		<xsl:attribute name="absolute-position">fixed</xsl:attribute>
-		<xsl:attribute name="top">15mm</xsl:attribute>	
-		<xsl:attribute name="left">15mm</xsl:attribute>
+		<xsl:attribute name="top">20mm</xsl:attribute>	
+		<xsl:attribute name="left">20mm</xsl:attribute>
 		<xsl:attribute name="width">140mm</xsl:attribute>
 		<xsl:attribute name="height">80mm</xsl:attribute>
 	</xsl:attribute-set>
 
 	<xsl:attribute-set name="logoContainer">
 		<xsl:attribute name="absolute-position">fixed</xsl:attribute>
-		<xsl:attribute name="top">30mm</xsl:attribute>	
+		<xsl:attribute name="top">20mm</xsl:attribute>	
 		<xsl:attribute name="left">155mm</xsl:attribute>
 	</xsl:attribute-set>
 	
@@ -567,7 +567,7 @@
 		<xsl:attribute name="absolute-position">fixed</xsl:attribute>
 		<xsl:attribute name="top">255mm</xsl:attribute>	
 		<xsl:attribute name="left">90mm</xsl:attribute>
-		<xsl:attribute name="width">90mm</xsl:attribute>
+		<xsl:attribute name="width">100mm</xsl:attribute>
 	</xsl:attribute-set>	
 	
 	<xsl:attribute-set name="returnContainer">
