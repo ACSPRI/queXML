@@ -329,7 +329,10 @@
 		 <barcode:intl2of5>
 			 <barcode:height>9mm</barcode:height>
 			 <barcode:module-width>0.6mm</barcode:module-width>
-			 <barcode:human-readable><barcode:placement>bottom</barcode:placement></barcode:human-readable>
+			 <barcode:human-readable>
+				 <barcode:placement>bottom</barcode:placement>
+				 <barcode:font-name>sans-serif</barcode:font-name>
+			 </barcode:human-readable>
 		 </barcode:intl2of5>
    	</barcode:barcode>
 
