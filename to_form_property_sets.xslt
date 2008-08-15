@@ -964,7 +964,7 @@
 		<xsl:attribute name="y1">2.5mm</xsl:attribute>
 		<xsl:attribute name="x2"><xsl:value-of select="$lineLength"/></xsl:attribute>
 		<xsl:attribute name="y2">2.5mm</xsl:attribute>
-		<xsl:attribute name="style">stroke-dasharray: 4, 4;stroke: black; stroke-width: 0.5pt;</xsl:attribute>
+		<xsl:attribute name="style">stroke-dasharray: 2, 2;stroke: black; stroke-width: 0.5pt;</xsl:attribute>
 	</xsl:attribute-set>
 	
 	<xsl:attribute-set name="lineafterSVG">
@@ -973,7 +973,7 @@
 		<xsl:attribute name="y1">2.5mm</xsl:attribute>
 		<xsl:attribute name="x2"><xsl:value-of select="$matrixBoxWidth"/></xsl:attribute>
 		<xsl:attribute name="y2">2.5mm</xsl:attribute>
-		<xsl:attribute name="style">stroke-dasharray: 4, 4;stroke: black; stroke-width: 0.5pt;</xsl:attribute>
+		<xsl:attribute name="style">stroke-dasharray: 2, 2;stroke: black; stroke-width: 0.5pt;</xsl:attribute>
 	</xsl:attribute-set>
 
 
@@ -982,7 +982,7 @@
 		<xsl:attribute name="y1">2.5mm</xsl:attribute>
 		<xsl:attribute name="x2">1mm</xsl:attribute>
 		<xsl:attribute name="y2">2.5mm</xsl:attribute>
-		<xsl:attribute name="style">stroke-dasharray: 4, 4;stroke: black; stroke-width: 0.5pt;</xsl:attribute>
+		<xsl:attribute name="style">stroke-dasharray: 2, 2;stroke: black; stroke-width: 0.5pt;</xsl:attribute>
 	</xsl:attribute-set>
 	
 	<xsl:attribute-set name="lineafterSVGshort">
@@ -991,7 +991,7 @@
 		<xsl:attribute name="y1">2.5mm</xsl:attribute>
 		<xsl:attribute name="x2">7mm</xsl:attribute>
 		<xsl:attribute name="y2">2.5mm</xsl:attribute>
-		<xsl:attribute name="style">stroke-dasharray: 4, 4;stroke: black; stroke-width: 0.5pt;</xsl:attribute>
+		<xsl:attribute name="style">stroke-dasharray: 2, 2;stroke: black; stroke-width: 0.5pt;</xsl:attribute>
 	</xsl:attribute-set>
 	
 	
