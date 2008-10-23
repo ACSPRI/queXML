@@ -1019,7 +1019,7 @@
 	</xsl:attribute-set>
 
 	<xsl:attribute-set name="triangleBottomSVG">
-		<xsl:attribute name="points">0,6mm 5.1mm,6mm  2.5mm,8.5mm</xsl:attribute>
+		<xsl:attribute name="points">0,2.46 2,2.46 1,3.6</xsl:attribute>
 		<xsl:attribute name="style">fill: black;</xsl:attribute>
 	</xsl:attribute-set>
 

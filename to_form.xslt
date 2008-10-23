@@ -2453,7 +2453,9 @@
 		<fo:instream-foreign-object>
 			<svg:svg xsl:use-attribute-sets="boxarrowSVG">
 				<svg:rect xsl:use-attribute-sets="boxSVG"/>
-				<svg:polygon xsl:use-attribute-sets="triangleBottomSVG"/>
+				 <svg:g transform="scale(7)">
+					 <svg:polygon xsl:use-attribute-sets="triangleBottomSVG"/>
+				 </svg:g>
 				<svg:line xsl:use-attribute-sets="linetopSVG"/>
 			</svg:svg>
 
@@ -2465,7 +2467,9 @@
 		<fo:instream-foreign-object>
 			<svg:svg xsl:use-attribute-sets="boxarrowSVG">
 				<svg:rect xsl:use-attribute-sets="boxSVG"/>
-				<svg:polygon xsl:use-attribute-sets="triangleBottomSVG"/>
+				 <svg:g transform="scale(7)">
+					 <svg:polygon xsl:use-attribute-sets="triangleBottomSVG"/>
+				 </svg:g>
 			</svg:svg>
 
 		</fo:instream-foreign-object>
