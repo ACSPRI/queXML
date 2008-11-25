@@ -46,8 +46,7 @@
 				<xsl:copy>
 
         <xsl:attribute name="varName">
-        <xsl:number count="section" level="any" format="A"/><xsl:number count="question" level="single" format="1"/>
-<xsl:number value="position() - 1" level="single" format="a"/>	
+        <xsl:number count="section" level="any" format="A"/><xsl:number count="question" level="single" format="1"/><xsl:number count="subQuestion" level="single" format="a"/>
      </xsl:attribute>	
 			<xsl:apply-templates select="@*[not(name()='varName')] | node()"/>
 			</xsl:copy>

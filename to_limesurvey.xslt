@@ -148,19 +148,14 @@
 </xsl:template>
 
 
-<xsl:template match="questionnaire/section/sectionInfo">
-	<xsl:value-of select="text"/>
-</xsl:template>
+<xsl:template match="questionnaire/section/sectionInfo"><xsl:for-each select="text"><xsl:value-of select="."/>&lt;br/&gt;</xsl:for-each></xsl:template>
 
 <xsl:template match="questionnaire/section/question/directive">
 	<xsl:value-of select="text"/>
 </xsl:template>
 
 
-<xsl:template match="questionnaire/section/question/text">
-	<xsl:value-of select="."/>
-</xsl:template>
-
+<xsl:template match="questionnaire/section/question/text"><xsl:value-of select="."/>&lt;br/&gt;</xsl:template>
 
 	
 </xsl:stylesheet>
