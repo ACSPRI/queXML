@@ -617,7 +617,7 @@
 		<xsl:attribute name="border-top-width">5pt</xsl:attribute>
 		<xsl:attribute name="border-top-color">rgb(255, 255, 255)</xsl:attribute>	
 		<xsl:attribute name="padding-bottom">5mm</xsl:attribute>
-		<xsl:attribute name="background-color">rgb(221, 221, 221)</xsl:attribute>
+		<xsl:attribute name="background-color"><xsl:choose><xsl:when test="$toquexf = 1">rgb(255,255,255)</xsl:when><xsl:otherwise>rgb(221, 221, 221)</xsl:otherwise></xsl:choose></xsl:attribute>
 		<xsl:attribute name="break-before">
 			<xsl:choose>
 				<xsl:when test="$section_page = 'true'">page</xsl:when>

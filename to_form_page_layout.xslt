@@ -46,7 +46,7 @@
 		
 	<xsl:param name="formId"/> <!-- this is the case ID - 6 digits -->
 	
-	<xsl:param name="toteleform">0</xsl:param>
+	<xsl:param name="toquexf">0</xsl:param>
 	<xsl:param name="show_page_numbers">false</xsl:param>
 	<xsl:param name="show_variables">false</xsl:param>
 	
@@ -210,24 +210,15 @@
 
 										  
 
-	<xsl:attribute-set name="coverpage">
-		<xsl:attribute name="background-color">rgb(200, 200, 200)</xsl:attribute>
+	<xsl:attribute-set name="cover-page">
+		<xsl:attribute name="background-color"><xsl:choose><xsl:when test="$toquexf = 1">rgb(255, 255, 255)</xsl:when><xsl:otherwise>rgb(200, 200, 200)</xsl:otherwise></xsl:choose></xsl:attribute>
 	</xsl:attribute-set>
 
-	<xsl:attribute-set name="restpage">
-		<xsl:attribute name="background-color">rgb(241, 241, 241)</xsl:attribute>
+	<xsl:attribute-set name="rest-page">
+				<xsl:attribute name="background-color"><xsl:choose><xsl:when test="$toquexf = 1">rgb(255, 255, 255)</xsl:when><xsl:otherwise>rgb(241, 241, 241)</xsl:otherwise></xsl:choose></xsl:attribute>
 	</xsl:attribute-set>
 
 
-	<xsl:attribute-set name="coverpageteleform">
-		<xsl:attribute name="background-color">rgb(255, 255, 255)</xsl:attribute>
-	</xsl:attribute-set>
-
-	<xsl:attribute-set name="restpageteleform">
-		<xsl:attribute name="background-color">rgb(255, 255, 255)</xsl:attribute>
-	</xsl:attribute-set>
-	
-	
 	<xsl:template name="drawCornerBoxesLeft">
 	
 	
@@ -354,14 +345,14 @@
 
  <fo:layout-master-set>
     <fo:simple-page-master master-name="cover" page-height="29.7cm" page-width="21.0cm">
-      <fo:region-body margin="16mm" background-color="rgb(200, 200, 200)"/>      
+      <fo:region-body margin="16mm" xsl:use-attribute-sets="cover-page"/>      
       <fo:region-before extent="16mm" region-name="cover-before" background-color="rgb(255,255,255)" />
       <fo:region-after extent="16mm" region-name="cover-after" background-color="rgb(255,255,255)"/>
       <fo:region-start extent="16mm" region-name="cover-start" background-color="rgb(255,255,255)" />
       <fo:region-end extent="16mm" region-name="cover-end" background-color="rgb(255,255,255)" />
     </fo:simple-page-master>
     <fo:simple-page-master master-name="qpage" page-height="29.7cm" page-width="21.0cm">
-      <fo:region-body margin="16mm" background-color="rgb(241, 241, 241)"/>      
+      <fo:region-body margin="16mm" xsl:use-attribute-sets="rest-page"/>      
       <fo:region-before extent="16mm" region-name="qpage-before" background-color="rgb(255,255,255)" />
       <fo:region-after extent="16mm" region-name="qpage-after" background-color="rgb(255,255,255)"/>
       <fo:region-start extent="16mm" region-name="qpage-start" background-color="rgb(255,255,255)" />
