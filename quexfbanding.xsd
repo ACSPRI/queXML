@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="queXF">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="questionnaire"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="questionnaire">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="1" maxOccurs="1" ref="id"/>
+        <xs:element minOccurs="1" maxOccurs="unbounded" ref="section"/>
+        <xs:element minOccurs="1" maxOccurs="unbounded" ref="page"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="section">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="title"/>
+        <xs:element ref="label"/>
+      </xs:sequence>
+      <xs:attribute name="id" use="required" type="xs:ID"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="title" type="xs:NCName"/>
+  <xs:element name="page">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="1" maxOccurs="1" ref="pid"/>
+        <xs:element ref="id"/>
+        <xs:element minOccurs="1" maxOccurs="1" ref="tlx"/>
+        <xs:element minOccurs="1" maxOccurs="1" ref="tly"/>
+        <xs:element minOccurs="1" maxOccurs="1" ref="trx"/>
+        <xs:element minOccurs="1" maxOccurs="1" ref="try"/>
+        <xs:element minOccurs="1" maxOccurs="1" ref="blx"/>
+        <xs:element minOccurs="1" maxOccurs="1" ref="bly"/>
+        <xs:element minOccurs="1" maxOccurs="1" ref="brx"/>
+        <xs:element minOccurs="1" maxOccurs="1" ref="bry"/>
+        <xs:element minOccurs="1" maxOccurs="1" ref="rotation"/>
+        <xs:element maxOccurs="unbounded" ref="boxgroup"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="pid" type="xs:integer"/>
+  <xs:element name="trx" type="xs:integer"/>
+  <xs:element name="try" type="xs:integer"/>
+  <xs:element name="blx" type="xs:integer"/>
+  <xs:element name="bly" type="xs:integer"/>
+  <xs:element name="rotation" type="xs:decimal"/>
+  <xs:element name="boxgroup">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="1" maxOccurs="1" ref="id"/>
+        <xs:element minOccurs="1" maxOccurs="1" ref="type"/>
+        <xs:element minOccurs="1" maxOccurs="1" ref="width"/>
+        <xs:element minOccurs="1" maxOccurs="1" ref="varname"/>
+        <xs:element minOccurs="1" maxOccurs="1" ref="sortorder"/>
+        <xs:element minOccurs="1" maxOccurs="1" ref="label"/>
+        <xs:element minOccurs="1" maxOccurs="1" ref="groupsection"/>
+        <xs:element minOccurs="1" maxOccurs="unbounded" ref="box"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="type" type="xs:integer"/>
+  <xs:element name="width" type="xs:integer"/>
+  <xs:element name="varname" type="xs:NCName"/>
+  <xs:element name="sortorder" type="xs:integer"/>
+  <xs:element name="groupsection">
+    <xs:complexType>
+      <xs:attribute name="idref" use="required" type="xs:IDREF"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="box">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="id"/>
+        <xs:element  minOccurs="1" maxOccurs="1" ref="tlx"/>
+        <xs:element  minOccurs="1" maxOccurs="1" ref="tly"/>
+        <xs:element  minOccurs="1" maxOccurs="1" ref="brx"/>
+        <xs:element  minOccurs="1" maxOccurs="1" ref="bry"/>
+        <xs:element  maxOccurs="1" ref="value"/>
+        <xs:element  maxOccurs="1" ref="label"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="value">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="id" type="xs:integer"/>
+  <xs:element name="label" type="xs:string"/>
+  <xs:element name="tlx" type="xs:integer"/>
+  <xs:element name="tly" type="xs:integer"/>
+  <xs:element name="brx" type="xs:integer"/>
+  <xs:element name="bry" type="xs:integer"/>
+</xs:schema>
