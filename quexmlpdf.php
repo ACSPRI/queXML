@@ -565,43 +565,84 @@ class queXMLPDF extends TCPDF {
 	 */
 	public function getLayout()
 	{
-		$r = "<queXF>\n<questionnaire>\n\t<id>{$this->questionnaireId}</id>\n";
+		$doc = new DomDocument('1.0');
+		$root = $doc->createElement('queXF');
+
+		$q = $doc->createElement('questionnaire');
+
+		$id = $doc->createElement('id');
+		$value = $doc->createTextNode($this->questionnaireId);
+		$id->appendChild($value);
+		$q->appendChild($id);
 
 		foreach($this->section as $key => $val)
 		{
-			$r .= "\t<section id='$key'>\n";
+			$s = $doc->createElement('section');
+			$s->setAttribute('id',$key);
 			foreach ($val as $sk => $sv)
-				$r .= "\t\t<$sk>$sv</$sk>\n";
-
-			$r .= "\t</section>\n";
+			{
+				$tmpe = $doc->createElement($sk);
+				$tmpv = $doc->createTextNode($sv);
+				$tmpe->appendChild($tmpv);
+				$s->appendChild($tmpe);
+			}
+			$q->appendChild($s);
 		}
 		foreach($this->layout as $key => $val)
 		{
-			$r .= "\t<page>\n";
+			$p = $doc->createElement('page');
+
 			foreach ($val as $pk => $pv)
-				if ($pk != 'boxgroup') $r .= "\t\t<$pk>$pv</$pk>\n";
+			{
+				if ($pk != 'boxgroup')
+				{	
+					$tmpe = $doc->createElement($pk);
+					$tmpv = $doc->createTextNode($pv);
+					$tmpe->appendChild($tmpv);
+					$p->appendChild($tmpe);
+				}
+			}
 
 			foreach ($val['boxgroup'] as $bg)
 			{
-				$r .= "\t\t<boxgroup>\n";
+				$bgE = $doc->createElement('boxgroup');
 				foreach ($bg as $pk => $pv)
 				{
-					if ($pk == 'groupsection') $r.= "\t\t\t<$pk idref='$pv'/>\n";
-					else if ($pk != 'box') $r.= "\t\t\t<$pk>$pv</$pk>\n";
+					if ($pk == 'groupsection')
+					{
+						$gs = $doc->createElement('groupsection');
+						$gs->setAttribute('idref',$pv);
+						$bgE->appendChild($gs);
+					}
+					else if ($pk != 'box')
+					{
+						$tmpe = $doc->createElement($pk);
+						$tmpv = $doc->createTextNode($pv);
+						$tmpe->appendChild($tmpv);
+						$bgE->appendChild($tmpe);
+					}
 				}
 
 				foreach($bg['box'] as $b)
 				{
-					$r .= "\t\t\t<box>\n";
+					$bE = $doc->createElement('box');
 					foreach($b as $bk => $bv)
-						$r .= "\t\t\t\t<$bk>$bv</$bk>\n";
+					{
+						$tmpe = $doc->createElement($bk);
+						$tmpv = $doc->createTextNode($bv);
+						$tmpe->appendChild($tmpv);
+						$bE->appendChild($tmpe);
+					}
+					$bgE->appendChild($bE);
 				}
-				$r .= "\t\t\t</box>\n\t\t</boxgroup>\n";
+				$p->appendChild($bgE);
 			}
-			$r .= "\t</page>\n";
+			$q->appendChild($p);
 		}
-		$r .= "</questionnaire>\n</queXF>";
-		return $r;
+		$root->appendChild($q);
+		$doc->appendChild($root);
+		$doc->formatOutput = true; //make it look nice
+		return $doc->saveXML();
 	}
 
 	/**
