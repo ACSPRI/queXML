@@ -56,13 +56,13 @@
 				<text>Please cross the most appropriate box</text>
 				<administration>self</administration>
 			</directive>
-		<subQuestion varName="A1">
+		<subQuestion varName="A1_A">
 				<text>The first part of a matrix question</text>
 			</subQuestion>
-			<subQuestion varName="A1_A">
+			<subQuestion varName="A1_B">
 				<text>The second question in a matrix question</text>
 			</subQuestion>
-			<response varName="A1_B">
+			<response varName="A1">
 				<fixed>
 					<category>
 						<label>They are not useful</label>

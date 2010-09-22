@@ -110,10 +110,10 @@ class queXMLPDF extends TCPDF {
 	/**
 	 * The questionnaire ID of this form
 	 * 
-	 * @var mixed  Defaults to 123456. 
+	 * @var mixed  Defaults to 1. 
 	 * @since 2010-09-20
 	 */
-	protected $questionnaireId = 123456;
+	protected $questionnaireId = 1;
 
 	/**
 	 * The length of a the id portion barcode
@@ -927,7 +927,7 @@ class queXMLPDF extends TCPDF {
 				foreach ($qu->response as $r)
 				{
 					$rtmp = array();
-					$qtmp['varname'] = current($r['varName']);
+					$rstmp['varname'] = current($r['varName']);
 					if (isset($r->fixed))
 					{
 						$rtmp['type'] = 'fixed';
@@ -985,7 +985,7 @@ class queXMLPDF extends TCPDF {
 	 * 
 	 * sections (title, text)
 	 *	questions (title, text, varname, helptext)
-	 *		responses
+	 *		responses (varname)
 	 *			subquestion (text, varname)
 	 *			response (type, width, text, rotate)
 	 *				categories (text, value)
@@ -1045,8 +1045,8 @@ class queXMLPDF extends TCPDF {
 	/**
 	 * Create a question that may have multiple response groups
 	 *
-	 * questions (title, text, varname, helptext)
-	 *	responses
+	 * questions (title, text, helptext)
+	 *	responses (varname)
 	 *		subquestions 
 	 *			subquestion(text, varname)
 	 *		response (type, width, text, rotate)
@@ -1061,8 +1061,6 @@ class queXMLPDF extends TCPDF {
 		$help = false;
 		if (isset($question['helptext'])) $help = $question['helptext'];
 
-		$varname = $question['varname'];	
-	
 		//Question header
 		$this->drawQuestionHead($question['title'], $question['text'],$help);
 
@@ -1072,6 +1070,7 @@ class queXMLPDF extends TCPDF {
 		//Loop over response groups and produce questions of various types
 		if (isset($question['responses'])) { foreach($question['responses'] as $r)
 		{
+			$varname = $r['varname'];	
 
 			if (isset($r['subquestions']))
 			{
@@ -1109,7 +1108,7 @@ class queXMLPDF extends TCPDF {
 				$response = $r['response'];
 				$type = $response['type'];
 
-				if (isset($response['text'])) 
+				if (isset($response['text']) && !empty($response['text'])) 
 					$rtext = $text .  $this->subQuestionTextSeparator .  $response['text'];
 				else
 					$rtext = $text;
@@ -1118,9 +1117,9 @@ class queXMLPDF extends TCPDF {
 				{
 					case 'fixed':
 						if (isset($response['rotate']))
-							$this->drawSingleChoiceHorizontal($response['categories'],array(array('text' => $rtext, 'varname' => $varname)));
+							$this->drawSingleChoiceHorizontal($response['categories'],array(array('text' => '', 'varname' => $varname)),$rtext);
 						else
-							$this->drawSingleChoiceVertical($response['categories'],array(array('text' => $rtext, 'varname' => $varname)));
+							$this->drawSingleChoiceVertical($response['categories'],array(array('text' => '', 'varname' => $varname)),$rtext);
 						break;
 					case 'longtext':
 						$this->addBoxGroup(6,$varname,$rtext);
