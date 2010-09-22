@@ -870,6 +870,18 @@ class queXMLPDF extends TCPDF {
 
 
 	/**
+	 * Get the questionnaire id
+	 * 
+	 * @return int The questionnaire Id
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since  2010-09-23
+	 */
+	public function getQuestionnaireId()
+	{
+		return $this->questionnaireId;
+	}
+
+	/**
 	 * Converts a queXML file to the array format required for the create function
 	 * 
 	 * @param string $quexml The queXML file
@@ -1680,7 +1692,7 @@ class queXMLPDF extends TCPDF {
 	 * @param string $text The text of the section
 	 * @param string $desc The description of this section
 	 */
-	public function addSection($desc = 'queXMLPDF Section',$title = false)
+	protected function addSection($desc = 'queXMLPDF Section',$title = false)
 	{
 		$this->sectionCP++;
 
