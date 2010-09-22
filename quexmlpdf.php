@@ -478,6 +478,14 @@ class queXMLPDF extends TCPDF {
 	protected $vasIncrements = 100;
 
 	/**
+	 * The text to separate parent text and subquestion text
+	 * 
+	 * @var string  Defaults to " : ". 
+	 * @since 2010-09-22
+	 */
+	protected $subQuestionTextSeparator = " : ";
+
+	/**
 	 * Add a box group to the page layout system
 	 *
 	 * VALUES(0, 'Temporary');
@@ -1058,11 +1066,12 @@ class queXMLPDF extends TCPDF {
 		//Question header
 		$this->drawQuestionHead($question['title'], $question['text'],$help);
 
+		$text = "";
+		if (isset($question['text'])) $text = $question['text'];
+
 		//Loop over response groups and produce questions of various types
 		if (isset($question['responses'])) { foreach($question['responses'] as $r)
 		{
-			$text = "";
-			if (isset($r['text'])) $text = $r['text'];
 
 			if (isset($r['subquestions']))
 			{
@@ -1076,21 +1085,21 @@ class queXMLPDF extends TCPDF {
 						$categories = $response['categories'];
 						
 						if (isset($response['rotate']))
-							$this->drawSingleChoiceVertical($categories,$subquestions);
+							$this->drawSingleChoiceVertical($categories,$subquestions,$text);
 						else
-							$this->drawSingleChoiceHorizontal($categories,$subquestions);
+							$this->drawSingleChoiceHorizontal($categories,$subquestions,$text);
 						
 						break;
 					case 'number':
 					case 'currency':
 					case 'text':
 						if (isset($response['rotate']))
-							$this->drawMatrixTextHorizontal($subquestions,$response['width']);
+							$this->drawMatrixTextHorizontal($subquestions,$response['width'],$text);
 						else
-							$this->drawMatrixTextVertical($subquestions,$response['width']);
+							$this->drawMatrixTextVertical($subquestions,$response['width'],$text);
 						break;
 					case 'vas':
-						$this->drawMatrixVas($subquestions);
+						$this->drawMatrixVas($subquestions,$text);
 						break;
 		
 				}
@@ -1100,30 +1109,35 @@ class queXMLPDF extends TCPDF {
 				$response = $r['response'];
 				$type = $response['type'];
 
+				if (isset($response['text'])) 
+					$rtext = $text .  $this->subQuestionTextSeparator .  $response['text'];
+				else
+					$rtext = $text;
+
 				switch ($type)
 				{
 					case 'fixed':
 						if (isset($response['rotate']))
-							$this->drawSingleChoiceHorizontal($response['categories'],array(array('text' => $text, 'varname' => $varname)));
+							$this->drawSingleChoiceHorizontal($response['categories'],array(array('text' => $rtext, 'varname' => $varname)));
 						else
-							$this->drawSingleChoiceVertical($response['categories'],array(array('text' => $text, 'varname' => $varname)));
+							$this->drawSingleChoiceVertical($response['categories'],array(array('text' => $rtext, 'varname' => $varname)));
 						break;
 					case 'longtext':
-						$this->addBoxGroup(6,$varname,$text);
+						$this->addBoxGroup(6,$varname,$rtext);
 						$this->drawLongText($response['width']);
 						break;
 					case 'number':
 					case 'currency':
 					case 'text':
-						$this->addBoxGroup(3,$varname,$response['text'],$response['width']);	
+						$this->addBoxGroup(3,$varname,$rtext,$response['width']);	
 						$this->drawText($response['text'],$response['width']);
 						//Insert a gap here
 						$this->Rect($this->getMainPageX(),$this->GetY(),$this->getMainPageWidth(),$this->subQuestionLineSpacing,'F',array(),$this->backgroundColourQuestion);
 						$this->SetY($this->GetY() + $this->subQuestionLineSpacing,false);
 						break;
 					case 'vas':
-						$this->addBoxGroup(1,$varname,$text,strlen($this->vasIncrements));
-						$this->drawVas("");
+						$this->addBoxGroup(1,$varname,$rtext,strlen($this->vasIncrements));
+						$this->drawVas($response['text']);
 						break;
 		
 				}
@@ -1142,17 +1156,25 @@ class queXMLPDF extends TCPDF {
 	 * 
 	 * @param array $subquestions The subquestions containing text and varname
 	 * @param int $width The width of the text element
+	 * @param string|bool $parenttext The question text of the parent or false if not specified
 	 * 
 	 * @author Adam Zammit <adam.zammit@acspri.org.au>
 	 * @since  2010-09-02
 	 */
-	protected function drawMatrixTextVertical($subquestions,$width)
+	protected function drawMatrixTextVertical($subquestions,$width,$parenttext = false)
 	{
 		$c = count($subquestions);
 		for($i = 0; $i < $c; $i++)
 		{
 			$s = $subquestions[$i];
-			$this->addBoxGroup(3,$s['varname'],$s['text'],$width);	
+
+			if ($parenttext == false)
+				$this->addBoxGroup(3,$s['varname'],$s['text'],$width);
+			else				
+				$this->addBoxGroup(3,$s['varname'],$parenttext . $this->subQuestionTextSeparator . $s['text'],$width);
+
+
+
 			$this->drawText($s['text'],$width);
 		
 			$currentY = $this->GetY();
@@ -1167,18 +1189,29 @@ class queXMLPDF extends TCPDF {
 	 * Draw multiple VAS items
 	 * 
 	 * @param array $subquestions The subquestions containing text and varname
+	 * @param string|bool $parenttext The question text of the parent or false if not specified
 	 * 
 	 * @author Adam Zammit <adam.zammit@acspri.org.au>
 	 * @since  2010-09-20
 	 */
-	protected function drawMatrixVas($subquestions)
+	protected function drawMatrixVas($subquestions,$parenttext = false)
 	{
 		$c = count($subquestions);
 		
+		$width = strlen($this->vasIncrements);	
+
 		for ($i = 0; $i < $c; $i++)
 		{
 			$s = $subquestions[$i];
-			$this->addBoxGroup(1,$s['varname'],$s['text'],strlen($this->vasIncrements));	
+
+			if ($parenttext == false)
+				$this->addBoxGroup(1,$s['varname'],$s['text'],$width);
+			else				
+				$this->addBoxGroup(1,$s['varname'],$parenttext . $this->subQuestionTextSeparator . $s['text'],$width);
+
+
+
+
 			$this->drawVas($s['text']);
 		
 			$currentY = $this->GetY();
@@ -1382,11 +1415,12 @@ class queXMLPDF extends TCPDF {
 	 * 
 	 * @param array $subquestions The subquestions
 	 * @param int $width The width
+	 * @param string|bool $parenttext The question text of the parent or false if not specified
 	 *
 	 * @author Adam Zammit <adam.zammit@acspri.org.au>
 	 * @since  2010-09-08
 	 */
-	protected function drawMatrixTextHorizontal($subquestions,$width)
+	protected function drawMatrixTextHorizontal($subquestions,$width,$parenttext = false)
 	{
 		$total = count($subquestions);
 		$currentY = $this->GetY();
@@ -1418,7 +1452,12 @@ class queXMLPDF extends TCPDF {
 		foreach ($subquestions as $s)
 		{
 			//Add box group to current layout
-			$this->addBoxGroup(3,$s['varname'],$s['text']);
+			if ($parenttext == false)
+				$this->addBoxGroup(3,$s['varname'],$s['text']);
+			else				
+				$this->addBoxGroup(3,$s['varname'],$parenttext . $this->subQuestionTextSeparator . $s['text']);
+
+
 
 			//Draw the cells
 			$this->drawCells($width);
@@ -1436,12 +1475,13 @@ class queXMLPDF extends TCPDF {
 	 * Draw a horizontal table of respones including "eye guides"
 	 * 
 	 * @param array $categories The response categories
-	 * @apram array $subquestions The subquestions if any 
+	 * @param array $subquestions The subquestions if any 
+	 * @param string|bool $parenttext The question text of the parent or false if not specified
 	 *
 	 * @author Adam Zammit <adam.zammit@acspri.org.au>
 	 * @since  2010-09-08
 	 */
-	protected function drawSingleChoiceHorizontal($categories, $subquestions = array(array('text' => '')))
+	protected function drawSingleChoiceHorizontal($categories, $subquestions = array(array('text' => '')),$parenttext = false)
 	{
 		$total = count($categories);
 		$currentY = $this->GetY();
@@ -1464,7 +1504,10 @@ class queXMLPDF extends TCPDF {
 		foreach ($subquestions as $s)
 		{
 			//Add box group to current layout
-			$this->addBoxGroup(1,$s['varname'],$s['text']);
+			if ($parenttext == false)
+				$this->addBoxGroup(1,$s['varname'],$s['text']);
+			else				
+				$this->addBoxGroup(1,$s['varname'],$parenttext . $this->subQuestionTextSeparator . $s['text']);
 
 			$html = "<table><tr><td width=\"{$textwidth}mm\" class=\"responseText\">" . $s['text'] . "</td><td></td></tr></table>";
 			$this->writeHTMLCell($this->getMainPageWidth(), $this->singleResponseAreaHeight, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);
@@ -1501,11 +1544,12 @@ class queXMLPDF extends TCPDF {
 	 * 
 	 * @param array $categories An array containing the category text, value, skipto and other
 	 * @param array $subquestions An array containing the subquestions if any
+	 * @param string|bool $parenttext The question text of the parent or false if not specified
 	 * 
 	 * @author Adam Zammit <adam.zammit@acspri.org.au>
 	 * @since  2010-09-02
 	 */
-	protected function drawSingleChoiceVertical($categories, $subquestions = array(array('text' => '')))
+	protected function drawSingleChoiceVertical($categories, $subquestions = array(array('text' => '')),$parenttext = false)
 	{
 		$currentY = $this->GetY();
 		$total = count($subquestions);
@@ -1538,7 +1582,12 @@ class queXMLPDF extends TCPDF {
 
 			$this->SetY($firstY, false);
 			$currentY = $firstY;
-			$this->addBoxGroup(1,$s['varname'],$s['text']);
+			
+			if ($parenttext == false)
+				$this->addBoxGroup(1,$s['varname'],$s['text']);
+			else
+				$this->addBoxGroup(1,$s['varname'],$parenttext . $this->subQuestionTextSeparator . $s['text']);
+
 			$x = $this->getMainPageX() + $textwidth + ($rwidth * $snum) + ((($rwidth - $this->singleResponseBoxWidth) / 2.0 ));
 
 			$other = false;
