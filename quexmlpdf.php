@@ -932,14 +932,14 @@ class queXMLPDF extends TCPDF {
 					$sqtmp = array();
 					foreach ($sq->text as $ttmp)
 						$sqtmp['text'] .= $ttmp;
-					$sqtmp['varname'] = current($sq['varName']);
+					$sqtmp['varname'] = $sq['varName'];
 					$rstmp['subquestions'][] = $sqtmp;
 				}
 
 				foreach ($qu->response as $r)
 				{
 					$rtmp = array();
-					$rstmp['varname'] = current($r['varName']);
+					$rstmp['varname'] = $r['varName'];
 					if (isset($r->fixed))
 					{
 						$rtmp['type'] = 'fixed';
@@ -959,7 +959,7 @@ class queXMLPDF extends TCPDF {
 								$oarr = array();
 								$oarr['width'] = current($c->contingentQuestion->length);
 								$oarr['text'] = current($c->contingentQuestion->text);
-								$oarr['varname'] = current($c->contingentQuestion['varName']);
+								$oarr['varname'] = $c->contingentQuestion['varName'];
 								$cat['other'] = $oarr;
 							}	
 							$ctmp[] = $cat;	
@@ -968,7 +968,10 @@ class queXMLPDF extends TCPDF {
 					}
 					else if (isset($r->free))
 					{
-						$rtmp['type'] = 'text';
+						if (strtolower(trim(current($r->free->format))) == 'longtext')
+							$rtmp['type'] = 'longtext';
+						else
+							$rtmp['type'] = 'text';
 						$rtmp['width'] = current($r->free->length);
 						$rtmp['text'] = current($r->free->label);
 					}
