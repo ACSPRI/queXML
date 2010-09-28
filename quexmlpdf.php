@@ -762,7 +762,7 @@ class queXMLPDF extends TCPDF {
 	 */
 	protected function drawHorizontalResponseBox($x,$y,$position = 'only',$downarrow = false, $rightarrow = false)
 	{
-		$this->SetDrawColor($lineColour[0],$lineColour[1],$lineColour[2]);
+		$this->SetDrawColor($this->lineColour[0],$this->lineColour[1],$this->lineColour[2]);
 		$this->SetLineWidth($this->singleResponseBoxBorder);
 
 		//centre for the line
@@ -803,7 +803,7 @@ class queXMLPDF extends TCPDF {
 	 */
 	protected function drawVerticalResponseBox($x,$y,$position = 'only',$downarrow = false, $rightarrow = false)
 	{
-		$this->SetDrawColor($lineColour[0],$lineColour[1],$lineColour[2]);
+		$this->SetDrawColor($this->lineColour[0],$this->lineColour[1],$this->lineColour[2]);
 		$this->SetLineWidth($this->singleResponseBoxBorder);
 	
 		if (!$downarrow)
@@ -907,10 +907,16 @@ class queXMLPDF extends TCPDF {
 			$stmp = array();
 			$sl = $this->numberToLetter($scount);
 			$stmp['title'] = $sl;
-			
+		
 			foreach ($s->sectionInfo as $sitmp)
 			{
-				if ($sitmp->position == 'title') $stmp['text'] .= $sitmp->text;
+				if ($sitmp->position == 'title')
+				{
+					if (!isset($stmp['text']))
+						$stmp['text'] = "";
+
+					$stmp['text'] .= $sitmp->text;
+				}
 			}
 			
 			$qcount = 1;
@@ -922,10 +928,23 @@ class queXMLPDF extends TCPDF {
 				$qtmp['title'] = $sl . $qcount;
 
 				foreach ($qu->text as $ttmp)
+				{
+					if (!isset($qtmp['text']))
+						$qtmp['text'] = "";
+
 					$qtmp['text'] .= $ttmp;
+				}
 				
 				foreach ($qu->directive as $ttmp)
-					if ($ttmp->administration == 'self') $qtmp['helptext'] .= $ttmp->text;
+				{
+					if ($ttmp->administration == 'self')
+					{
+						if (!isset($qtmp['helptext']))
+							$qtmp['helptext'] = "";
+
+						$qtmp['helptext'] .= $ttmp->text;
+					}
+				}
 
 				foreach ($qu->subQuestion as $sq)
 				{
@@ -1295,7 +1314,7 @@ class queXMLPDF extends TCPDF {
 		$this->SetX($textwidth + $this->getMainPageX(),false); 
 	
 		$this->SetLineWidth($this->vasLineWidth);
-		$this->SetDrawColor($lineColour[0],$lineColour[1],$lineColour[2]);
+		$this->SetDrawColor($this->lineColour[0],$this->lineColour[1],$this->lineColour[2]);
 	
 		//Draw the VAS left vert line
 		$ly = (($this->vasAreaHeight - $this->vasHeight) / 2.0) + $currentY;		
@@ -1332,7 +1351,7 @@ class queXMLPDF extends TCPDF {
 	 */
 	protected function drawText($text,$width)
 	{
-		$this->SetDrawColor($lineColour[0],$lineColour[1],$lineColour[2]);
+		$this->SetDrawColor($this->lineColour[0],$this->lineColour[1],$this->lineColour[2]);
 
 		//draw boxes - can draw up to $textResponsesPerLine for each line
 		$lines = ceil($width / $this->textResponsesPerLine);
@@ -1403,7 +1422,7 @@ class queXMLPDF extends TCPDF {
 	protected function drawCells($cells)
 	{
 		$this->setBackground('empty');
-		$this->SetDrawColor($lineColour[0],$lineColour[1],$lineColour[2]);
+		$this->SetDrawColor($this->lineColour[0],$this->lineColour[1],$this->lineColour[2]);
 
 		for ($j = 0; $j < $cells; $j++)
 		{
