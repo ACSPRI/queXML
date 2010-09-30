@@ -4,8 +4,8 @@
  * Modify these two lines to point to your TCPDF installation
  * Tested with TCPDF 5.8.008 - see http://www.tcpdf.org/
  */
-require_once('/var/lib/tcpdf/config/lang/eng.php');
-require_once('/var/lib/tcpdf/tcpdf.php');
+require_once(dirname(__FILE__) . '/../tcpdf/config/lang/eng.php');
+require_once(dirname(__FILE__) . '/../tcpdf/tcpdf.php');
 
 
 /**
@@ -1280,6 +1280,7 @@ class queXMLPDF extends TCPDF {
 		$this->SetX(($this->getPageWidth() - $this->getMainPageX() - $this->skipColumnWidth - $this->longTextResponseWidth),false);
 		//Add to pay layout
 		$this->addBox($this->GetX(),$this->GetY(),$this->GetX() + $this->longTextResponseWidth, $this->GetX() + $height);
+		$this->SetDrawColor($this->lineColour[0],$this->lineColour[1],$this->lineColour[2]);
 		$this->Cell($this->longTextResponseWidth,$height,'',$border,0,'',true,'',0,false,'T','C');
 		$currentY = $currentY + $height;
 		$this->SetY($currentY,false);
