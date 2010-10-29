@@ -173,7 +173,7 @@ class queXMLPDF extends TCPDF {
 	 */
 	protected $style = "<style>
 		td.questionTitle {font-style:bold;}
-		td.questionText {font-style:bold;} 
+		td.questionText {font-style:bold; font-size:12pt;} 
 		td.questionHelp {text-align:right; font-style:italic; font-size: 8pt;}
 		td.questionHelpAfter {text-align:center; font-style:bold; font-size: 10pt;}
 		td.responseText {text-align:right; margin-right:1mm; font-size:10pt; vertical-align:middle;} 
@@ -770,9 +770,10 @@ class queXMLPDF extends TCPDF {
 	 * @param string $position What position the box is in for the eye guides
 	 * @param bool $downarrow Draw a down arrow?
 	 * @param bool $rightarrow Draw an arrow to the right?
+	 * @param bool $smallwidth Whether or not to use the small width
 	 *
 	 */
-	protected function drawHorizontalResponseBox($x,$y,$position = 'only',$downarrow = false, $rightarrow = false)
+	protected function drawHorizontalResponseBox($x,$y,$position = 'only',$downarrow = false, $rightarrow = false, $smallwidth = false)
 	{
 		$this->SetDrawColor($this->lineColour[0],$this->lineColour[1],$this->lineColour[2]);
 		$this->SetLineWidth($this->singleResponseBoxBorder);
@@ -783,7 +784,13 @@ class queXMLPDF extends TCPDF {
 		//centre on y
 		$y = $y + (($this->singleResponseHorizontalAreaHeight - $this->singleResponseBoxHeight) / 2.0);
 		
-		$linelength = (($this->singleResponseVerticalAreaWidth - $this->singleResponseBoxWidth) / 2.0);
+		if ($smallwidth) 
+			$areawidth = $this->singleResponseVerticalAreaWidthSmall;
+		else		
+			$areawidth = $this->singleResponseVerticalAreaWidth;
+
+
+		$linelength = (($areawidth - $this->singleResponseBoxWidth) / 2.0);
 
 		$this->SetLineStyle(array('dash' => '1'));
 
@@ -1554,6 +1561,7 @@ class queXMLPDF extends TCPDF {
 	{
 		$total = count($categories);
 		$currentY = $this->GetY();
+
 		if ($total > $this->singleResponseHorizontalMax) //change if too many cats
 			$rwidth = $this->singleResponseVerticalAreaWidthSmall;
 		else		
@@ -1589,7 +1597,7 @@ class queXMLPDF extends TCPDF {
 				else if ($rnum < $total) $num = 'middle';
 				else if ($rnum == $total) $num = 'last';
 
-				$position = $this->drawHorizontalResponseBox(($textwidth + ($rnum * $rwidth)),$currentY, $num);
+				$position = $this->drawHorizontalResponseBox(($this->getMainPageX() + $textwidth + (($rnum - 1) * $rwidth)),$currentY, $num,false,false,($total > $this->singleResponseHorizontalMax));
 	
 				//Add box to the current layout
 				$this->addBox($position[0],$position[1],$position[2],$position[3],$r['value'],$r['text']);
