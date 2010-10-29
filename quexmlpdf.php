@@ -172,16 +172,16 @@ class queXMLPDF extends TCPDF {
 	 * @since 2010-09-16
 	 */
 	protected $style = "<style>
-		td.questionTitle {font-style:bold;}
-		td.questionText {font-style:bold; font-size:12pt;} 
+		td.questionTitle {font-weight:bold;}
+		td.questionText {font-weight:bold; font-size:12pt;} 
 		td.questionHelp {text-align:right; font-style:italic; font-size: 8pt;}
-		td.questionHelpAfter {text-align:center; font-style:bold; font-size: 10pt;}
-		td.responseText {text-align:right; margin-right:1mm; font-size:10pt; vertical-align:middle;} 
+		td.questionHelpAfter {text-align:center; font-weight:bold; font-size: 10pt;}
+		td.responseText {text-align:right; margin:20mm 5mm 0mm 0mm; font-size:10pt;} 
 		td.responseAboveText {text-align:left;} 
-		td.responseLabel {text-align:center; font-size:8pt; vertical-align:middle;} 
-		div.skipTo {text-align:left; font-size:8pt; font-style:bold;} 
-		span.sectionTitle {font-size: 18pt} 
-		span.sectionDescription {font-size: 14pt} 
+		td.responseLabel {text-align:center; font-size:8pt;} 
+		div.skipTo {text-align:left; font-size:8pt; font-weight:bold;} 
+		span.sectionTitle {font-size: 18pt; font-weight:bold;} 
+		span.sectionDescription {font-size: 14pt; font-weight:bold;} 
 		div.sectionInfo {font-size: 10pt; text-align:left;}
 		</style>";
 
