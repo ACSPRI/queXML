@@ -4,8 +4,8 @@
  * Modify these two lines to point to your TCPDF installation
  * Tested with TCPDF 5.8.008 - see http://www.tcpdf.org/
  */
-require_once(dirname(__FILE__) . '/../tcpdf/config/lang/eng.php');
-require_once(dirname(__FILE__) . '/../tcpdf/tcpdf.php');
+require_once('/var/lib/tcpdf/config/lang/eng.php');
+require_once('/var/lib/tcpdf/tcpdf.php');
 
 
 /**
@@ -171,7 +171,19 @@ class queXMLPDF extends TCPDF {
 	 * @var string  Defaults to "<style>td.questionHelp {text-align:right; font-style:italic; font-size: 8pt;} td.responseText {text-align:right; margin-right:1mm;} td.responseAboveText {text-align:left;} td.responseLabel {text-align:center; font-size:8pt;} span.sectionTitle {font-size: 18pt} span.sectionDescription {font-size: 14pt}</style>". 
 	 * @since 2010-09-16
 	 */
-	protected $style = "<style>td.questionTitle {font-style:bold;} td.questionText {font-style:bold;} td.questionHelp {text-align:right; font-style:italic; font-size: 8pt;} td.responseText {text-align:right; margin-right:1mm; font-size:10pt;} td.responseAboveText {text-align:left;} td.responseLabel {text-align:center; font-size:8pt;} div.skipTo {text-align:left; font-size:8pt; font-style:bold;} span.sectionTitle {font-size: 18pt} span.sectionDescription {font-size: 14pt}</style>";
+	protected $style = "<style>
+		td.questionTitle {font-style:bold;}
+		td.questionText {font-style:bold;} 
+		td.questionHelp {text-align:right; font-style:italic; font-size: 8pt;}
+		td.questionHelpAfter {text-align:center; font-style:bold; font-size: 10pt;}
+		td.responseText {text-align:right; margin-right:1mm; font-size:10pt; vertical-align:middle;} 
+		td.responseAboveText {text-align:left;} 
+		td.responseLabel {text-align:center; font-size:8pt; vertical-align:middle;} 
+		div.skipTo {text-align:left; font-size:8pt; font-style:bold;} 
+		span.sectionTitle {font-size: 18pt} 
+		span.sectionDescription {font-size: 14pt} 
+		div.sectionInfo {font-size: 10pt; text-align:left;}
+		</style>";
 
 	/**
 	 * Width of the area of each single response 
@@ -917,6 +929,13 @@ class queXMLPDF extends TCPDF {
 
 					$stmp['text'] .= $sitmp->text;
 				}
+				if ($sitmp->position == 'before' || $sitmp->position == 'during')
+				{
+					if (!isset($stmp['info']))
+						$stmp['info'] = "";
+
+					$stmp['info'] .= $sitmp->text . "<br/>";
+				}
 			}
 			
 			$qcount = 1;
@@ -937,12 +956,19 @@ class queXMLPDF extends TCPDF {
 				
 				foreach ($qu->directive as $ttmp)
 				{
-					if ($ttmp->administration == 'self')
+					if ($ttmp->administration == 'self' && $ttmp->position != 'after')
 					{
 						if (!isset($qtmp['helptext']))
 							$qtmp['helptext'] = "";
 
 						$qtmp['helptext'] .= $ttmp->text;
+					}
+					if ($ttmp->administration == 'self' && $ttmp->position == 'after')
+					{
+						if (!isset($qtmp['helptextafter']))
+							$qtmp['helptextafter'] = "";
+
+						$qtmp['helptextafter'] .= $ttmp->text;
 					}
 				}
 
@@ -1017,8 +1043,8 @@ class queXMLPDF extends TCPDF {
 	 * Create a queXML PDF document based on an array
 	 * that is structured like a queXML document
 	 * 
-	 * sections (title, text)
-	 *	questions (title, text, varname, helptext)
+	 * sections (title, text, info)
+	 *	questions (title, text, varname, helptext, helptextafter)
 	 *		responses (varname)
 	 *			subquestion (text, varname)
 	 *			response (type, width, text, rotate)
@@ -1037,7 +1063,7 @@ class queXMLPDF extends TCPDF {
 			$questions = count($sv['questions']);
 			
 			$this->startTransaction();
-			$this->addSection($sv['text'],$sv['title']);
+			$this->addSection($sv['text'],$sv['title'],$sv['info']);
 			if ($questions != 0) $this->createQuestion($sv['questions'][0]);
 			if ($this->pageBreakOccured)
 			{
@@ -1045,7 +1071,7 @@ class queXMLPDF extends TCPDF {
 				$this->rollBackTransaction(true);
 				$this->fillPageBackground();
 				$this->newPage();
-				$this->addSection($sv['text'],$sv['title']);
+				$this->addSection($sv['text'],$sv['title'],$sv['info']);
 				if ($questions != 0) $this->createQuestion($sv['questions'][0]);
 			}
 			else
@@ -1079,7 +1105,7 @@ class queXMLPDF extends TCPDF {
 	/**
 	 * Create a question that may have multiple response groups
 	 *
-	 * questions (title, text, helptext)
+	 * questions (title, text, helptext, helptextafter)
 	 *	responses (varname)
 	 *		subquestions 
 	 *			subquestion(text, varname)
@@ -1176,6 +1202,15 @@ class queXMLPDF extends TCPDF {
 				}
 			}
 		}}
+
+		//If there is some help text for after the question
+		if (isset($question['helptextafter']))
+		{
+			$this->setBackground('question');
+			$html = "<table><tr><td width=\"" . $this->getMainPageWidth() . "mm\" class=\"questionHelpAfter\">{$question['helptextafter']}</td><td></td></tr></table>";
+			$this->writeHTMLCell($this->getMainPageWidth(), 1, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);
+
+		}
 
 		//Leave a border at the bottom of the question		
 		if ($this->questionBorderBottom > 0) //question border
@@ -1595,12 +1630,14 @@ class queXMLPDF extends TCPDF {
 		if (count($categories) > 1)
 		{
 			$html = "<table><tr><td width=\"{$textwidth}mm\" class=\"responseText\"></td>";
+			$isempty = true;
 			foreach ($subquestions as $r)
 			{
 				$html .= "<td class=\"responseLabel\" width=\"{$rwidth}mm\">{$r['text']}</td>";
+				if (!empty($r['text'])) $isempty = false;
 			}
 			$html .= "<td></td></tr></table>";
-			$this->writeHTMLCell($this->getMainPageWidth(), 0, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);
+			if (!$isempty) $this->writeHTMLCell($this->getMainPageWidth(), 0, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);
 		}
 
 		$currentY = $this->GetY();
@@ -1714,8 +1751,9 @@ class queXMLPDF extends TCPDF {
 	 *
 	 * @param string $text The text of the section
 	 * @param string $desc The description of this section
+	 * @param string $info Information for this section
 	 */
-	protected function addSection($desc = 'queXMLPDF Section',$title = false)
+	protected function addSection($desc = 'queXMLPDF Section',$title = false,$info = false)
 	{
 		$this->sectionCP++;
 
@@ -1725,6 +1763,9 @@ class queXMLPDF extends TCPDF {
 		$this->section[$this->sectionCP] = array('label' => $desc, 'title' => $title);
 
 		$html = "<span class=\"sectionTitle\">$title</span>: <span class=\"sectionDescription\">$desc</span>";
+
+		if ($info)
+			$html .= "<div class=\"sectionInfo\">$info</div>";
 
 		$this->setBackground('section');
 		$this->writeHTMLCell($this->getPageWidth() - (($this->cornerBorder *2) + ($this->cornerWidth * 2)),18,$this->getMainPageX(),$this->getY(),$this->style . $html,array('B' => array('width' => 1, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 255, 255))),1,true,true,'');
