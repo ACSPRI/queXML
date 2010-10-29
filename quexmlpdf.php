@@ -183,6 +183,7 @@ class queXMLPDF extends TCPDF {
 		span.sectionTitle {font-size: 18pt; font-weight:bold;} 
 		span.sectionDescription {font-size: 14pt; font-weight:bold;} 
 		div.sectionInfo {font-size: 10pt; text-align:left;}
+		td.questionnaireInfo {font-size: 12pt; text-align:center; font-weight:bold;}
 		</style>";
 
 	/**
@@ -496,6 +497,14 @@ class queXMLPDF extends TCPDF {
 	 * @since 2010-09-22
 	 */
 	protected $subQuestionTextSeparator = " : ";
+
+	/**
+	 * The top margin for questionnaireInfo section
+	 * 
+	 * @var mixed  Defaults to 5. 
+	 * @since 2010-10-29
+	 */
+	protected $questionnaireInfoMargin = 5;
 
 	/**
 	 * Add a box group to the page layout system
@@ -858,7 +867,7 @@ class queXMLPDF extends TCPDF {
 			$this->setBackground('question');		
 			$html = "<div class=\"skipTo\">{$this->skipToText}$rightarrow</div>";
 			$ypos = $this->GetY();
-			$this->writeHTMLCell($this->skipColumnWidth, $this->singleResponseAreaHeight, $this->getPageWidth() - $this->getMainPageX() - $this->skipColumnWidth ,$y, $this->style . $html,0,0,true,true,'C',true);
+			$this->writeHTMLCell($this->skipColumnWidth, 0, $this->getPageWidth() - $this->getMainPageX() - $this->skipColumnWidth ,$y, $this->style . $html,0,0,true,true,'C',true);
 			$this->SetY($ypos,false);
 		}
 
@@ -921,6 +930,17 @@ class queXMLPDF extends TCPDF {
 
 		$q['id'] = $xml['id'];
 
+		foreach ($xml->questionnaireInfo as $qitmp)
+		{
+			if ($qitmp->position == 'after')
+			{
+				if (!isset($q['infoafter']))
+					$q['infoafter'] = "";
+
+				$q['infoafter'] .= $qitmp->text . "<br/>";
+			}
+		}
+	
 		foreach($xml->section as $s)
 		{
 			$stmp = array();
@@ -951,7 +971,7 @@ class queXMLPDF extends TCPDF {
 				$qtmp = array();
 				$rstmp = array();
 				
-				$qtmp['title'] = $sl . $qcount;
+				$qtmp['title'] = $sl . $qcount . ".";
 
 				foreach ($qu->text as $ttmp)
 				{
@@ -1105,6 +1125,17 @@ class queXMLPDF extends TCPDF {
 					$this->commitTransaction();
 			}
 		}
+
+		//Draw questionnaireInfo after if exists
+		if (isset($questionnaire['infoafter']))
+		{
+			$this->setBackground('question');
+			$this->writeHTMLCell($this->getMainPageWidth(), $this->questionnaireInfoMargin, $this->getMainPageX(), $this->GetY() - $this->questionBorderBottom, "<div></div>",0,1,true,true);
+			$html = "<table><tr><td width=\"" . $this->getMainPageWidth() . "mm\" class=\"questionnaireInfo\">{$questionnaire['infoafter']}</td><td></td></tr></table>";
+			$this->writeHTMLCell($this->getMainPageWidth(), 1, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);
+		}
+
+
 		//fill to the end of the last page
 		$this->fillPageBackground();
 	}
