@@ -408,7 +408,7 @@ class queXMLPDF extends TCPDF {
 	 * @var bool  Defaults to array(220,220,220). 
 	 * @since 2010-09-15
 	 */
-	protected $backgroundColourQuestion = array(220,220,220);
+	protected $backgroundColourQuestion = array(241,241,241);
 
 	/**
 	 * The bacground colour of a section
@@ -416,7 +416,7 @@ class queXMLPDF extends TCPDF {
 	 * @var bool  Defaults to array(200,200,200). 
 	 * @since 2010-09-20
 	 */
-	protected $backgroundColourSection = array(200,200,200);
+	protected $backgroundColourSection = array(221,221,221);
 
 	/**
 	 * Empty background colour
@@ -945,7 +945,7 @@ class queXMLPDF extends TCPDF {
 		{
 			$stmp = array();
 			$sl = $this->numberToLetter($scount);
-			$stmp['title'] = $sl;
+			$stmp['title'] = "Section " . $sl;
 		
 			foreach ($s->sectionInfo as $sitmp)
 			{
@@ -978,6 +978,9 @@ class queXMLPDF extends TCPDF {
 					if (!isset($qtmp['text']))
 						$qtmp['text'] = "";
 
+					//Add a new line if we aren't at the end
+					if ($ttmp != end($qu->text)){ $qtmp['text'] .= "<br/>"; } 
+					
 					$qtmp['text'] .= $ttmp;
 				}
 				
@@ -1801,7 +1804,7 @@ class queXMLPDF extends TCPDF {
 
 		$this->section[$this->sectionCP] = array('label' => $desc, 'title' => $title);
 
-		$html = "<span class=\"sectionTitle\">$title</span>: <span class=\"sectionDescription\">$desc</span>";
+		$html = "<span class=\"sectionTitle\">$title:</span> <span class=\"sectionDescription\">$desc</span>";
 
 		if ($info)
 			$html .= "<div class=\"sectionInfo\">$info</div>";
