@@ -174,13 +174,13 @@ class queXMLPDF extends TCPDF {
 	protected $style = "<style>
 		td.questionTitle {font-weight:bold; font-size:12pt;}
 		td.questionText {font-weight:bold; font-size:12pt;} 
-		td.questionHelp {text-align:right; font-style:italic; font-size: 8pt;}
-		td.questionHelpAfter {text-align:center; font-weight:bold; font-size: 10pt;}
-		td.responseAboveText {text-align:left; font-size:12pt;} 
-		span.sectionTitle {font-size: 18pt; font-weight:bold;} 
-		span.sectionDescription {font-size: 14pt; font-weight:bold;} 
-		div.sectionInfo {font-size: 10pt; text-align:left; margin: 0 5mm 0 0;}
-		td.questionnaireInfo {font-size: 12pt; text-align:center; font-weight:bold;}
+		td.questionHelp {font-weight:normal; text-align:right; font-style:italic; font-size:8pt;}
+		td.questionHelpAfter {text-align:center; font-weight:bold; font-size:10pt;}
+		td.responseAboveText {font-weight:normal; font-style:normal; text-align:left; font-size:12pt;} 
+		span.sectionTitle {font-size:18pt; font-weight:bold;} 
+		span.sectionDescription {font-size:14pt; font-weight:bold;} 
+		div.sectionInfo {font-style:normal; font-size:10pt; text-align:left; font-weight:normal;}
+		td.questionnaireInfo {font-size:16pt; text-align:center; font-weight:bold;}
 		</style>";
 
 	/**
@@ -929,12 +929,12 @@ class queXMLPDF extends TCPDF {
 			$text =  $this->skipToText . $rightarrow;
 			$ypos = $this->GetY();
 
-			$cfontsize = $this->GetFontSize();
 			$this->setDefaultFont($this->skipToTextFontSize,'B');
 
 			$this->MultiCell($this->skipColumnWidth,$this->singleResponseBoxHeight,$text,0,'L',false,0,($this->getPageWidth() - $this->getMainPageX() - $this->skipColumnWidth),$y,true,0,false,true,$this->singleResponseBoxHeight,'M',true);
 
-			$this->setDefaultFont($cfontsize);
+			//Reset to non bold as causing problems with TCPDF HTML CSS conversion
+			$this->setDefaultFont($this->skipToTextFontSize,'');
 
 			//$this->writeHTMLCell($this->skipColumnWidth, 0, $this->getPageWidth() - $this->getMainPageX() - $this->skipColumnWidth ,$y, $this->style . $html,0,0,true,true,'C',true);
 			$this->SetY($ypos,false);
@@ -1006,7 +1006,7 @@ class queXMLPDF extends TCPDF {
 				if (!isset($q['infoafter']))
 					$q['infoafter'] = "";
 
-				$q['infoafter'] .= $qitmp->text . "<br/>";
+				$q['infoafter'] .= $qitmp->text . "<br/><br/>";
 			}
 		}
 	
@@ -1529,12 +1529,10 @@ class queXMLPDF extends TCPDF {
 
 			if ($lines == 1 && $cells <= $this->labelTextResponsesSameLine && !empty($text))
 			{
-				$cfontsize = $this->GetFontSize();
-				$this->SetFontSize($this->responseTextFontSize);			
+				$this->setDefaultFont($this->responseTextFontSize);			
 
 				$this->MultiCell($textwidth,$this->textResponseHeight,$text,0,'R',false,1,$this->getMainPageX(),$currentY,true,0,false,true,$this->textResponseHeight,'M',true);
 
-				$this->SetFontSize($cfontsize);
 
 				//$html = "<table><tr><td width=\"{$textwidth}mm\" class=\"responseText\">$text</td><td></td></tr></table>";
 			}
@@ -1687,7 +1685,6 @@ class queXMLPDF extends TCPDF {
 		$this->setBackground('question');
 		$this->writeHTMLCell($this->getMainPageWidth(), $this->responseLabelHeight, $this->getMainPageX(), $currentY , $this->style . $html,0,1,true,true);
 
-		$cfontsize = $this->GetFontSize();
 		$this->setDefaultFont($this->responseLabelFontSize);			
 
 		$count = 0;
@@ -1702,7 +1699,6 @@ class queXMLPDF extends TCPDF {
 		$currentY += $this->responseLabelHeight;
 
 		//reset font size
-		$this->setDefaultFont($cfontsize);			
 
 
 		foreach ($subquestions as $s)
@@ -1720,12 +1716,10 @@ class queXMLPDF extends TCPDF {
 			$html = "<div></div>";
 			$this->setBackground('question');
 			$this->writeHTMLCell($this->getMainPageWidth(), $this->singleResponseAreaHeight, $this->getMainPageX(), $currentY, $this->style . $html,0,1,true,true);	
-			$cfontsize = $this->GetFontSize();
-			$this->SetFontSize($this->responseTextFontSize);			
+			$this->setDefaultFont($this->responseTextFontSize);			
 
 			$this->MultiCell($textwidth,$this->singleResponseAreaHeight,$s['text'],0,'R',false,0,$this->getMainPageX(),$currentY,true,0,false,true,$this->singleResponseAreaHeight,'M',true);
 
-			$this->SetFontSize($cfontsize);
 
 
 
@@ -1788,8 +1782,7 @@ class queXMLPDF extends TCPDF {
 			$this->writeHTMLCell($this->getMainPageWidth(), $this->responseLabelHeight, $this->getMainPageX(), $currentY , $this->style . $html,0,1,true,true);
 
 
-			$cfontsize = $this->GetFontSize();
-			$this->SetFontSize($this->responseLabelFontSize);			
+			$this->setDefaultFont($this->responseLabelFontSize);			
 
 			//Draw a Cell for each rwidth from $textwidth + $this->getMainPageX(),currentY 
 			foreach ($subquestions as $r)
@@ -1806,8 +1799,6 @@ class queXMLPDF extends TCPDF {
 			else
 				$this->SetY($currentY+$this->responseLabelHeight);
 
-			//reset font size
-			$this->SetFontSize($cfontsize);			
 		}
 
 		$currentY = $this->GetY();
@@ -1848,12 +1839,10 @@ class queXMLPDF extends TCPDF {
 					$html = "<div></div>";
 					$this->setBackground('question');
 					$this->writeHTMLCell($this->getMainPageWidth(), $this->singleResponseAreaHeight, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);	
-					$cfontsize = $this->GetFontSize();
-					$this->SetFontSize($this->responseTextFontSize);			
+					$this->setDefaultFont($this->responseTextFontSize);			
 
 					$this->MultiCell($textwidth,$this->singleResponseAreaHeight,$r['text'],0,'R',false,0,$this->getMainPageX(),$currentY,true,0,false,true,$this->singleResponseAreaHeight,'M',true);
 
-					$this->SetFontSize($cfontsize);
 				}
 
 				$skipto = false;
@@ -1940,13 +1929,13 @@ class queXMLPDF extends TCPDF {
 
 		$this->section[$this->sectionCP] = array('label' => $desc, 'title' => $title);
 
-		$html = "<span class=\"sectionTitle\">$title:</span> <span class=\"sectionDescription\">$desc</span>";
+		$html = "<span class=\"sectionTitle\">$title:</span>&nbsp;<span class=\"sectionDescription\">$desc</span>";
 
 		if ($info)
 			$html .= "<div class=\"sectionInfo\">$info</div>";
 
 		$this->setBackground('section');
-		$this->writeHTMLCell($this->getPageWidth() - (($this->cornerBorder *2) + ($this->cornerWidth * 2)),$this->sectionHeight,$this->getMainPageX(),$this->getY(),$this->style . $html,array('B' => array('width' => 1, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 255, 255))),1,true,true,'');
+		$this->writeHTMLCell($this->getPageWidth() - (($this->cornerBorder *2) + ($this->cornerWidth * 2)),$this->sectionHeight,$this->getMainPageX(),$this->getY(),$this->style . $html,array('B' => array('width' => 1, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $this->backgroundColourEmpty)),1,true,true,'');
 	}
 
 	/**
