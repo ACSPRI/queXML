@@ -221,7 +221,7 @@ class queXMLPDF extends TCPDF {
 	 * @var string  Defaults to 0.1. 
 	 * @since 2010-09-20
 	 */
-	protected $singleResponseBoxBorder = 0.1;
+	protected $singleResponseBoxBorder = 0.15;
 
 	/**
 	 * Length of the "eye guide" for a vertical response box
@@ -282,10 +282,10 @@ class queXMLPDF extends TCPDF {
 	/**
 	 * The border width of a text resposne box
 	 * 
-	 * @var mixed  Defaults to 0.1. 
+	 * @var mixed  Defaults to 0.15.  Any less than this may produce printing problems
 	 * @since 2010-09-20
 	 */
-	protected $textResponseBorder = 0.1;
+	protected $textResponseBorder = 0.15;
 
 	/**
 	 * The height of a text response box
@@ -1589,13 +1589,13 @@ class queXMLPDF extends TCPDF {
 				$border = array('TR' => array('width' => $this->textResponseBorder, 'dash' => 0), 'B' => array('width' => ($this->textResponseBorder * 2), 'dash' => 0));
 
 				//add a border gap
-				$this->SetX($this->GetX() + $this->textResponseBorder,false);
+				$this->SetX($this->GetX() + ($this->textResponseBorder),false);
 			}
 			else //middle
 			{
 				$border = array('T' => array('width' => $this->textResponseBorder, 'dash' => 0), 'R' => array('width' => $this->textResponseBorder, 'dash' => 1), 'B' => array('width' => ($this->textResponseBorder * 2), 'dash' => 0));
 				//add a border gap
-				$this->SetX($this->GetX() + $this->textResponseBorder,false);
+				$this->SetX($this->GetX() + ($this->textResponseBorder),false);
 			}
 
 			//Add the box to the layout scheme
