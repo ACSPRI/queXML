@@ -501,7 +501,7 @@ class queXMLPDF extends TCPDF {
 	 * @var mixed  Defaults to 5. 
 	 * @since 2010-10-29
 	 */
-	protected $questionnaireInfoMargin = 5;
+	protected $questionnaireInfoMargin = 20;
 
 	/**
 	 * Height of a response label
@@ -1581,19 +1581,31 @@ class queXMLPDF extends TCPDF {
 		{
 			//draw text cells 
 			if ($cells == 1) //only
-				$border = array('LTRB' => array('width' => $this->textResponseBorder, 'dash' => 0));
+				$border = array('LTR' => array('width' => $this->textResponseBorder, 'dash' => 0), 'B' => array('width' => ($this->textResponseBorder * 2), 'dash' => 0));
 			else if ($j == 0) //first
-				$border = array('LTB' => array('width' => $this->textResponseBorder, 'dash' => 0), 'R' => array('width' => $this->textResponseBorder, 'dash' => 1));
+				$border = array('LT' => array('width' => $this->textResponseBorder, 'dash' => 0), 'R' => array('width' => $this->textResponseBorder, 'dash' => 1), 'B' => array('width' => ($this->textResponseBorder * 2), 'dash' => 0));
 			else if (($j + 1) == $cells) //last
-				$border = array('TRB' => array('width' => $this->textResponseBorder, 'dash' => 0));
+			{
+				$border = array('TR' => array('width' => $this->textResponseBorder, 'dash' => 0), 'B' => array('width' => ($this->textResponseBorder * 2), 'dash' => 0));
+
+				//add a border gap
+				$this->SetX($this->GetX() + $this->textResponseBorder,false);
+			}
 			else //middle
-				$border = array('TB' => array('width' => $this->textResponseBorder, 'dash' => 0), 'R' => array('width' => $this->textResponseBorder, 'dash' => 1));
+			{
+				$border = array('T' => array('width' => $this->textResponseBorder, 'dash' => 0), 'R' => array('width' => $this->textResponseBorder, 'dash' => 1), 'B' => array('width' => ($this->textResponseBorder * 2), 'dash' => 0));
+				//add a border gap
+				$this->SetX($this->GetX() + $this->textResponseBorder,false);
+			}
 
 			//Add the box to the layout scheme
 			$this->addBox($this->GetX(),$this->GetY(),$this->GetX() + $this->textResponseWidth,$this->GetY() + $this->textResponseHeight);
 			//Draw the box
 			$this->Cell($this->textResponseWidth,$this->textResponseHeight,'',$border,0,'',true,'',0,false,'T','C');
 		}
+
+		//add some spacing for the bottom border
+		//$this->SetY(($this->GetY() + ($this->textResponseBorder * 2)),false);
 	}
 
 	/**
