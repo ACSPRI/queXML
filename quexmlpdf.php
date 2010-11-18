@@ -1075,7 +1075,12 @@ class queXMLPDF extends TCPDF {
 				{
 					$sqtmp = array();
 					foreach ($sq->text as $ttmp)
+					{
+						if (!isset($sqtmp['text']))
+							$sqtmp['text'] = "";
+
 						$sqtmp['text'] .= $ttmp;
+					}
 					$sqtmp['varname'] = $sq['varName'];
 					$rstmp['subquestions'][] = $sqtmp;
 				}
