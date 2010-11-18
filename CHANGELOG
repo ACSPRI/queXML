@@ -1,4 +1,8 @@
-queXML - Changes since 1.3.0
+queXML 1.3.2 - Changes since 1.3.1
+
+Fixed display of dashed lines in text areas that were not printing correctly
+
+queXML 1.3.1 - Changes since 1.3.0
 
 Replaced drawing using HTML tables with TCPDF Multicell to allow for aligning text vertically
 Updated background colour to be lighter and inline with queXML FO
