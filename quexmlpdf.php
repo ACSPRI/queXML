@@ -1008,6 +1008,13 @@ class queXMLPDF extends TCPDF {
 
 				$q['infoafter'] .= $qitmp->text . "<br/><br/>";
 			}
+			else if ($qitmp->position == 'before')
+			{
+				if (!isset($q['infobefore']))
+					$q['infobefore'] = "";
+
+				$q['infobefore'] .= $qitmp->text . "<br/><br/>";
+			}
 		}
 	
 		foreach($xml->section as $s)
@@ -1161,6 +1168,18 @@ class queXMLPDF extends TCPDF {
 		$this->init();
 		$this->questionnaireId = intval($questionnaire['id']);
 		$this->newPage();
+
+		//Draw questionnaireInfo before if exists
+		if (isset($questionnaire['infobefore']))
+		{
+			$this->setBackground('question');
+			$this->writeHTMLCell($this->getMainPageWidth(), $this->questionnaireInfoMargin, $this->getMainPageX(), $this->GetY() - $this->questionBorderBottom, "<div></div>",0,1,true,true);
+			$html = "<table><tr><td width=\"" . $this->getMainPageWidth() . "mm\" class=\"questionnaireInfo\">{$questionnaire['infobefore']}</td><td></td></tr></table>";
+			$this->writeHTMLCell($this->getMainPageWidth(), 1, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);
+		}
+
+
+
 		foreach($questionnaire['sections'] as $sk => $sv)
 		{
 			//link the section title with the first question for pagination purposes
