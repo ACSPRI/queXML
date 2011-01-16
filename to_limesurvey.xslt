@@ -125,6 +125,11 @@
 
 </xsl:template>
 
+
+<xsl:template match="questionnaire/questionnaireInfo">
+	<xsl:value-of select="text"/>
+</xsl:template>
+
 <xsl:template match="questionnaire/section">"<xsl:number count="section" level="any" format="1"/>","1","<xsl:apply-templates select="sectionInfo[position='title' and administration='self']"/>","<xsl:number count="section" level="any" format="00001"/>","<xsl:apply-templates select="sectionInfo[position='before' and administration='self']"/>","en"
 </xsl:template>
 
