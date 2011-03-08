@@ -1192,6 +1192,7 @@ class queXMLPDF extends TCPDF {
 			{
 				$this->pageBreakOccured = false;
 				$this->rollBackTransaction(true);
+				$this->SetAutoPageBreak(false); //Temporarily set so we don't trigger a page break
 				$this->fillPageBackground();
 				$this->newPage();
 				$this->addSection($sv['text'],$sv['title'],$sv['info']);
@@ -1210,6 +1211,7 @@ class queXMLPDF extends TCPDF {
 				{
 					$this->pageBreakOccured = false;
 					$this->rollBackTransaction(true);
+					$this->SetAutoPageBreak(false); //Temporarily set so we don't trigger a page break
 					//now draw a background to the bottom of the page
 					$this->fillPageBackground();
 			
@@ -2010,7 +2012,9 @@ class queXMLPDF extends TCPDF {
 	protected function newPage() 
 	{
 		$this->AddPage();
-		$this->SetAutoPageBreak(true,$this->cornerBorder);
+
+		//Set Auto page break to false 
+		$this->SetAutoPageBreak(false);
 
 		$this->SetMargins(0,0,0);
 		$this->SetHeaderMargin(0);
@@ -2061,8 +2065,8 @@ class queXMLPDF extends TCPDF {
 							);
 		$this->layoutCP = $barcodeValue;
 
-
 		$this->SetXY($cb + $this->cornerWidth, $cb + $this->cornerWidth);
+		$this->SetAutoPageBreak(true,$this->getMainPageX());
 	}
 
 	/**
