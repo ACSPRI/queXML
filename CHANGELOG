@@ -1,3 +1,11 @@
+queXML 1.3.3 - Changes since 1.3.2
+
+queXMLPDF: Banding XML will include number only fields where set to integer, number or numeric (Thank you Laith for reporting this)
+queXMLPDF: Fixed issue where page breaks occuring at the wrong spot (Limesurvey Bug: http://bugs.limesurvey.org/view.php?id=4998)
+queXMLPDF: Added support for questionnaireInfo position=before element
+queXMLPDF: Added check to avoid notice printing
+to_limesurvey.xslt (queXML to Limesurvey stylesheet): Added template to make sure only text is displayed 
+
 queXML 1.3.2 - Changes since 1.3.1
 
 Fixed display of dashed lines in text areas that were not printing correctly
