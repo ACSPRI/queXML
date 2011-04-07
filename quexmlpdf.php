@@ -1022,15 +1022,12 @@ class queXMLPDF extends TCPDF {
 			$sl = $this->numberToLetter($scount);
 			$stmp['title'] = "Section " . $sl;
 			$stmp['info'] = "";
-
+			$stmp['text'] = "";
 	
 			foreach ($s->sectionInfo as $sitmp)
 			{
 				if ($sitmp->position == 'title')
 				{
-					if (!isset($stmp['text']))
-						$stmp['text'] = "";
-
 					$stmp['text'] .= $sitmp->text;
 				}
 				if ($sitmp->position == 'before' || $sitmp->position == 'during')
