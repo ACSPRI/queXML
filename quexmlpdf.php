@@ -7,7 +7,6 @@
 require_once('/var/lib/tcpdf/config/lang/eng.php');
 require_once('/var/lib/tcpdf/tcpdf.php');
 
-
 /**
  * A TCPDF based class to produce queXF compatible questionnaire PDF files and banding description XML from queXML
  * 
@@ -1022,7 +1021,9 @@ class queXMLPDF extends TCPDF {
 			$stmp = array();
 			$sl = $this->numberToLetter($scount);
 			$stmp['title'] = "Section " . $sl;
-		
+			$stmp['info'] = "";
+
+	
 			foreach ($s->sectionInfo as $sitmp)
 			{
 				if ($sitmp->position == 'title')
@@ -1034,9 +1035,6 @@ class queXMLPDF extends TCPDF {
 				}
 				if ($sitmp->position == 'before' || $sitmp->position == 'during')
 				{
-					if (!isset($stmp['info']))
-						$stmp['info'] = "";
-
 					$stmp['info'] .= $sitmp->text . "<br/>";
 				}
 			}
@@ -1048,12 +1046,10 @@ class queXMLPDF extends TCPDF {
 				$rstmp = array();
 				
 				$qtmp['title'] = $sl . $qcount . ".";
+				$qtmp['text'] = "";
 
 				foreach ($qu->text as $ttmp)
 				{
-					if (!isset($qtmp['text']))
-						$qtmp['text'] = "";
-
 					//Add a new line if we aren't at the end
 					if ($ttmp != end($qu->text)){ $qtmp['text'] .= "<br/>"; } 
 					
@@ -1081,11 +1077,9 @@ class queXMLPDF extends TCPDF {
 				foreach ($qu->subQuestion as $sq)
 				{
 					$sqtmp = array();
+					$sqtmp['text'] = "";
 					foreach ($sq->text as $ttmp)
 					{
-						if (!isset($sqtmp['text']))
-							$sqtmp['text'] = "";
-
 						$sqtmp['text'] .= $ttmp;
 					}
 					$sqtmp['varname'] = $sq['varName'];
@@ -1980,7 +1974,7 @@ class queXMLPDF extends TCPDF {
 
 		$html = "<span class=\"sectionTitle\">$title:</span>&nbsp;<span class=\"sectionDescription\">$desc</span>";
 
-		if ($info)
+		if ($info && !empty($info))
 			$html .= "<div class=\"sectionInfo\">$info</div>";
 
 		$this->setBackground('section');
