@@ -572,6 +572,7 @@
 					</xsd:complexType>
 				</xsd:element>
 			</xsd:sequence>
+			<xsd:attribute name="id" type="xsd:integer" use="optional"/>
 		</xsd:complexType>
 	</xsd:element>
 </xsd:schema>
