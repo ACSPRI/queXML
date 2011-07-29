@@ -1458,7 +1458,7 @@ class queXMLPDF extends TCPDF {
 		//Align to skip column on right
 		$this->SetX(($this->getPageWidth() - $this->getMainPageX() - $this->skipColumnWidth - $this->longTextResponseWidth),false);
 		//Add to pay layout
-		$this->addBox($this->GetX(),$this->GetY(),$this->GetX() + $this->longTextResponseWidth, $this->GetX() + $height);
+		$this->addBox($this->GetX(),$this->GetY(),$this->GetX() + $this->longTextResponseWidth, $this->GetY() + $height);
 		$this->SetDrawColor($this->lineColour[0],$this->lineColour[1],$this->lineColour[2]);
 		$this->Cell($this->longTextResponseWidth,$height,'',$border,0,'',true,'',0,false,'T','C');
 		$currentY = $currentY + $height;
