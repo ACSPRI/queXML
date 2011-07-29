@@ -1,3 +1,7 @@
+queXML 1.3.5 - Changse since 1.3.4
+
+queXMLPDF: Fixed bug in creation of banding files for longtext elements 
+
 queXML 1.3.4 - Changse since 1.3.3
 
 quexml.xsd: Updated schema to include missing optional id attribute for questionnaire element
