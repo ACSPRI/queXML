@@ -1,98 +1,325 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
-  <xs:element name="queXF">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="questionnaire"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="questionnaire">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element minOccurs="1" maxOccurs="1" ref="id"/>
-        <xs:element minOccurs="1" maxOccurs="unbounded" ref="section"/>
-        <xs:element minOccurs="1" maxOccurs="unbounded" ref="page"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="section">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="title"/>
-        <xs:element ref="label"/>
-      </xs:sequence>
-      <xs:attribute name="id" use="required" type="xs:ID"/>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="title" type="xs:NCName"/>
-  <xs:element name="page">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element minOccurs="1" maxOccurs="1" ref="pid"/>
-        <xs:element ref="id"/>
-        <xs:element minOccurs="1" maxOccurs="1" ref="tlx"/>
-        <xs:element minOccurs="1" maxOccurs="1" ref="tly"/>
-        <xs:element minOccurs="1" maxOccurs="1" ref="trx"/>
-        <xs:element minOccurs="1" maxOccurs="1" ref="try"/>
-        <xs:element minOccurs="1" maxOccurs="1" ref="blx"/>
-        <xs:element minOccurs="1" maxOccurs="1" ref="bly"/>
-        <xs:element minOccurs="1" maxOccurs="1" ref="brx"/>
-        <xs:element minOccurs="1" maxOccurs="1" ref="bry"/>
-        <xs:element minOccurs="1" maxOccurs="1" ref="rotation"/>
-        <xs:element maxOccurs="unbounded" ref="boxgroup"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="pid" type="xs:integer"/>
-  <xs:element name="trx" type="xs:integer"/>
-  <xs:element name="try" type="xs:integer"/>
-  <xs:element name="blx" type="xs:integer"/>
-  <xs:element name="bly" type="xs:integer"/>
-  <xs:element name="rotation" type="xs:decimal"/>
-  <xs:element name="boxgroup">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element minOccurs="1" maxOccurs="1" ref="id"/>
-        <xs:element minOccurs="1" maxOccurs="1" ref="type"/>
-        <xs:element minOccurs="1" maxOccurs="1" ref="width"/>
-        <xs:element minOccurs="1" maxOccurs="1" ref="varname"/>
-        <xs:element minOccurs="1" maxOccurs="1" ref="sortorder"/>
-        <xs:element minOccurs="1" maxOccurs="1" ref="label"/>
-        <xs:element minOccurs="1" maxOccurs="1" ref="groupsection"/>
-        <xs:element minOccurs="1" maxOccurs="unbounded" ref="box"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="type" type="xs:integer"/>
-  <xs:element name="width" type="xs:integer"/>
-  <xs:element name="varname" type="xs:NCName"/>
-  <xs:element name="sortorder" type="xs:integer"/>
-  <xs:element name="groupsection">
-    <xs:complexType>
-      <xs:attribute name="idref" use="required" type="xs:IDREF"/>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="box">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="id"/>
-        <xs:element  minOccurs="1" maxOccurs="1" ref="tlx"/>
-        <xs:element  minOccurs="1" maxOccurs="1" ref="tly"/>
-        <xs:element  minOccurs="1" maxOccurs="1" ref="brx"/>
-        <xs:element  minOccurs="1" maxOccurs="1" ref="bry"/>
-        <xs:element  maxOccurs="1" ref="value"/>
-        <xs:element  maxOccurs="1" ref="label"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="value">
-    <xs:complexType/>
-  </xs:element>
-  <xs:element name="id" type="xs:integer"/>
-  <xs:element name="label" type="xs:string"/>
-  <xs:element name="tlx" type="xs:integer"/>
-  <xs:element name="tly" type="xs:integer"/>
-  <xs:element name="brx" type="xs:integer"/>
-  <xs:element name="bry" type="xs:integer"/>
-</xs:schema>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- quexfbanding.xsd
+
+        Copyright Australian Consortium for Social and Political Research Incorporated 2011
+        
+        This file is part of queXML.
+
+        queXML is free software; you can redistribute it and/or modify
+        it under the terms of the GNU General Public License as published by
+        the Free Software Foundation; either version 2 of the License, or
+        (at your option) any later version.
+
+        queXML is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        GNU General Public License for more details.
+
+        You should have received a copy of the GNU General Public License
+        along with queXML; if not, write to the Free Software
+        Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+        
+        queXF Banding Schema
+
+        A schema for describing elements on a paper page for the purpose of 
+        automatic form data input using the queXF package. The queXF banding XML
+        document is generated as part of the paper form generation process from
+        queXML using the queXMLPDF class.
+
+        The queXF banding document describes the physical dimensions of the page,
+        the location of the corner edges (used for paper alignment after scanning),
+        the location, type and description of each form element (boxes) on the page.
+
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+elementFormDefault="qualified">
+  <xsd:annotation>
+    <xsd:documentation>A schema for describing elements on a paper
+    page for the purpose of automatic form data input using the
+    queXF package. The queXF banding XML document is generated as
+    part of the paper form generation process from queXML using the
+    queXMLPDF class.</xsd:documentation>
+  </xsd:annotation>
+  <xsd:element name="queXF">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="questionnaire" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="questionnaire">
+    <xsd:annotation>
+      <xsd:documentation>A questionnaire (or in queXF notation: a
+      form)</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="1" minOccurs="1" ref="id" />
+        <xsd:element maxOccurs="unbounded" minOccurs="1"
+        ref="section" />
+        <xsd:element maxOccurs="unbounded" minOccurs="1"
+        ref="page" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="section">
+    <xsd:annotation>
+      <xsd:documentation>A section of a questionnaire. This is
+      mainly used for documentation purposes.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="title" />
+        <xsd:element ref="label" />
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:integer" use="required" />
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="title" type="xsd:string">
+    <xsd:annotation>
+      <xsd:documentation>The section title</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="page">
+    <xsd:annotation>
+      <xsd:documentation>A physical printed
+      page</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="1" minOccurs="1" ref="pid" />
+        <xsd:element ref="id" />
+        <xsd:element maxOccurs="1" minOccurs="1" ref="tlx" />
+        <xsd:element maxOccurs="1" minOccurs="1" ref="tly" />
+        <xsd:element maxOccurs="1" minOccurs="1" ref="trx" />
+        <xsd:element maxOccurs="1" minOccurs="1" ref="try" />
+        <xsd:element maxOccurs="1" minOccurs="1" ref="blx" />
+        <xsd:element maxOccurs="1" minOccurs="1" ref="bly" />
+        <xsd:element maxOccurs="1" minOccurs="1" ref="brx" />
+        <xsd:element maxOccurs="1" minOccurs="1" ref="bry" />
+        <xsd:element maxOccurs="1" minOccurs="1" ref="rotation" />
+        <xsd:element ref="width" />
+        <xsd:element ref="height" />
+        <xsd:element ref="TL_VERT_TLX" />
+        <xsd:element ref="TL_VERT_TLY" />
+        <xsd:element ref="TL_VERT_BRX" />
+        <xsd:element ref="TL_VERT_BRY" />
+        <xsd:element ref="TL_HORI_TLX" />
+        <xsd:element ref="TL_HORI_TLY" />
+        <xsd:element ref="TL_HORI_BRX" />
+        <xsd:element ref="TL_HORI_BRY" />
+        <xsd:element ref="TR_VERT_TLX" />
+        <xsd:element ref="TR_VERT_TLY" />
+        <xsd:element ref="TR_VERT_BRX" />
+        <xsd:element ref="TR_VERT_BRY" />
+        <xsd:element ref="TR_HORI_TLX" />
+        <xsd:element ref="TR_HORI_TLY" />
+        <xsd:element ref="TR_HORI_BRX" />
+        <xsd:element ref="TR_HORI_BRY" />
+        <xsd:element ref="BL_VERT_TLX" />
+        <xsd:element ref="BL_VERT_TLY" />
+        <xsd:element ref="BL_VERT_BRX" />
+        <xsd:element ref="BL_VERT_BRY" />
+        <xsd:element ref="BL_HORI_TLX" />
+        <xsd:element ref="BL_HORI_TLY" />
+        <xsd:element ref="BL_HORI_BRX" />
+        <xsd:element ref="BL_HORI_BRY" />
+        <xsd:element ref="BR_VERT_TLX" />
+        <xsd:element ref="BR_VERT_TLY" />
+        <xsd:element ref="BR_VERT_BRX" />
+        <xsd:element ref="BR_VERT_BRY" />
+        <xsd:element ref="BR_HORI_TLX" />
+        <xsd:element ref="BR_HORI_TLY" />
+        <xsd:element ref="BR_HORI_BRX" />
+        <xsd:element ref="BR_HORI_BRY" />
+        <xsd:element ref="VERT_WIDTH" />
+        <xsd:element ref="HORI_WIDTH" />
+        <xsd:element maxOccurs="unbounded" ref="boxgroup" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="pid" type="xsd:integer">
+    <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:documentation>The page id (this needs to be unique across
+      all pages and all forms)</xs:documentation>
+    </xs:annotation>
+  </xsd:element>
+  <xsd:element name="trx" type="xsd:integer">
+    <xsd:annotation>
+      <xsd:documentation>The X coordinate in pixels at 300DPI of
+      the top right hand corner</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="try" type="xsd:integer">
+    <xsd:annotation>
+      <xsd:documentation>The Y coordinate in pixels at 300DPI of
+      the top right hand corner</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="blx" type="xsd:integer">
+    <xsd:annotation>
+      <xsd:documentation>The X coordinate in pixels at 300DPI of
+      the bottom left hand corner</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="bly" type="xsd:integer">
+    <xsd:annotation>
+      <xsd:documentation>The Y coordinate in pixels at 300DPI of
+      the bottom left hand corner</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="rotation" type="xsd:decimal">
+    <xsd:annotation>
+      <xsd:documentation>The amount of page rotation in
+      radians</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="height" type="xsd:integer">
+    <xsd:annotation>
+      <xsd:documentation>The height in pixels at 300DPI of the
+      page</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="width" type="xsd:integer">
+    <xsd:annotation>
+      <xsd:documentation>The width in pixels at 300DPI of the
+      page</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="TL_VERT_TLX" type="xsd:integer" />
+  <xsd:element name="TL_VERT_TLY" type="xsd:integer" />
+  <xsd:element name="TL_VERT_BRX" type="xsd:integer" />
+  <xsd:element name="TL_VERT_BRY" type="xsd:integer" />
+  <xsd:element name="TL_HORI_TLX" type="xsd:integer" />
+  <xsd:element name="TL_HORI_TLY" type="xsd:integer" />
+  <xsd:element name="TL_HORI_BRX" type="xsd:integer" />
+  <xsd:element name="TL_HORI_BRY" type="xsd:integer" />
+  <xsd:element name="TR_VERT_TLX" type="xsd:integer" />
+  <xsd:element name="TR_VERT_TLY" type="xsd:integer" />
+  <xsd:element name="TR_VERT_BRX" type="xsd:integer" />
+  <xsd:element name="TR_VERT_BRY" type="xsd:integer" />
+  <xsd:element name="TR_HORI_TLX" type="xsd:integer" />
+  <xsd:element name="TR_HORI_TLY" type="xsd:integer" />
+  <xsd:element name="TR_HORI_BRX" type="xsd:integer" />
+  <xsd:element name="TR_HORI_BRY" type="xsd:integer" />
+  <xsd:element name="BL_VERT_TLX" type="xsd:integer" />
+  <xsd:element name="BL_VERT_TLY" type="xsd:integer" />
+  <xsd:element name="BL_VERT_BRX" type="xsd:integer" />
+  <xsd:element name="BL_VERT_BRY" type="xsd:integer" />
+  <xsd:element name="BL_HORI_TLX" type="xsd:integer" />
+  <xsd:element name="BL_HORI_TLY" type="xsd:integer" />
+  <xsd:element name="BL_HORI_BRX" type="xsd:integer" />
+  <xsd:element name="BL_HORI_BRY" type="xsd:integer" />
+  <xsd:element name="BR_VERT_TLX" type="xsd:integer" />
+  <xsd:element name="BR_VERT_TLY" type="xsd:integer" />
+  <xsd:element name="BR_VERT_BRX" type="xsd:integer" />
+  <xsd:element name="BR_VERT_BRY" type="xsd:integer" />
+  <xsd:element name="BR_HORI_TLX" type="xsd:integer" />
+  <xsd:element name="BR_HORI_TLY" type="xsd:integer" />
+  <xsd:element name="BR_HORI_BRX" type="xsd:integer" />
+  <xsd:element name="BR_HORI_BRY" type="xsd:integer" />
+  <xsd:element name="VERT_WIDTH" type="xsd:integer" />
+  <xsd:element name="HORI_WIDTH" type="xsd:integer" />
+  <xsd:element name="boxgroup">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="1" minOccurs="1" ref="id" />
+        <xsd:element maxOccurs="1" minOccurs="1" ref="type" />
+        <xsd:element maxOccurs="1" minOccurs="1" ref="width" />
+        <xsd:element maxOccurs="1" minOccurs="1" ref="varname" />
+        <xsd:element maxOccurs="1" minOccurs="1" ref="sortorder" />
+        <xsd:element maxOccurs="1" minOccurs="1" ref="label" />
+        <xsd:element maxOccurs="1" minOccurs="1"
+        ref="groupsection" />
+        <xsd:element maxOccurs="unbounded" minOccurs="1"
+        ref="box" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="type" type="xsd:integer">
+    <xsd:annotation>
+      <xsd:documentation>The type of data contained in each box in
+      this box group. These are defined in the queXF database in
+      the boxgroupstype table. The types are: 0 = temporary, 1 =
+      single choice, 2 = multiple choice, 3 = text and numbers, 4 =
+      numbers only, 5 = barcode, 6 = long text</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="varname" type="xsd:string">
+    <xsd:annotation>
+      <xsd:documentation>The corresponding variable name for the
+      group of boxes</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="sortorder" type="xsd:integer">
+    <xsd:annotation>
+      <xsd:documentation>The order that this box group should
+      appear on this page</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="groupsection">
+    <xsd:annotation>
+      <xsd:documentation>The section that this box group belongs
+      to</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:attribute name="idref" type="xsd:integer"
+      use="required" />
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="box">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="id" />
+        <xsd:element maxOccurs="1" minOccurs="1" ref="tlx">
+          <xsd:annotation>
+            <xsd:documentation>The X coordinate in pixels at 300DPI
+            of the top left hand corner</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element maxOccurs="1" minOccurs="1" ref="tly">
+          <xsd:annotation>
+            <xsd:documentation>The Y coordinate in pixels at 300DPI
+            of the top left hand corner</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element maxOccurs="1" minOccurs="1" ref="brx">
+          <xsd:annotation>
+            <xsd:documentation>The X coordinate in pixels at 300DPI
+            of the bottom right hand corner</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element maxOccurs="1" minOccurs="1" ref="bry">
+          <xsd:annotation>
+            <xsd:documentation>The Y coordinate in pixels at 300DPI
+            of the bottom right hand corner</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element maxOccurs="1" ref="value">
+          <xsd:annotation>
+            <xsd:documentation>The corresponding value (if any)
+            that applies to this box. This is useful in single
+            choice and multiple choice question types where a box,
+            if selected, should be coded to a particular
+            value</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element maxOccurs="1" ref="label">
+          <xsd:annotation>
+            <xsd:documentation>The value label for this box (if
+            any). This is usefile in single choice and multiple
+            choice question types where a box, if selected, should
+            have a label associated with it</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="value" type="xsd:string" />
+  <xsd:element name="id" type="xsd:integer" />
+  <xsd:element name="label" type="xsd:string" />
+  <xsd:element name="tlx" type="xsd:integer" />
+  <xsd:element name="tly" type="xsd:integer" />
+  <xsd:element name="brx" type="xsd:integer" />
+  <xsd:element name="bry" type="xsd:integer" />
+</xsd:schema>
