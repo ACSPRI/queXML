@@ -1,3 +1,9 @@
+queXML 1.3.6 - Changes since 1.3.5
+
+queXMLPDF: Calculation of barcode position is now a distance from the right hand margin (instead of a fixed position in MM)
+queXMLPDF: Calculation of number of text boxes per line is now a funciton of the box width and page width (instead of fixed in code)
+Updated and added documentation to queXF banding XML Schema
+
 queXML 1.3.5 - Changse since 1.3.4
 
 queXMLPDF: Fixed bug in creation of banding files for longtext elements 
