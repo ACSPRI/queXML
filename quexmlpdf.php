@@ -184,7 +184,7 @@ class queXMLPDF extends TCPDF {
 	protected $style = "<style>
 		td.questionTitle {font-weight:bold; font-size:12pt;}
 		td.questionText {font-weight:bold; font-size:12pt;} 
-		td.vasLabel {font-weright:bold; font-size:10pt; text-align:center;}
+		td.vasLabel {font-weight:bold; font-size:10pt; text-align:center;}
 		td.questionHelp {font-weight:normal; text-align:right; font-style:italic; font-size:8pt;}
 		td.questionHelpAfter {text-align:center; font-weight:bold; font-size:10pt;}
 		td.responseAboveText {font-weight:normal; font-style:normal; text-align:left; font-size:12pt;} 
