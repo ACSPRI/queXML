@@ -2111,7 +2111,7 @@ class queXMLPDF extends TCPDF {
 		$this->Line($width - $cb,$height - $cb,$width - $cb - $cl,$height - $cb,$lineStyle);
 		$this->Line($width - $cb,$height - $cb,$width - $cb,$height - ($cb + $cl),$lineStyle);
 
-		$barcodeValue = str_pad($this->questionnaireId,$this->idLength,"0",STR_PAD_LEFT) . str_pad($this->getPage(),$this->pageLength,"0",STR_PAD_LEFT);	
+		$barcodeValue = substr(str_pad($this->questionnaireId,$this->idLength,"0",STR_PAD_LEFT),0,$this->idLength) . substr(str_pad($this->getPage(),$this->pageLength,"0",STR_PAD_LEFT),0,$this->pageLength);	
 
 		//Calc X position of barcode from page width
 		$barcodeX = $width - ($this->barcodeMarginX + $this->barcodeW);
