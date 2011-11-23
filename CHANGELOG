@@ -1,3 +1,8 @@
+queXML 1.3.7 - Changes since 1.3.6
+
+queXMLPDF: Enforce idLength and pageLength (not just pad for them)
+queXMLPDF: Fixed typo in style for VAS font (from Limesurvey commit 11300)
+
 queXML 1.3.6 - Changes since 1.3.5
 
 queXMLPDF: Calculation of barcode position is now a distance from the right hand margin (instead of a fixed position in MM)
