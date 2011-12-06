@@ -572,7 +572,11 @@
 					</xsd:complexType>
 				</xsd:element>
 			</xsd:sequence>
-			<xsd:attribute name="id" type="xsd:integer" use="optional"/>
+			<xsd:attribute name="id" type="xsd:integer" use="required">
+	                   <xsd:annotation>
+	                           <xsd:documentation>A unique id for this questionnaire. Defaults to an integer that is greater than or equal to 1 and  less than or equal to 999999</xsd:documentation>
+	                   </xsd:annotation>
+			</xsd:attribute>
 		</xsd:complexType>
 	</xsd:element>
 </xsd:schema>
