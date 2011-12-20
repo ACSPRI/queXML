@@ -46,7 +46,7 @@ class queXMLPDF extends TCPDF {
 	 * @var int  Defaults to 15. 
 	 * @since 2010-09-02
 	 */
-	protected $cornerBorder = 15;
+	protected $cornerBorder = 14;
 
 	/**
 	 * The length in MM of a corner line
@@ -199,6 +199,14 @@ class queXMLPDF extends TCPDF {
 	 * 
 	 * @var string  Defaults to 10. 
 	 * @since 2010-09-20
+	 * Height of the area of a single response where displayed horizontally
+	 * 
+	 * @var string  Defaults to 10.5. 
+	 * @since 2011-12-20
+	 */
+	protected $singleResponseHorizontalHeight = 10.5;
+
+	/**
 	 */
 	protected $singleResponseAreaWidth = 10;
 
@@ -265,14 +273,6 @@ class queXMLPDF extends TCPDF {
 	 * @since 2010-09-08
 	 */
 	protected $singleResponseHorizontalMax = 10;
-
-	/**
-	 * The horizontal area height of a box running horizontally
-	 * 
-	 * @var string  Defaults to 7. 
-	 * @since 2010-09-20
-	 */
-	protected $singleResponseHorizontalAreaHeight = 7;
 
 	/**
 	 * The height of an arrow
@@ -882,10 +882,10 @@ class queXMLPDF extends TCPDF {
 		$this->SetLineWidth($this->singleResponseBoxBorder);
 
 		//centre for the line
-		$boxmid = ($y + ($this->singleResponseHorizontalAreaHeight / 2.0));
+		$boxmid = ($y + ($this->singleResponseHorizontalHeight / 2.0));
 
 		//centre on y
-		$y = $y + (($this->singleResponseHorizontalAreaHeight - $this->singleResponseBoxHeight) / 2.0);
+		$y = $y + (($this->singleResponseHorizontalHeight - $this->singleResponseBoxHeight) / 2.0);
 		
 		if ($smallwidth) 
 			$areawidth = $this->singleResponseVerticalAreaWidthSmall;
@@ -1819,10 +1819,10 @@ class queXMLPDF extends TCPDF {
 			//Draw background
 			$html = "<div></div>";
 			$this->setBackground('question');
-			$this->writeHTMLCell($this->getMainPageWidth(), $this->singleResponseAreaHeight, $this->getMainPageX(), $currentY, $this->style . $html,0,1,true,true);	
+			$this->writeHTMLCell($this->getMainPageWidth(), $this->singleResponseHorizontalHeight, $this->getMainPageX(), $currentY, $this->style . $html,0,1,true,true);	
 			$this->setDefaultFont($this->responseTextFontSize);			
 
-			$this->MultiCell($textwidth,$this->singleResponseAreaHeight,$s['text'],0,'R',false,0,$this->getMainPageX(),$currentY,true,0,false,true,$this->singleResponseAreaHeight,'M',true);
+			$this->MultiCell($textwidth,$this->singleResponseHorizontalHeight,$s['text'],0,'R',false,0,$this->getMainPageX(),$currentY,true,0,false,true,$this->singleResponseHorizontalHeight,'M',true);
 
 
 
@@ -1845,10 +1845,10 @@ class queXMLPDF extends TCPDF {
 				$rnum++;
 			}
 
-			if (($this->GetY() - $currentY) > $this->singleResponseAreaHeight)
+			if (($this->GetY() - $currentY) > $this->singleResponseHorizontalHeight)
 				$currentY = $this->GetY();
 			else
-				$currentY = $currentY + $this->singleResponseAreaHeight;
+				$currentY = $currentY + $this->singleResponseHorizontalHeight;
 
 			$this->SetY($currentY,false);
 
