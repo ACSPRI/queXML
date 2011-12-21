@@ -1201,13 +1201,8 @@ class queXMLPDF extends TCPDF {
 		//Draw questionnaireInfo before if exists
 		if (isset($questionnaire['infobefore']))
 		{
-			$this->setBackground('question');
-			$this->writeHTMLCell($this->getMainPageWidth(), $this->questionnaireInfoMargin, $this->getMainPageX(), $this->GetY() - $this->questionBorderBottom, "<div></div>",0,1,true,true);
-			$html = "<table><tr><td width=\"" . $this->getMainPageWidth() . "mm\" class=\"questionnaireInfo\">{$questionnaire['infobefore']}</td><td></td></tr></table>";
-			$this->writeHTMLCell($this->getMainPageWidth(), 1, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);
+			$this->drawInfo($questionnaire['infobefore']);
 		}
-
-
 
 		foreach($questionnaire['sections'] as $sk => $sv)
 		{
@@ -1253,18 +1248,50 @@ class queXMLPDF extends TCPDF {
 			}
 		}
 
+
 		//Draw questionnaireInfo after if exists
 		if (isset($questionnaire['infoafter']))
 		{
-			$this->setBackground('question');
-			$this->writeHTMLCell($this->getMainPageWidth(), $this->questionnaireInfoMargin, $this->getMainPageX(), $this->GetY() - $this->questionBorderBottom, "<div></div>",0,1,true,true);
-			$html = "<table><tr><td width=\"" . $this->getMainPageWidth() . "mm\" class=\"questionnaireInfo\">{$questionnaire['infoafter']}</td><td></td></tr></table>";
-			$this->writeHTMLCell($this->getMainPageWidth(), 1, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);
+			$this->startTransaction();
+
+			$this->drawInfo($questionnaire['infoafter']);
+
+			if ($this->pageBreakOccured)
+			{
+				$this->pageBreakOccured = false;
+				$this->rollBackTransaction(true);
+				$this->SetAutoPageBreak(false); //Temporarily set so we don't trigger a page break
+				//now draw a background to the bottom of the page
+				$this->fillPageBackground();
+		
+				$this->newPage();
+				//retry question here
+				$this->drawInfo($questionnaire['infoafter']);
+			}
+			else
+				$this->commitTransaction();
+
 		}
 
 
 		//fill to the end of the last page
 		$this->fillPageBackground();
+	}
+
+
+	/**
+	 * Draw the questionnaire info specified
+	 * 
+	 * @param string $text The text to draw in info style
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since  2011-12-21
+	 */
+	protected function drawInfo($info)
+	{
+		$this->setBackground('question');
+		$this->writeHTMLCell($this->getMainPageWidth(), $this->questionnaireInfoMargin, $this->getMainPageX(), $this->GetY() - $this->questionBorderBottom, "<div></div>",0,1,true,true);
+		$html = "<table><tr><td width=\"" . $this->getMainPageWidth() . "mm\" class=\"questionnaireInfo\">{$info}</td><td></td></tr></table>";
+		$this->writeHTMLCell($this->getMainPageWidth(), 1, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);
 	}
 
 	/**
