@@ -1,3 +1,10 @@
+queXML 1.3.8 - Changes since 1.3.7
+
+queXML Schema: Made id attribute for root element required and added documentation on it
+queXMLPDF: Made border 14mm instead of 15mm to fit a bit more on to page ($cornerBorder)
+queXMLPDF: Replaced singleResponseHorizontalAreaHeight with singleResponseHorizontalHeight and only applied to subquestions with horizontal single response (these types display with a better gap now)
+queXMLPDF: Functionify the drawInfo procedure and make sure to move to new page if info doesn't fit
+
 queXML 1.3.7 - Changes since 1.3.6
 
 queXMLPDF: Enforce idLength and pageLength (not just pad for them)
