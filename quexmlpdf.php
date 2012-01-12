@@ -156,8 +156,18 @@ class queXMLPDF extends TCPDF {
 	 * 
 	 * @var mixed  Defaults to 120. 
 	 * @since 2010-09-20
+	 * @deprecated
 	 */
-	protected $questionTextWidth = 120;
+	//protected $questionTextWidth = 120;
+
+	/**
+	 * Right margin of question text in MM
+	 * 
+	 * @var mixed  Defaults to 40. 
+	 * @since 2012-01-11
+	 * @see $questionTextWidth
+	 */
+	protected $questionTextRightMargin = 40;
 
 	/**
 	 * Height of the border between questions in MM
@@ -184,9 +194,11 @@ class queXMLPDF extends TCPDF {
 	protected $style = "<style>
 		td.questionTitle {font-weight:bold; font-size:12pt;}
 		td.questionText {font-weight:bold; font-size:12pt;} 
+		td.questionSpecifier {font-weight:normal; font-size:12pt;} 
 		td.vasLabel {font-weight:bold; font-size:10pt; text-align:center;}
 		td.questionHelp {font-weight:normal; text-align:right; font-style:italic; font-size:8pt;}
 		td.questionHelpAfter {text-align:center; font-weight:bold; font-size:10pt;}
+		td.questionHelpBefore {text-align:center; font-weight:bold; font-size:12pt;}
 		td.responseAboveText {font-weight:normal; font-style:normal; text-align:left; font-size:12pt;} 
 		span.sectionTitle {font-size:18pt; font-weight:bold;} 
 		span.sectionDescription {font-size:14pt; font-weight:bold;} 
@@ -208,7 +220,7 @@ class queXMLPDF extends TCPDF {
 
 	/**
 	 */
-	protected $singleResponseAreaWidth = 10;
+	protected $singleResponseAreaWidth = 10.5;
 
 	/**
 	 * Height of the are of each single response (includes guiding lines)
@@ -1086,7 +1098,15 @@ class queXMLPDF extends TCPDF {
 					
 					$qtmp['text'] .= $ttmp;
 				}
-				
+			
+				foreach ($qu->specifier as $ttmp)
+				{
+					if (!isset($qtmp['specifier']))
+						$qtmp['specifier'] = "";
+
+					$qtmp['specifier'] .= $ttmp;
+				}
+	
 				foreach ($qu->directive as $ttmp)
 				{
 					if ($ttmp->administration == 'self' && $ttmp->position != 'after')
@@ -1102,6 +1122,13 @@ class queXMLPDF extends TCPDF {
 							$qtmp['helptextafter'] = "";
 
 						$qtmp['helptextafter'] .= $ttmp->text;
+					}
+					if ($ttmp->administration == 'self' && $ttmp->position == 'before')
+					{
+						if (!isset($qtmp['helptextbefore']))
+							$qtmp['helptextbefore'] = "";
+
+						$qtmp['helptextbefore'] .= $ttmp->text;
 					}
 				}
 
@@ -1297,7 +1324,7 @@ class queXMLPDF extends TCPDF {
 	/**
 	 * Create a question that may have multiple response groups
 	 *
-	 * questions (title, text, helptext, helptextafter)
+	 * questions (title, text, specifier, helptext, helptextafter)
 	 *	responses (varname)
 	 *		subquestions 
 	 *			subquestion(text, varname)
@@ -1311,10 +1338,21 @@ class queXMLPDF extends TCPDF {
 	protected function createQuestion($question)
 	{
 		$help = false;
+		$specifier = false;
 		if (isset($question['helptext'])) $help = $question['helptext'];
+		if (isset($question['specifier'])) $specifier = $question['specifier'];
+
+		//If there is some help text for before the question
+		if (isset($question['helptextbefore']))
+		{
+			$this->setBackground('question');
+			$html = "<table><tr><td width=\"" . $this->getMainPageWidth() . "mm\" class=\"questionHelpBefore\">{$question['helptextbefore']}</td><td></td></tr></table>";
+			$this->writeHTMLCell($this->getMainPageWidth(), 1, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);
+
+		}
 
 		//Question header
-		$this->drawQuestionHead($question['title'], $question['text'],$help);
+		$this->drawQuestionHead($question['title'], $question['text'],$help,$specifier);
 
 		$text = "";
 		if (isset($question['text'])) $text = $question['text'];
@@ -2026,13 +2064,22 @@ class queXMLPDF extends TCPDF {
 	 * @param string $title The question title (number)
 	 * @param string $text The question text (can be HTML)
 	 * @param string|bool $help The question help text or false if none (can be HTML)
+	 * @param string|bool $specifier The question specifier text or false if none (can be HTML)
 	 */
-	protected function drawQuestionHead($title,$text,$help = false)
+	protected function drawQuestionHead($title,$text,$help = false,$specifier = false)
 	{
 		$this->setBackground('question');
 		//Cell for question number (title) and text including a white border at the bottom
 
-		$html = "<table><tr><td class=\"questionTitle\" width=\"" . $this->questionTitleWidth . "mm\">$title</td><td class=\"questionText\" width=\"" . $this->questionTextWidth . "mm\">$text</td><td></td></tr></table>";
+		$html = "<table><tr><td class=\"questionTitle\" width=\"" . $this->questionTitleWidth . "mm\">$title</td><td class=\"questionText\" width=\"" . ($this->getMainPageWidth() - $this->questionTextRightMargin - $this->questionTitleWidth) . "mm\">$text</td><td></td></tr>";
+
+		if ($specifier !== false)
+		{
+			$html .= "<tr><td class=\"questionTitle\" width=\"" . $this->questionTitleWidth . "mm\">&nbsp;</td><td class=\"questionSpecifier\" width=\"" . ($this->getMainPageWidth() - $this->questionTextRightMargin - $this->questionTitleWidth) . "mm\">$specifier</td><td></td></tr>";
+		}
+
+		$html .= "</table>";
+		
 
 		$this->writeHTMLCell($this->getMainPageWidth(), 1, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);
 
