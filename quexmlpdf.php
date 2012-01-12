@@ -1109,7 +1109,7 @@ class queXMLPDF extends TCPDF {
 	
 				foreach ($qu->directive as $ttmp)
 				{
-					if ($ttmp->administration == 'self' && $ttmp->position != 'after')
+					if ($ttmp->administration == 'self' && $ttmp->position == 'during')
 					{
 						if (!isset($qtmp['helptext']))
 							$qtmp['helptext'] = "";
