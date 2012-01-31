@@ -176,6 +176,22 @@ class queXMLPDF extends TCPDF {
 	 * @since 2010-09-20
 	 */
 	protected $questionBorderBottom = 1;
+	
+	/**
+	 * Border after a help before directive
+	 * 
+	 * @var mixed  Defaults to 3. 
+	 * @since 2012-01-31
+	 */
+	protected $helpBeforeBorderBottom = 3;
+
+	/**
+	 * Border before a help before directive
+	 * 
+	 * @var mixed  Defaults to 3. 
+	 * @since 2012-01-31
+	 */
+	protected $helpBeforeBorderTop = 3;
 
 	/**
 	 * Width of the skip column area (where skip text is written)
@@ -1345,10 +1361,17 @@ class queXMLPDF extends TCPDF {
 		//If there is some help text for before the question
 		if (isset($question['helptextbefore']))
 		{
+			//Leave a border at the top of the Help Before text
+			if ($this->helpBeforeBorderTop > 0) //question border
+				$this->SetY($this->GetY() + $this->helpBeforeBorderTop,false); //new line
+	
 			$this->setBackground('question');
 			$html = "<table><tr><td width=\"" . $this->getMainPageWidth() . "mm\" class=\"questionHelpBefore\">{$question['helptextbefore']}</td><td></td></tr></table>";
 			$this->writeHTMLCell($this->getMainPageWidth(), 1, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);
 
+			//Leave a border at the bottom of the Help Before text
+			if ($this->helpBeforeBorderBottom > 0) //question border
+				$this->SetY($this->GetY() + $this->helpBeforeBorderBottom,false); //new line
 		}
 
 		//Question header
@@ -2075,7 +2098,7 @@ class queXMLPDF extends TCPDF {
 
 		if ($specifier !== false)
 		{
-			$html .= "<tr><td class=\"questionTitle\" width=\"" . $this->questionTitleWidth . "mm\">&nbsp;</td><td class=\"questionSpecifier\" width=\"" . ($this->getMainPageWidth() - $this->questionTextRightMargin - $this->questionTitleWidth) . "mm\">$specifier</td><td></td></tr>";
+			$html .= "<tr><td></td><td></td><td></td></tr><tr><td class=\"questionTitle\" width=\"" . $this->questionTitleWidth . "mm\">&nbsp;</td><td class=\"questionSpecifier\" width=\"" . ($this->getMainPageWidth() - $this->questionTextRightMargin - $this->questionTitleWidth) . "mm\">$specifier</td><td></td></tr>";
 		}
 
 		$html .= "</table>";
