@@ -241,7 +241,7 @@ class queXMLPDF extends TCPDF {
 	 * @var string  Defaults to 10.5. 
 	 * @since 2011-12-20
 	 */
-	protected $singleResponseHorizontalHeight = 10.5;
+	protected $singleResponseHorizontalHeight = 12.5;
 
 	/**
 	 */
@@ -293,7 +293,7 @@ class queXMLPDF extends TCPDF {
 	 * @var string  Defaults to 15. 
 	 * @since 2010-09-20
 	 */
-	protected $singleResponseVerticalAreaWidth = 15;
+	protected $singleResponseVerticalAreaWidth = 13;
 
 	/**
 	 * Vertical area taken up by a "small" vertical response area
