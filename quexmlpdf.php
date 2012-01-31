@@ -152,6 +152,14 @@ class queXMLPDF extends TCPDF {
 	protected $questionTitleWidth = 14;
 
 	/**
+	 * The suffix of the question title. i.e. A15. (the . is the suffix)
+	 * 
+	 * @var mixed  Defaults to ".". 
+	 * @since 2012-01-31
+	 */
+	protected $questionTitleSuffix = ".";
+
+	/**
 	 * Width of question text in MM
 	 * 
 	 * @var mixed  Defaults to 120. 
@@ -209,6 +217,7 @@ class queXMLPDF extends TCPDF {
 	 */
 	protected $style = "<style>
 		td.questionTitle {font-weight:bold; font-size:12pt;}
+		td.questionTitleSkipTo {font-weight:bold; font-size:16pt;}
 		td.questionText {font-weight:bold; font-size:12pt;} 
 		td.questionSpecifier {font-weight:normal; font-size:12pt;} 
 		td.vasLabel {font-weight:bold; font-size:10pt; text-align:center;}
@@ -428,6 +437,15 @@ class queXMLPDF extends TCPDF {
 	 * @since 2010-09-02
 	 */
 	protected $section = array();
+
+	/**
+	 * An array of key: skip target, value: last originating question 
+	 * that skips to the target
+	 * 
+	 * @var string  Defaults to array(). 
+	 * @since 2012-01-31
+	 */
+	protected $skipToRegistry = array();
 
 	/**
 	 * Page counter pointer (links to barcode id of page)
@@ -1104,7 +1122,7 @@ class queXMLPDF extends TCPDF {
 				$qtmp = array();
 				$rstmp = array();
 				
-				$qtmp['title'] = $sl . $qcount . ".";
+				$qtmp['title'] = $sl . $qcount . $this->questionTitleSuffix;
 				$qtmp['text'] = "";
 
 				foreach ($qu->text as $ttmp)
@@ -1176,7 +1194,12 @@ class queXMLPDF extends TCPDF {
 							$cat = array();
 							$cat['text'] = current($c->label);
 							$cat['value'] = current($c->value);
-							if (isset($c->skipTo)) $cat['skipto'] = current($c->skipTo);
+							if (isset($c->skipTo))
+							{ 
+								$cat['skipto'] = current($c->skipTo);
+								//save a skip
+								$this->skipToRegistry[current($c->skipTo) . $this->questionTitleSuffix] = $qtmp['title'];
+							}
 							if (isset($c->contingentQuestion))
 							{
 								//Need to handle contingent questions
@@ -2093,12 +2116,18 @@ class queXMLPDF extends TCPDF {
 	{
 		$this->setBackground('question');
 		//Cell for question number (title) and text including a white border at the bottom
+		
+		$class = "questionTitle";
 
-		$html = "<table><tr><td class=\"questionTitle\" width=\"" . $this->questionTitleWidth . "mm\">$title</td><td class=\"questionText\" width=\"" . ($this->getMainPageWidth() - $this->questionTextRightMargin - $this->questionTitleWidth) . "mm\">$text</td><td></td></tr>";
+		//If there is a skip to this question, make the question title bigger
+		if (isset($this->skipToRegistry[$title]))
+			$class = "questionTitleSkipTo";
+
+		$html = "<table><tr><td class=\"$class\" width=\"" . $this->questionTitleWidth . "mm\">$title</td><td class=\"questionText\" width=\"" . ($this->getMainPageWidth() - $this->questionTextRightMargin - $this->questionTitleWidth) . "mm\">$text</td><td></td></tr>";
 
 		if ($specifier !== false)
 		{
-			$html .= "<tr><td></td><td></td><td></td></tr><tr><td class=\"questionTitle\" width=\"" . $this->questionTitleWidth . "mm\">&nbsp;</td><td class=\"questionSpecifier\" width=\"" . ($this->getMainPageWidth() - $this->questionTextRightMargin - $this->questionTitleWidth) . "mm\">$specifier</td><td></td></tr>";
+			$html .= "<tr><td></td><td></td><td></td></tr><tr><td class=\"$class\" width=\"" . $this->questionTitleWidth . "mm\">&nbsp;</td><td class=\"questionSpecifier\" width=\"" . ($this->getMainPageWidth() - $this->questionTextRightMargin - $this->questionTitleWidth) . "mm\">$specifier</td><td></td></tr>";
 		}
 
 		$html .= "</table>";
