@@ -976,9 +976,7 @@ class queXMLPDF extends TCPDF {
 	
 		if (!$downarrow)
 		{
-			if ($position == 'only') $y = $y + (($this->singleResponseAreaHeight - $this->singleResponseBoxHeight) / 2.0);
-			else if ($position == 'first' || $position == 'last') $y = $y + (($this->singleResponseAreaHeight - ($this->singleResponseBoxHeight + $this->singleResponseBoxLineLength)) / 2.0);
-			else if ($position == 'middle') $y = $y + (($this->singleResponseAreaHeight - ($this->singleResponseBoxHeight + ($this->singleResponseBoxLineLength * 2.0))) / 2.0);
+			$y = $y + (($this->singleResponseAreaHeight - $this->singleResponseBoxHeight) / 2.0);
 		}
 
 		$boxmid = ($x + ($this->singleResponseBoxWidth / 2.0));
