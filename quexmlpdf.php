@@ -35,10 +35,10 @@ class queXMLPDF extends TCPDF {
 
 	/**
 	 * Whether a page break has occured
-	 * 
+	 * Should be a private var but crash occurs on PHP 5.1.6, see Limesurvey Bug 5824
 	 * @var bool
 	 */
-	private $pageBreakOccured;
+	protected $pageBreakOccured;
 
 	/**
 	 * Corner border (the number of mm between the edge of the page and the start of the document)
