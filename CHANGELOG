@@ -1,3 +1,14 @@
+queXML 1.3.9 - Changes since 1.3.8
+
+queXMLPDF: Limit help text to the right spot
+queXMLPDF: Added a white border around question directive before elements
+queXMLPDF: Added a new line before question specifiers
+queXMLPDF: Added a skipTo registry - so question titles can be bolded where there is a skip to them
+queXMLPDF: Centered single response better 
+queXMLPDF: Updated to work better with Matrix questions on A4 paper
+queXMLPDF: Fix for bug reported upstream here: http://bugs.limesurvey.org/view.php?id=5824
+queXMLPDF: Allow for a section with no question to work
+
 queXML 1.3.8 - Changes since 1.3.7
 
 queXML Schema: Made id attribute for root element required and added documentation on it
