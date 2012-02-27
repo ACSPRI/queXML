@@ -1289,26 +1289,29 @@ class queXMLPDF extends TCPDF {
 			else
 				$this->commitTransaction();
 
-			//start from the second question as first is linked to the section
-			foreach(array_slice($sv['questions'], 1) as $qk => $qv)
+			//start from the second question as first is linked to the section (if there is a question in this section)
+			if ($questions != 0)
 			{
-				$this->startTransaction();
-				//add question here
-				$this->createQuestion($qv);
-				if ($this->pageBreakOccured)
+				foreach(array_slice($sv['questions'], 1) as $qk => $qv)
 				{
-					$this->pageBreakOccured = false;
-					$this->rollBackTransaction(true);
-					$this->SetAutoPageBreak(false); //Temporarily set so we don't trigger a page break
-					//now draw a background to the bottom of the page
-					$this->fillPageBackground();
-			
-					$this->newPage();
-					//retry question here
+					$this->startTransaction();
+					//add question here
 					$this->createQuestion($qv);
+					if ($this->pageBreakOccured)
+					{
+						$this->pageBreakOccured = false;
+						$this->rollBackTransaction(true);
+						$this->SetAutoPageBreak(false); //Temporarily set so we don't trigger a page break
+						//now draw a background to the bottom of the page
+						$this->fillPageBackground();
+				
+						$this->newPage();
+						//retry question here
+						$this->createQuestion($qv);
+					}
+					else
+						$this->commitTransaction();
 				}
-				else
-					$this->commitTransaction();
 			}
 		}
 
