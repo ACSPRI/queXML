@@ -662,6 +662,21 @@ class queXMLPDF extends TCPDF {
 				'box' => array());
 	}
 
+	/**
+	 * Add a new box group which is a copy of the previous one (if exists)
+	 * 
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since  2012-03-26
+	 */
+	protected function addBoxGroupCopyPrevious()
+	{		
+		if (isset($this->layout[$this->layoutCP]['boxgroup'][$this->boxGroupCP]))
+		{
+			$a = $this->layout[$this->layoutCP]['boxgroup'][$this->boxGroupCP];
+			$this->addBoxGroup($a['type'],$a['varname'],$a['label']);
+		}
+	}
+
 
 	/**
 	 * Add a box to the page layout system
@@ -1719,6 +1734,9 @@ class queXMLPDF extends TCPDF {
 			else if (($i + 1 == $lines)) $cells = ($width - ($textResponsesPerLine * $i));  //last line
 			else $cells = $textResponsesPerLine; //middle line
 
+			//add another box group if moving on to another line
+			if ($i >= 1)
+				$this->addBoxGroupCopyPrevious();
 
 			$textwidth = ($this->getMainPageWidth() - $this->skipColumnWidth) - (($this->textResponseWidth + $this->textResponseBorder ) * $cells);
 
