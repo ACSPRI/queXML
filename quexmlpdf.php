@@ -46,7 +46,7 @@ class queXMLPDF extends TCPDF {
 	 * @var int  Defaults to 15. 
 	 * @since 2010-09-02
 	 */
-	protected $cornerBorder = 14;
+	protected $cornerBorder = 13;
 
 	/**
 	 * The length in MM of a corner line
@@ -241,11 +241,7 @@ class queXMLPDF extends TCPDF {
 	 * @var string  Defaults to 10.5. 
 	 * @since 2011-12-20
 	 */
-	protected $singleResponseHorizontalHeight = 12.5;
-
-	/**
-	 */
-	protected $singleResponseAreaWidth = 10.5;
+	protected $singleResponseHorizontalHeight = 10.5;
 
 	/**
 	 * Height of the are of each single response (includes guiding lines)
@@ -596,7 +592,23 @@ class queXMLPDF extends TCPDF {
 	 * @var resource  Defaults to 8. 
 	 * @since 2010-11-05
 	 */
-	protected $responseLabelFontSize = 8;
+	protected $responseLabelFontSize = 7.5;
+
+	/**
+	 * A smaller font size for response labels where otherwise will break the line
+	 * 
+	 * @var resource  Defaults to 6. 
+	 * @since 2012-03-30
+	 */
+	protected $responseLabelFontSizeSmall = 6.5;
+
+	/**
+	 * Reduce the font size of a resposne label if any words are longer than this
+	 * 
+	 * @var resource  Defaults to 7. 
+	 * @since 2012-03-30
+	 */
+	protected $resposneLabelSmallWordLength = 7;
 	
 	/**
 	 * Font size for response text
@@ -629,6 +641,27 @@ class queXMLPDF extends TCPDF {
 	 * @since 2010-11-05
 	 */
 	protected $sectionHeight = 18;
+
+	/**
+	 * Return the length of the longest word
+	 * 
+	 * @param mixed $txt   
+	 * 
+	 * @return int Length of longest word
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since  2012-03-30
+	 */
+	protected function wordLength($txt)
+	{
+		$words = explode(' ', $txt);
+		$length = 0;
+		foreach($words as $v)
+		{
+			if(strlen($v) > $length)
+				$length = strlen($v);
+		}
+		return $length;
+	}
 
 	/**
 	 * Add a box group to the page layout system
@@ -1927,7 +1960,17 @@ class queXMLPDF extends TCPDF {
 		{
 			$y = $currentY;
 			$x = ($textwidth + $this->getMainPageX() + ($rwidth * $count));
+			
+			// Going to break the line because of long word
+			if ($this->wordLength($r['text']) > $this->responseLabelSmallWordLength)
+				$this->setDefaultFont($this->responseLabelFontSizeSmall);			
+
 			$this->MultiCell($rwidth,$this->responseLabelHeight,$r['text'],0,'C',false,0,$x,$y,true,0,false,true,$this->responseLabelHeight,'B',true);
+
+			//reset font
+			if ($this->wordLength($r['text']) > $this->responseLabelSmallWordLength)
+				$this->setDefaultFont($this->responseLabelFontSize);			
+
 			$count++;
 		}
 		$currentY += $this->responseLabelHeight;
@@ -2001,7 +2044,7 @@ class queXMLPDF extends TCPDF {
 		$currentY = $this->GetY();
 		$total = count($subquestions);
 
-		$rwidth = $this->singleResponseAreaWidth;
+		$rwidth = $this->singleResponseVerticalAreaWidth;
 
 		$textwidth = ($this->getMainPageWidth() - $this->skipColumnWidth) - ($rwidth * $total);
 
@@ -2023,7 +2066,15 @@ class queXMLPDF extends TCPDF {
 			{
 				$y = $currentY;
 				$x = ($textwidth + $this->getMainPageX() + ($rwidth * $count));
+
+				// Going to break the line because of long word
+				if ($this->wordLength($r['text']) > $this->responseLabelSmallWordLength)
+					$this->setDefaultFont($this->responseLabelFontSizeSmall);			
+
 				$this->MultiCell($rwidth,$this->responseLabelHeight,$r['text'],0,'C',false,0,$x,$y,true,0,false,true,$this->responseLabelHeight,'B',true);
+				if ($this->wordLength($r['text']) > $this->responseLabelSmallWordLength)
+					$this->setDefaultFont($this->responseLabelFontSize);			
+	
 				if (!empty($r['text'])) $isempty = false;
 				$count++;
 			}
