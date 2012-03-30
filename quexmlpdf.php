@@ -324,7 +324,7 @@ class queXMLPDF extends TCPDF {
 	protected $textResponseWidth = 6;
 
 	/**
-	 * The border width of a text resposne box
+	 * The border width of a text response box
 	 * 
 	 * @var mixed  Defaults to 0.15.  Any less than this may produce printing problems
 	 * @since 2010-09-20
@@ -603,12 +603,12 @@ class queXMLPDF extends TCPDF {
 	protected $responseLabelFontSizeSmall = 6.5;
 
 	/**
-	 * Reduce the font size of a resposne label if any words are longer than this
+	 * Reduce the font size of a response label if any words are longer than this
 	 * 
 	 * @var resource  Defaults to 7. 
 	 * @since 2012-03-30
 	 */
-	protected $resposneLabelSmallWordLength = 7;
+	protected $responseLabelSmallWordLength = 7;
 	
 	/**
 	 * Font size for response text
