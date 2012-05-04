@@ -480,7 +480,7 @@ class queXMLPDF extends TCPDF {
 	 * @var bool  Defaults to array(220,220,220). 
 	 * @since 2010-09-15
 	 */
-	protected $backgroundColourQuestion = array(241,241,241);
+	protected $backgroundColourQuestion = array(241);
 
 	/**
 	 * The bacground colour of a section
@@ -488,7 +488,7 @@ class queXMLPDF extends TCPDF {
 	 * @var bool  Defaults to array(200,200,200). 
 	 * @since 2010-09-20
 	 */
-	protected $backgroundColourSection = array(221,221,221);
+	protected $backgroundColourSection = array(221);
 
 	/**
 	 * Empty background colour
@@ -496,7 +496,7 @@ class queXMLPDF extends TCPDF {
 	 * @var bool  Defaults to array(255,255,255). 
 	 * @since 2010-09-20
 	 */
-	protected $backgroundColourEmpty = array(255,255,255);
+	protected $backgroundColourEmpty = array(255);
 
 	/**
 	 * The colour of a line/fill
@@ -504,7 +504,16 @@ class queXMLPDF extends TCPDF {
 	 * @var mixed  Defaults to array(0,0,0). 
 	 * @since 2010-09-20
 	 */
-	protected $lineColour = array(0,0,0);
+	protected $lineColour = array(0);
+
+	/**
+	 * Text colour in grayscale
+	 * 
+	 * @var mixed  Defaults to 0. 
+	 * @since 2012-04-16
+	 */
+	protected $textColour = 0;
+
 
 	/**
 	 * The text to display before a skip 
@@ -892,6 +901,9 @@ class queXMLPDF extends TCPDF {
 		$this->SetTitle('queXML Document');
 		$this->SetSubject('queXML');
 		$this->SetKeywords('queXML queXF');
+
+		//set text colour
+		$this->SetTextColor($this->textColour);
 	}
 
 	/**
@@ -923,13 +935,13 @@ class queXMLPDF extends TCPDF {
 	{
 		switch ($type) {
 			case 'question':
-				$this->SetFillColor($this->backgroundColourQuestion[0],$this->backgroundColourQuestion[1],$this->backgroundColourQuestion[0]);
+				$this->SetFillColor($this->backgroundColourQuestion[0]);
 				break;
 			case 'section':
-				$this->SetFillColor($this->backgroundColourSection[0],$this->backgroundColourSection[1],$this->backgroundColourSection[0]);
+				$this->SetFillColor($this->backgroundColourSection[0]);
 				break;
 			case 'empty':
-				$this->SetFillColor($this->backgroundColourEmpty[0],$this->backgroundColourEmpty[1],$this->backgroundColourEmpty[0]);
+				$this->SetFillColor($this->backgroundColourEmpty[0]);
 				break;
 
 		}
@@ -972,7 +984,7 @@ class queXMLPDF extends TCPDF {
 	 */
 	protected function drawHorizontalResponseBox($x,$y,$position = 'only',$downarrow = false, $rightarrow = false, $smallwidth = false)
 	{
-		$this->SetDrawColor($this->lineColour[0],$this->lineColour[1],$this->lineColour[2]);
+		$this->SetDrawColor($this->lineColour[0]);
 		$this->SetLineWidth($this->singleResponseBoxBorder);
 
 		//centre for the line
@@ -1019,7 +1031,7 @@ class queXMLPDF extends TCPDF {
 	 */
 	protected function drawVerticalResponseBox($x,$y,$position = 'only',$downarrow = false, $rightarrow = false)
 	{
-		$this->SetDrawColor($this->lineColour[0],$this->lineColour[1],$this->lineColour[2]);
+		$this->SetDrawColor($this->lineColour[0]);
 		$this->SetLineWidth($this->singleResponseBoxBorder);
 	
 		if (!$downarrow)
@@ -1039,14 +1051,18 @@ class queXMLPDF extends TCPDF {
 
 		if ($downarrow)
 		{
-			$this->Polygon(array($x, $y + $this->singleResponseBoxHeight, $boxmid, $y + $this->singleResponseBoxHeight + $this->arrowHeight, $x + $this->singleResponseBoxWidth, $y + $this->singleResponseBoxHeight),'DF',array(),$this->lineColour);	
+			$this->SetFillColor($this->lineColour[0]);
+			$this->Polygon(array($x, $y + $this->singleResponseBoxHeight, $boxmid, $y + $this->singleResponseBoxHeight + $this->arrowHeight, $x + $this->singleResponseBoxWidth, $y + $this->singleResponseBoxHeight),'DF',array(),$this->lineColour);
+			$this->setBackground('empty');	
 		}
 
 		if ($rightarrow !== false)
 		{
 			//Draw skipto
 			$boxymid = ($y + ($this->singleResponseBoxHeight / 2.0));
+			$this->SetFillColor($this->lineColour[0]);
 			$this->Polygon(array($x + $this->singleResponseBoxWidth, $y, $x + $this->singleResponseBoxWidth + $this->arrowHeight, $boxymid, $x + $this->singleResponseBoxWidth, $y + $this->singleResponseBoxHeight),'DF',array(),$this->lineColour);	
+			$this->setBackground('empty');	
 			//Now draw the text
 
 			//Start at $x + singleResponseboxWidth + arrowHeight, $y - siongleresponseboxlinelength and go to $skipcolumnwidth wide and singleresponseareHeight high
@@ -1652,7 +1668,7 @@ class queXMLPDF extends TCPDF {
 		$this->SetX(($this->getPageWidth() - $this->getMainPageX() - $this->skipColumnWidth - $this->longTextResponseWidth),false);
 		//Add to pay layout
 		$this->addBox($this->GetX(),$this->GetY(),$this->GetX() + $this->longTextResponseWidth, $this->GetY() + $height);
-		$this->SetDrawColor($this->lineColour[0],$this->lineColour[1],$this->lineColour[2]);
+		$this->SetDrawColor($this->lineColour[0]);
 		$this->Cell($this->longTextResponseWidth,$height,'',$border,0,'',true,'',0,false,'T','C');
 		$currentY = $currentY + $height;
 		$this->SetY($currentY,false);
@@ -1705,7 +1721,7 @@ class queXMLPDF extends TCPDF {
 		$this->SetX($textwidth + $this->getMainPageX(),false); 
 	
 		$this->SetLineWidth($this->vasLineWidth);
-		$this->SetDrawColor($this->lineColour[0],$this->lineColour[1],$this->lineColour[2]);
+		$this->SetDrawColor($this->lineColour[0]);
 	
 		//Draw the VAS left vert line
 		$ly = (($this->vasAreaHeight - $this->vasHeight) / 2.0) + $currentY;		
@@ -1742,7 +1758,7 @@ class queXMLPDF extends TCPDF {
 	 */
 	protected function drawText($text,$width)
 	{
-		$this->SetDrawColor($this->lineColour[0],$this->lineColour[1],$this->lineColour[2]);
+		$this->SetDrawColor($this->lineColour[0]);
 
 		//calculate text responses per line
 		$textResponsesPerLine = round(($this->getMainPageWidth() - $this->skipColumnWidth - $this->textResponseMarginX) / ($this->textResponseWidth + $this->textResponseBorder));
@@ -1827,7 +1843,7 @@ class queXMLPDF extends TCPDF {
 	protected function drawCells($cells)
 	{
 		$this->setBackground('empty');
-		$this->SetDrawColor($this->lineColour[0],$this->lineColour[1],$this->lineColour[2]);
+		$this->SetDrawColor($this->lineColour[0]);
 
 		for ($j = 0; $j < $cells; $j++)
 		{
@@ -2236,6 +2252,7 @@ class queXMLPDF extends TCPDF {
 
 		$this->setBackground('section');
 		$this->writeHTMLCell($this->getPageWidth() - (($this->cornerBorder *2) + ($this->cornerWidth * 2)),$this->sectionHeight,$this->getMainPageX(),$this->getY(),$this->style . $html,array('B' => array('width' => 1, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $this->backgroundColourEmpty)),1,true,true,'');
+		$this->setBackground('empty');
 	}
 
 	/**
@@ -2287,8 +2304,10 @@ class queXMLPDF extends TCPDF {
 		$height = $this->getPageHeight();
 		$cb = $this->cornerBorder;
 		$cl = $this->cornerLength;
+
+		$this->SetDrawColor($this->lineColour[0]);
 	
-		$barcodeStyle = array('border' => false, 'padding' => '0', 'fgcolor' => $this->lineColour, 'bgcolor' => false, 'text' => false, 'stretch' => true);
+		$barcodeStyle = array('border' => false, 'padding' => '0', 'bgcolor' => false, 'text' => false, 'stretch' => true);
 		$lineStyle = array('width' => $this->cornerWidth, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0));
 		
 		//Top left
@@ -2332,6 +2351,8 @@ class queXMLPDF extends TCPDF {
 
 		$this->SetXY($cb + $this->cornerWidth, $cb + $this->cornerWidth);
 		$this->SetAutoPageBreak(true,$this->getMainPageX());
+
+		$this->setBackground('empty');
 	}
 
 	/**
