@@ -417,6 +417,13 @@ class queXMLPDF extends TCPDF {
 	 */
 	protected $longTextStorageWidth = 1024;
 
+	/**
+	 * The number of columns to display the sections/questions in on each page
+	 * 
+	 * @var int  Defaults to 1. 
+	 * @since 2012-05-30
+	 */
+	protected $columns = 1;
 
 	/**
 	 * The layout of the form for importing in to queXF
@@ -473,6 +480,14 @@ class queXMLPDF extends TCPDF {
 	 * @var int  Defaults to 0. 
 	 */
 	protected $boxCP = 0;
+
+	/**
+	 * Column counter pointer (current column)
+	 * 
+	 * @var mixed  Defaults to 1. 
+	 * @since 2012-05-30
+	 */
+	protected $columnCP = 1;
 
 	/**
 	 * Background colour of a question
@@ -2269,12 +2284,10 @@ class queXMLPDF extends TCPDF {
 	/**
 	 * Draw the background from the current Y position to the bottom of the page
 	 * 
-	 * @param bool $last Optional, defaults to false.  If this is the last page
-	 * 
 	 * @author Adam Zammit <adam.zammit@acspri.org.au>
 	 * @since  2010-09-15
 	 */
-	protected function fillPageBackground($last = false)
+	protected function fillPageBackground()
 	{
 		$height = $this->getPageHeight() - $this->cornerBorder - $this->GetY() + $this->questionBorderBottom;
 		$html = "<div></div>";
