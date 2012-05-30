@@ -484,10 +484,10 @@ class queXMLPDF extends TCPDF {
 	/**
 	 * Column counter pointer (current column)
 	 * 
-	 * @var mixed  Defaults to 1. 
+	 * @var mixed  Defaults to 0. 
 	 * @since 2012-05-30
 	 */
-	protected $columnCP = 1;
+	protected $columnCP = 0;
 
 	/**
 	 * Background colour of a question
@@ -975,6 +975,18 @@ class queXMLPDF extends TCPDF {
 	}
 
 	/**
+	 * The X coordinate of the start of the column
+	 * 
+	 * @return int The X coordinate of the start of the current column
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since  2012-05-30
+	 */
+	public function getColumnX()
+	{
+		return getMainPageX() + ($this->columnCP  * getColumnWidth());
+	}
+
+	/**
 	 * The width of the writeable page
 	 * 
 	 * @return int The width of the writeable page
@@ -984,6 +996,18 @@ class queXMLPDF extends TCPDF {
 	public function getMainPageWidth()
 	{
 		return ($this->getPageWidth() - (($this->cornerBorder * 2.0) + ($this->cornerWidth * 2.0)));
+	}
+
+	/**
+	 * The width of the writable column
+	 * 
+	 * @return int The width of the current column
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since  2012-05-30
+	 */
+	public function getColumnWidth()
+	{
+		return ((1 / $this->columns) * getMainPageWidth());
 	}
 
 	/**
