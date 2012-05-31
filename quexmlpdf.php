@@ -428,6 +428,14 @@ class queXMLPDF extends TCPDF {
 	protected $columns = 1;
 
 	/**
+	 * The width of the border between columns
+	 * 
+	 * @var int  Defaults to 1. 
+	 * @since 2012-05-31
+	 */
+	protected $columnBorder = 1;
+
+	/**
 	 * The layout of the form for importing in to queXF
 	 *
 	 * @var array Defaults to empty array
@@ -988,7 +996,10 @@ class queXMLPDF extends TCPDF {
 	 */
 	public function getColumnX()
 	{
-		return $this->getMainPageX() + ($this->columnCP  * $this->getColumnWidth());
+		$border = 0;
+		if ($this->columnCP > 0) 
+			$border = $this->columnBorder;
+		return $this->getMainPageX() + ($this->columnCP  * ($this->getColumnWidth() + $border)) + $border;
 	}
 
 	/**
@@ -1012,7 +1023,10 @@ class queXMLPDF extends TCPDF {
 	 */
 	public function getColumnWidth()
 	{
-		return ((1 / $this->columns) * $this->getMainPageWidth());
+		$border = 0;
+		if ($this->columnCP > 0) 
+			$border = $this->columnBorder;
+		return ((1 / $this->columns) * $this->getMainPageWidth()) - $border;
 	}
 
 	/**
