@@ -406,8 +406,10 @@ class queXMLPDF extends TCPDF {
 	 * 
 	 * @var mixed  Defaults to 145. 
 	 * @since 2010-09-20
+	 * @deprecated
+	 * @see drawLongText() for the new calculation of long text box width
 	 */
-	protected $longTextResponseWidth = 145;
+	//protected $longTextResponseWidth = 145;
 
 	/**
 	 * Default number of characters to store in a long text field
@@ -919,6 +921,9 @@ class queXMLPDF extends TCPDF {
 
 		//set text colour
 		$this->SetTextColor($this->textColour);
+
+		//set column pointer
+		$this->columnCP = -1;
 	}
 
 	/**
@@ -983,7 +988,7 @@ class queXMLPDF extends TCPDF {
 	 */
 	public function getColumnX()
 	{
-		return getMainPageX() + ($this->columnCP  * getColumnWidth());
+		return $this->getMainPageX() + ($this->columnCP  * $this->getColumnWidth());
 	}
 
 	/**
@@ -1007,7 +1012,7 @@ class queXMLPDF extends TCPDF {
 	 */
 	public function getColumnWidth()
 	{
-		return ((1 / $this->columns) * getMainPageWidth());
+		return ((1 / $this->columns) * $this->getMainPageWidth());
 	}
 
 	/**
@@ -1111,7 +1116,7 @@ class queXMLPDF extends TCPDF {
 
 			$this->setDefaultFont($this->skipToTextFontSize,'B');
 
-			$this->MultiCell($this->skipColumnWidth,$this->singleResponseBoxHeight,$text,0,'L',false,0,($this->getPageWidth() - $this->getMainPageX() - $this->skipColumnWidth),$y,true,0,false,true,$this->singleResponseBoxHeight,'M',true);
+			$this->MultiCell($this->skipColumnWidth,$this->singleResponseBoxHeight,$text,0,'L',false,0,(($this->getColumnWidth() + $this->getColumnX()) - $this->skipColumnWidth),$y,true,0,false,true,$this->singleResponseBoxHeight,'M',true);
 
 			//Reset to non bold as causing problems with TCPDF HTML CSS conversion
 			$this->setDefaultFont($this->skipToTextFontSize,'');
@@ -1363,7 +1368,7 @@ class queXMLPDF extends TCPDF {
 	{
 		$this->init();
 		$this->questionnaireId = intval($questionnaire['id']);
-		$this->newPage();
+		$this->newPage(true); //first page
 
 		//Draw questionnaireInfo before if exists
 		if (isset($questionnaire['infobefore']))
@@ -1445,7 +1450,7 @@ class queXMLPDF extends TCPDF {
 
 
 		//fill to the end of the last page
-		$this->fillPageBackground();
+		$this->fillLastPageBackground();
 	}
 
 
@@ -1459,9 +1464,9 @@ class queXMLPDF extends TCPDF {
 	protected function drawInfo($info)
 	{
 		$this->setBackground('question');
-		$this->writeHTMLCell($this->getMainPageWidth(), $this->questionnaireInfoMargin, $this->getMainPageX(), $this->GetY() - $this->questionBorderBottom, "<div></div>",0,1,true,true);
-		$html = "<table><tr><td width=\"" . $this->getMainPageWidth() . "mm\" class=\"questionnaireInfo\">{$info}</td><td></td></tr></table>";
-		$this->writeHTMLCell($this->getMainPageWidth(), 1, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);
+		$this->writeHTMLCell($this->getColumnWidth(), $this->questionnaireInfoMargin, $this->getColumnX(), $this->GetY() - $this->questionBorderBottom, "<div></div>",0,1,true,true);
+		$html = "<table><tr><td width=\"" . $this->getColumnWidth() . "mm\" class=\"questionnaireInfo\">{$info}</td><td></td></tr></table>";
+		$this->writeHTMLCell($this->getColumnWidth(), 1, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,true);
 	}
 
 	/**
@@ -1493,8 +1498,8 @@ class queXMLPDF extends TCPDF {
 				$this->SetY($this->GetY() + $this->helpBeforeBorderTop,false); //new line
 	
 			$this->setBackground('question');
-			$html = "<table><tr><td width=\"" . $this->getMainPageWidth() . "mm\" class=\"questionHelpBefore\">{$question['helptextbefore']}</td><td></td></tr></table>";
-			$this->writeHTMLCell($this->getMainPageWidth(), 1, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);
+			$html = "<table><tr><td width=\"" . $this->getColumnWidth() . "mm\" class=\"questionHelpBefore\">{$question['helptextbefore']}</td><td></td></tr></table>";
+			$this->writeHTMLCell($this->getColumnWidth(), 1, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,true);
 
 			//Leave a border at the bottom of the Help Before text
 			if ($this->helpBeforeBorderBottom > 0) //question border
@@ -1577,7 +1582,7 @@ class queXMLPDF extends TCPDF {
 						$this->addBoxGroup($bgtype,$varname,$rtext,$response['width']);	
 						$this->drawText($response['text'],$response['width']);
 						//Insert a gap here
-						$this->Rect($this->getMainPageX(),$this->GetY(),$this->getMainPageWidth(),$this->subQuestionLineSpacing,'F',array(),$this->backgroundColourQuestion);
+						$this->Rect($this->getColumnX(),$this->GetY(),$this->getColumnWidth(),$this->subQuestionLineSpacing,'F',array(),$this->backgroundColourQuestion);
 						$this->SetY($this->GetY() + $this->subQuestionLineSpacing,false);
 						break;
 					case 'vas':
@@ -1593,8 +1598,8 @@ class queXMLPDF extends TCPDF {
 		if (isset($question['helptextafter']))
 		{
 			$this->setBackground('question');
-			$html = "<table><tr><td width=\"" . $this->getMainPageWidth() . "mm\" class=\"questionHelpAfter\">{$question['helptextafter']}</td><td></td></tr></table>";
-			$this->writeHTMLCell($this->getMainPageWidth(), 1, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);
+			$html = "<table><tr><td width=\"" . $this->getColumnWidth() . "mm\" class=\"questionHelpAfter\">{$question['helptextafter']}</td><td></td></tr></table>";
+			$this->writeHTMLCell($this->getColumnWidth(), 1, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,true);
 
 		}
 
@@ -1635,7 +1640,7 @@ class queXMLPDF extends TCPDF {
 			$currentY = $this->GetY();
 		
 			//Insert a gap here
-			$this->Rect($this->getMainPageX(),$this->GetY(),$this->getMainPageWidth(),$this->subQuestionLineSpacing,'F',array(),$this->backgroundColourQuestion);
+			$this->Rect($this->getColumnX(),$this->GetY(),$this->getColumnWidth(),$this->subQuestionLineSpacing,'F',array(),$this->backgroundColourQuestion);
 			$this->SetY($currentY + $this->subQuestionLineSpacing,false);
 		}
 	}
@@ -1675,7 +1680,7 @@ class queXMLPDF extends TCPDF {
 			$currentY = $this->GetY();
 		
 			//Insert a gap here
-			$this->Rect($this->getMainPageX(),$this->GetY(),$this->getMainPageWidth(),$this->subQuestionLineSpacing,'F',array(),$this->backgroundColourQuestion);
+			$this->Rect($this->getColumnX(),$this->GetY(),$this->getColumnWidth(),$this->subQuestionLineSpacing,'F',array(),$this->backgroundColourQuestion);
 			$this->SetY($currentY + $this->subQuestionLineSpacing,false);
 			
 			$heading = false;
@@ -1695,20 +1700,23 @@ class queXMLPDF extends TCPDF {
 	 */
 	protected function drawLongText($width)
 	{
+		//Calculate long text box width as the width of the available column minus the skip column and question title area
+		$rwidth = $this->getColumnWidth() - $this->skipColumnWidth - $this->questionTitleWidth;
+
 		$currentY = $this->GetY();
 		$height = $width * $this->longTextResponseHeightMultiplier;
 		$html = "<div></div>";
 		$this->setBackground('question');
-		$this->writeHTMLCell($this->getMainPageWidth(), $height, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);
+		$this->writeHTMLCell($this->getColumnWidth(), $height, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,true);
 		$this->SetY($currentY,false);
 		$this->setBackground('empty');
 		$border = array('LTRB' => array('width' => $this->textResponseBorder, 'dash' => 0));
 		//Align to skip column on right
-		$this->SetX(($this->getPageWidth() - $this->getMainPageX() - $this->skipColumnWidth - $this->longTextResponseWidth),false);
+		$this->SetX((($this->getColumnWidth() + $this->getColumnX()) - $this->skipColumnWidth - $rwidth),false);
 		//Add to pay layout
-		$this->addBox($this->GetX(),$this->GetY(),$this->GetX() + $this->longTextResponseWidth, $this->GetY() + $height);
+		$this->addBox($this->GetX(),$this->GetY(),$this->GetX() + $rwidth, $this->GetY() + $height);
 		$this->SetDrawColor($this->lineColour[0]);
-		$this->Cell($this->longTextResponseWidth,$height,'',$border,0,'',true,'',0,false,'T','C');
+		$this->Cell($rwidth,$height,'',$border,0,'',true,'',0,false,'T','C');
 		$currentY = $currentY + $height;
 		$this->SetY($currentY,false);
 	}
@@ -1727,7 +1735,7 @@ class queXMLPDF extends TCPDF {
 	 */
 	protected function drawVas($text, $labelleft,$labelright,$heading = true)
 	{
-		$textwidth = $this->getMainPageWidth() - $this->skipColumnWidth - ($this->vasLength + ($this->vasLineWidth * 2.0)) - 2;
+		$textwidth = $this->getColumnWidth() - $this->skipColumnWidth - ($this->vasLength + ($this->vasLineWidth * 2.0)) - 2;
 		$this->setBackground('question');
 
 		if ($heading)
@@ -1741,7 +1749,7 @@ class queXMLPDF extends TCPDF {
 			$html = "<table><tr><td width=\"{$slwidth}mm\"></td><td width=\"{$lwidth}mm\" class=\"vasLabel\">$labelleft</td><td width=\"{$gapwidth}mm\"></td><td width=\"{$lwidth}mm\" class=\"vasLabel\">$labelright</td></tr></table>";
 	
 	
-			$this->writeHTMLCell($this->getMainPageWidth(), 0, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,false);
+			$this->writeHTMLCell($this->getColumnWidth(), 0, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,false);
 		}
 
 		$currentY = $this->GetY();
@@ -1752,28 +1760,28 @@ class queXMLPDF extends TCPDF {
 		$textwidth += 2;
 
 
-		$this->writeHTMLCell($this->getMainPageWidth(), $this->vasAreaHeight, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,false);
+		$this->writeHTMLCell($this->getColumnWidth(), $this->vasAreaHeight, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,false);
 
 		$ncurrentY = $this->GetY();
 
 		$this->SetY($currentY,false);
-		$this->SetX($textwidth + $this->getMainPageX(),false); 
+		$this->SetX($textwidth + $this->getColumnX(),false); 
 	
 		$this->SetLineWidth($this->vasLineWidth);
 		$this->SetDrawColor($this->lineColour[0]);
 	
 		//Draw the VAS left vert line
 		$ly = (($this->vasAreaHeight - $this->vasHeight) / 2.0) + $currentY;		
-		$lx = $textwidth + $this->getMainPageX();
+		$lx = $textwidth + $this->getColumnX();
 		$this->Line($lx,$ly,$lx,$ly + $this->vasHeight);
 		
 		//Right vert line
-		$lx = $textwidth + $this->getMainPageX() + $this->vasLength + $this->vasLineWidth;
+		$lx = $textwidth + $this->getColumnX() + $this->vasLength + $this->vasLineWidth;
 		$this->Line($lx,$ly,$lx,$ly + $this->vasHeight);
 	
 		//Line itself
 		$ly = ($this->vasAreaHeight / 2.0) + $currentY;
-		$lx = $textwidth + $this->getMainPageX() + ($this->vasLineWidth / 2.0);
+		$lx = $textwidth + $this->getColumnX() + ($this->vasLineWidth / 2.0);
 		$this->Line($lx,$ly,$lx + $this->vasLength,$ly);
 
 		//Add to layout system
@@ -1800,8 +1808,8 @@ class queXMLPDF extends TCPDF {
 		$this->SetDrawColor($this->lineColour[0]);
 
 		//calculate text responses per line
-		$textResponsesPerLine = round(($this->getMainPageWidth() - $this->skipColumnWidth - $this->textResponseMarginX) / ($this->textResponseWidth + $this->textResponseBorder));
-		$labelTextResponsesSameLine = round(($this->getMainPageWidth() - $this->skipColumnWidth - $this->labelTextResponsesSameLineMarginX) / ($this->textResponseWidth + $this->textResponseBorder));
+		$textResponsesPerLine = round(($this->getColumnWidth() - $this->skipColumnWidth - $this->textResponseMarginX) / ($this->textResponseWidth + $this->textResponseBorder));
+		$labelTextResponsesSameLine = round(($this->getColumnWidth() - $this->skipColumnWidth - $this->labelTextResponsesSameLineMarginX) / ($this->textResponseWidth + $this->textResponseBorder));
 
 		//draw boxes - can draw up to $textResponsesPerLine for each line
 		$lines = ceil($width / $textResponsesPerLine);
@@ -1810,8 +1818,8 @@ class queXMLPDF extends TCPDF {
 		if ($width > $labelTextResponsesSameLine && !empty($text))
 		{
 			$this->setBackground('question');
-			$html = "<table><tr><td width=\"{$this->questionTitleWidth}mm\"></td><td width=\"" . ($this->getMainPageWidth() -  $this->skipColumnWidth - $this->questionTitleWidth) . "mm\" class=\"responseAboveText\">$text</td><td></td></tr></table>";
-			$this->writeHTMLCell($this->getMainPageWidth(), 1, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);
+			$html = "<table><tr><td width=\"{$this->questionTitleWidth}mm\"></td><td width=\"" . ($this->getColumnWidth() -  $this->skipColumnWidth - $this->questionTitleWidth) . "mm\" class=\"responseAboveText\">$text</td><td></td></tr></table>";
+			$this->writeHTMLCell($this->getColumnWidth(), 1, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,true);
 		}
 
 		$currentY = $this->GetY();
@@ -1826,19 +1834,19 @@ class queXMLPDF extends TCPDF {
 			if ($i >= 1)
 				$this->addBoxGroupCopyPrevious();
 
-			$textwidth = ($this->getMainPageWidth() - $this->skipColumnWidth) - (($this->textResponseWidth + $this->textResponseBorder ) * $cells);
+			$textwidth = ($this->getColumnWidth() - $this->skipColumnWidth) - (($this->textResponseWidth + $this->textResponseBorder ) * $cells);
 
 			//print "textwidth: $textwidth cells: $cells mainpagex: " . $this->getMainPageX() . "<br/>";
 			//First draw a background of height $this->responseLabelHeight
 			$html = "<div></div>";
 			$this->setBackground('question');
-			$this->writeHTMLCell($this->getMainPageWidth(), $this->textResponseHeight, $this->getMainPageX(), $this->GetY() , $this->style . $html,0,1,true,false);
+			$this->writeHTMLCell($this->getColumnWidth(), $this->textResponseHeight, $this->getColumnX(), $this->GetY() , $this->style . $html,0,1,true,false);
 
 			if ($lines == 1 && $cells <= $labelTextResponsesSameLine && !empty($text))
 			{
 				$this->setDefaultFont($this->responseTextFontSize);			
 
-				$this->MultiCell($textwidth,$this->textResponseHeight,$text,0,'R',false,1,$this->getMainPageX(),$currentY,true,0,false,true,$this->textResponseHeight,'M',true);
+				$this->MultiCell($textwidth,$this->textResponseHeight,$text,0,'R',false,1,$this->getColumnX(),$currentY,true,0,false,true,$this->textResponseHeight,'M',true);
 
 
 				//$html = "<table><tr><td width=\"{$textwidth}mm\" class=\"responseText\">$text</td><td></td></tr></table>";
@@ -1848,7 +1856,7 @@ class queXMLPDF extends TCPDF {
 			$ncurrentY = $this->GetY();
 
 			$this->SetY($currentY,false);
-			$this->SetX($textwidth + $this->getMainPageX() + 2,false); //set the X position to the first cell
+			$this->SetX($textwidth + $this->getColumnX() + 2,false); //set the X position to the first cell
 			
 			$this->drawCells($cells);
 
@@ -1860,9 +1868,9 @@ class queXMLPDF extends TCPDF {
 
 			if (!(($i + 1) == $lines) && $this->textResponseLineSpacing > 0) //if there should be a gap between text responses and not the last
 			{
-				$this->SetX($this->getMainPageX(),false);
+				$this->SetX($this->getColumnX(),false);
 				$this->setBackground('question');
-				$this->Cell($this->getMainPageWidth(),$this->textResponseLineSpacing,'','',0,'',true,'',0,false,'T','C');
+				$this->Cell($this->getColumnWidth(),$this->textResponseLineSpacing,'','',0,'',true,'',0,false,'T','C');
 				$currentY += $this->textResponseLineSpacing;
 				$this->SetY($currentY,false); //new line
 			}
@@ -1935,7 +1943,7 @@ class queXMLPDF extends TCPDF {
 
 		$rwidth = ($width * ($this->textResponseWidth + $this->textResponseBorder + $this->textResponseLineSpacing)); 
 
-		$textwidth = ($this->getMainPageWidth() - $this->skipColumnWidth) - ($rwidth * $total);
+		$textwidth = ($this->getColumnWidth() - $this->skipColumnWidth) - ($rwidth * $total);
 
 		$html = "<table><tr><td width=\"{$textwidth}mm\" class=\"responseText\"></td>";
 		foreach ($subquestions as $r)
@@ -1943,18 +1951,18 @@ class queXMLPDF extends TCPDF {
 			$html .= "<td class=\"responseLabel\" width=\"{$rwidth}mm\">{$r['text']}</td>";
 		}
 		$html .= "<td></td></tr></table>";
-		$this->writeHTMLCell($this->getMainPageWidth(), $this->singleResponseAreaHeight, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);
+		$this->writeHTMLCell($this->getColumnWidth(), $this->singleResponseAreaHeight, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,true);
 		$currentY = $this->GetY();
 
 		$html = "<table><tr><td width=\"{$textwidth}mm\" class=\"responseText\"></td><td></td></tr></table>";
-		$this->writeHTMLCell($this->getMainPageWidth(), $this->singleResponseAreaHeight, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);
+		$this->writeHTMLCell($this->getColumnWidth(), $this->singleResponseAreaHeight, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,true);
 
 		$ncurrentY = $this->GetY();
 
 		$this->SetY($currentY,false);		
 
 		//Set X position
-		$this->SetX($this->getMainPageX() + $textwidth,false);	
+		$this->SetX($this->getColumnX() + $textwidth,false);	
 
 
 		foreach ($subquestions as $s)
@@ -1999,22 +2007,22 @@ class queXMLPDF extends TCPDF {
 		else		
 			$rwidth = $this->singleResponseVerticalAreaWidth;
 
-		$textwidth = ($this->getMainPageWidth() - $this->skipColumnWidth) - ($rwidth * $total);
+		$textwidth = ($this->getColumnWidth() - $this->skipColumnWidth) - ($rwidth * $total);
 
 
 		//First draw a background of height $this->responseLabelHeight
 		$html = "<div></div>";
 		$this->setBackground('question');
-		$this->writeHTMLCell($this->getMainPageWidth(), $this->responseLabelHeight, $this->getMainPageX(), $currentY , $this->style . $html,0,1,true,true);
+		$this->writeHTMLCell($this->getColumnWidth(), $this->responseLabelHeight, $this->getColumnX(), $currentY , $this->style . $html,0,1,true,true);
 
 		$this->setDefaultFont($this->responseLabelFontSize);			
 
 		$count = 0;
-		//Draw a Cell for each rwidth from $textwidth + $this->getMainPageX(),currentY 
+		//Draw a Cell for each rwidth from $textwidth + $this->getColumnX(),currentY 
 		foreach ($categories as $r)
 		{
 			$y = $currentY;
-			$x = ($textwidth + $this->getMainPageX() + ($rwidth * $count));
+			$x = ($textwidth + $this->getColumnX() + ($rwidth * $count));
 			
 			// Going to break the line because of long word
 			if ($this->wordLength($r['text']) > $this->responseLabelSmallWordLength)
@@ -2047,10 +2055,10 @@ class queXMLPDF extends TCPDF {
 			//Draw background
 			$html = "<div></div>";
 			$this->setBackground('question');
-			$this->writeHTMLCell($this->getMainPageWidth(), $this->singleResponseHorizontalHeight, $this->getMainPageX(), $currentY, $this->style . $html,0,1,true,true);	
+			$this->writeHTMLCell($this->getColumnWidth(), $this->singleResponseHorizontalHeight, $this->getColumnX(), $currentY, $this->style . $html,0,1,true,true);	
 			$this->setDefaultFont($this->responseTextFontSize);			
 
-			$this->MultiCell($textwidth,$this->singleResponseHorizontalHeight,$s['text'],0,'R',false,0,$this->getMainPageX(),$currentY,true,0,false,true,$this->singleResponseHorizontalHeight,'M',true);
+			$this->MultiCell($textwidth,$this->singleResponseHorizontalHeight,$s['text'],0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$this->singleResponseHorizontalHeight,'M',true);
 
 
 
@@ -2065,7 +2073,7 @@ class queXMLPDF extends TCPDF {
 				else if ($rnum < $total) $num = 'middle';
 				else if ($rnum == $total) $num = 'last';
 
-				$position = $this->drawHorizontalResponseBox(($this->getMainPageX() + $textwidth + (($rnum - 1) * $rwidth)),$currentY, $num,false,false,($total > $this->singleResponseHorizontalMax));
+				$position = $this->drawHorizontalResponseBox(($this->getColumnX() + $textwidth + (($rnum - 1) * $rwidth)),$currentY, $num,false,false,($total > $this->singleResponseHorizontalMax));
 	
 				//Add box to the current layout
 				$this->addBox($position[0],$position[1],$position[2],$position[3],$r['value'],$r['text']);
@@ -2101,7 +2109,7 @@ class queXMLPDF extends TCPDF {
 
 		$rwidth = $this->singleResponseVerticalAreaWidth;
 
-		$textwidth = ($this->getMainPageWidth() - $this->skipColumnWidth) - ($rwidth * $total);
+		$textwidth = ($this->getColumnWidth() - $this->skipColumnWidth) - ($rwidth * $total);
 
 		if (count($categories) > 1)
 		{
@@ -2111,16 +2119,16 @@ class queXMLPDF extends TCPDF {
 			//First draw a background of height $this->responseLabelHeight
 			$html = "<div></div>";
 			$this->setBackground('question');
-			$this->writeHTMLCell($this->getMainPageWidth(), $this->responseLabelHeight, $this->getMainPageX(), $currentY , $this->style . $html,0,1,true,true);
+			$this->writeHTMLCell($this->getColumnWidth(), $this->responseLabelHeight, $this->getColumnX(), $currentY , $this->style . $html,0,1,true,true);
 
 
 			$this->setDefaultFont($this->responseLabelFontSize);			
 
-			//Draw a Cell for each rwidth from $textwidth + $this->getMainPageX(),currentY 
+			//Draw a Cell for each rwidth from $textwidth + $this->getColumnX(),currentY 
 			foreach ($subquestions as $r)
 			{
 				$y = $currentY;
-				$x = ($textwidth + $this->getMainPageX() + ($rwidth * $count));
+				$x = ($textwidth + $this->getColumnX() + ($rwidth * $count));
 
 				// Going to break the line because of long word
 				if ($this->wordLength($r['text']) > $this->responseLabelSmallWordLength)
@@ -2160,7 +2168,7 @@ class queXMLPDF extends TCPDF {
 			else
 				$this->addBoxGroup(1,$s['varname'],$parenttext . $this->subQuestionTextSeparator . $s['text']);
 
-			$x = $this->getMainPageX() + $textwidth + ($rwidth * $snum) + ((($rwidth - $this->singleResponseBoxWidth) / 2.0 ));
+			$x = $this->getColumnX() + $textwidth + ($rwidth * $snum) + ((($rwidth - $this->singleResponseBoxWidth) / 2.0 ));
 
 			$other = false;
 
@@ -2178,10 +2186,10 @@ class queXMLPDF extends TCPDF {
 					//Draw background
 					$html = "<div></div>";
 					$this->setBackground('question');
-					$this->writeHTMLCell($this->getMainPageWidth(), $this->singleResponseAreaHeight, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);	
+					$this->writeHTMLCell($this->getColumnWidth(), $this->singleResponseAreaHeight, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,true);	
 					$this->setDefaultFont($this->responseTextFontSize);			
 
-					$this->MultiCell($textwidth,$this->singleResponseAreaHeight,$r['text'],0,'R',false,0,$this->getMainPageX(),$currentY,true,0,false,true,$this->singleResponseAreaHeight,'M',true);
+					$this->MultiCell($textwidth,$this->singleResponseAreaHeight,$r['text'],0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$this->singleResponseAreaHeight,'M',true);
 
 				}
 
@@ -2221,7 +2229,7 @@ class queXMLPDF extends TCPDF {
 				$this->addBoxGroup(3,$other['varname'],$other['text'],$other['width']);	
 				$this->drawText($other['text'],$other['width']);
 				//Insert a gap here
-				$this->Rect($this->getMainPageX(),$this->GetY(),$this->getMainPageWidth(),$this->subQuestionLineSpacing,'F',array(),$this->backgroundColourQuestion);
+				$this->Rect($this->getColumnX(),$this->GetY(),$this->getColumnWidth(),$this->subQuestionLineSpacing,'F',array(),$this->backgroundColourQuestion);
 				$this->SetY($this->GetY() + $this->subQuestionLineSpacing,false);
 			}
 
@@ -2248,22 +2256,22 @@ class queXMLPDF extends TCPDF {
 		if (isset($this->skipToRegistry[$title]))
 			$class = "questionTitleSkipTo";
 
-		$html = "<table><tr><td class=\"$class\" width=\"" . $this->questionTitleWidth . "mm\">$title</td><td class=\"questionText\" width=\"" . ($this->getMainPageWidth() - $this->questionTextRightMargin - $this->questionTitleWidth) . "mm\">$text</td><td></td></tr>";
+		$html = "<table><tr><td class=\"$class\" width=\"" . $this->questionTitleWidth . "mm\">$title</td><td class=\"questionText\" width=\"" . ($this->getColumnWidth() - $this->questionTextRightMargin - $this->questionTitleWidth) . "mm\">$text</td><td></td></tr>";
 
 		if ($specifier !== false)
 		{
-			$html .= "<tr><td></td><td></td><td></td></tr><tr><td class=\"$class\" width=\"" . $this->questionTitleWidth . "mm\">&nbsp;</td><td class=\"questionSpecifier\" width=\"" . ($this->getMainPageWidth() - $this->questionTextRightMargin - $this->questionTitleWidth) . "mm\">$specifier</td><td></td></tr>";
+			$html .= "<tr><td></td><td></td><td></td></tr><tr><td class=\"$class\" width=\"" . $this->questionTitleWidth . "mm\">&nbsp;</td><td class=\"questionSpecifier\" width=\"" . ($this->getColumnWidth() - $this->questionTextRightMargin - $this->questionTitleWidth) . "mm\">$specifier</td><td></td></tr>";
 		}
 
 		$html .= "</table>";
 		
 
-		$this->writeHTMLCell($this->getMainPageWidth(), 1, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);
+		$this->writeHTMLCell($this->getColumnWidth(), 1, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,true);
 
 		if ($help != false)
 		{
-			$html = "<table><tr><td width=\"" . ($this->getMainPageWidth() -  $this->skipColumnWidth) . "mm\" class=\"questionHelp\">$help</td><td></td></tr></table>";
-			$this->writeHTMLCell($this->getMainPageWidth(), 1, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);
+			$html = "<table><tr><td width=\"" . ($this->getColumnWidth() -  $this->skipColumnWidth) . "mm\" class=\"questionHelp\">$help</td><td></td></tr></table>";
+			$this->writeHTMLCell($this->getColumnWidth(), 1, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,true);
 
 		}
 	}
@@ -2290,7 +2298,7 @@ class queXMLPDF extends TCPDF {
 			$html .= "<div class=\"sectionInfo\">$info</div>";
 
 		$this->setBackground('section');
-		$this->writeHTMLCell($this->getPageWidth() - (($this->cornerBorder *2) + ($this->cornerWidth * 2)),$this->sectionHeight,$this->getMainPageX(),$this->getY(),$this->style . $html,array('B' => array('width' => 1, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $this->backgroundColourEmpty)),1,true,true,'');
+		$this->writeHTMLCell($this->getColumnWidth(),$this->sectionHeight,$this->getColumnX(),$this->getY(),$this->style . $html,array('B' => array('width' => 1, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $this->backgroundColourEmpty)),1,true,true,'');
 		$this->setBackground('empty');
 	}
 
@@ -2306,6 +2314,22 @@ class queXMLPDF extends TCPDF {
 	}
 
 	/**
+	 * Make sure to fill the remaining columns on the last page
+	 * 
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since  2012-05-31
+	 */
+	protected function fillLastPageBackground()
+	{
+		while ($this->columnCP < $this->columns)
+		{
+			$this->fillPageBackground();
+			$this->SetXY($this->getColumnX(),($this->cornerBorder + $this->cornerWidth));
+			$this->columnCP++;
+		}
+	}
+
+	/**
 	 * Draw the background from the current Y position to the bottom of the page
 	 * 
 	 * @author Adam Zammit <adam.zammit@acspri.org.au>
@@ -2316,7 +2340,7 @@ class queXMLPDF extends TCPDF {
 		$height = $this->getPageHeight() - $this->cornerBorder - $this->GetY() + $this->questionBorderBottom;
 		$html = "<div></div>";
 		$this->setBackground('question');
-		$this->writeHTMLCell($this->getMainPageWidth(), $height, $this->getMainPageX(), $this->GetY() - $this->questionBorderBottom, $this->style . $html,0,1,true,true);
+		$this->writeHTMLCell($this->getColumnWidth(), $height, $this->getColumnX(), $this->GetY() - $this->questionBorderBottom, $this->style . $html,0,1,true,true);
 	}
 
 	/**
@@ -2325,71 +2349,82 @@ class queXMLPDF extends TCPDF {
 	 * Draw the barcode and page corners
 	 * 
 	 */
-	protected function newPage() 
+	protected function newPage($init = false) 
 	{
-		$this->AddPage();
+		$this->columnCP++; //increment the column pointer
 
-		//Set Auto page break to false 
-		$this->SetAutoPageBreak(false);
+		if ($init || ($this->columnCP >= $this->columns)) // if it is time for a new page
+		{
+			$this->AddPage();
 
-		$this->SetMargins(0,0,0);
-		$this->SetHeaderMargin(0);
-		$this->SetFooterMargin(0);
+			//Set Auto page break to false 
+			$this->SetAutoPageBreak(false);
 
-		//Shortcuts to make the code (a bit) nicer
-		$width = $this->getPageWidth();
-		$height = $this->getPageHeight();
-		$cb = $this->cornerBorder;
-		$cl = $this->cornerLength;
-
-		$this->SetDrawColor($this->lineColour[0]);
+			$this->SetMargins(0,0,0);
+			$this->SetHeaderMargin(0);
+			$this->SetFooterMargin(0);
 	
-		$barcodeStyle = array('border' => false, 'padding' => '0', 'bgcolor' => false, 'text' => false, 'stretch' => true);
-		$lineStyle = array('width' => $this->cornerWidth, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0));
-		
-		//Top left
-		$this->Line($cb,$cb,$cb + $cl,$cb,$lineStyle);
-		$this->Line($cb,$cb,$cb,$cb + $cl,$lineStyle);
-		
-		//Top right
-		$this->Line($width - $cb,$cb,$width - $cb - $cl,$cb,$lineStyle);
-		$this->Line($width - $cb,$cb,$width - $cb,$cb + $cl,$lineStyle);
-		
-		//Bottom left
-		$this->Line($cb,$height - $cb,$cb + $cl,$height - $cb,$lineStyle);
-		$this->Line($cb,$height - $cb,$cb,$height - ($cb + $cl),$lineStyle);
-		
-		//Bottom right
-		$this->Line($width - $cb,$height - $cb,$width - $cb - $cl,$height - $cb,$lineStyle);
-		$this->Line($width - $cb,$height - $cb,$width - $cb,$height - ($cb + $cl),$lineStyle);
-
-		$barcodeValue = substr(str_pad($this->questionnaireId,$this->idLength,"0",STR_PAD_LEFT),0,$this->idLength) . substr(str_pad($this->getPage(),$this->pageLength,"0",STR_PAD_LEFT),0,$this->pageLength);	
-
-		//Calc X position of barcode from page width
-		$barcodeX = $width - ($this->barcodeMarginX + $this->barcodeW);
-
-		$this->write1DBarcode($barcodeValue, $this->barcodeType, $barcodeX, $this->barcodeY, $this->barcodeW, $this->barcodeH,'', $barcodeStyle, 'N');
+			//Shortcuts to make the code (a bit) nicer
+			$width = $this->getPageWidth();
+			$height = $this->getPageHeight();
+			$cb = $this->cornerBorder;
+			$cl = $this->cornerLength;
 	
-		//Add this page to the layout system
-		$b = $this->cornerBorder + ($this->cornerWidth / 2.0); //temp calc for middle of line
-		$this->layout[$barcodeValue] = array(	'id' => $barcodeValue,
-							'tlx' => $this->mm2px($b),
-							'tly' => $this->mm2px($b),
-							'trx' => $this->mm2px($width - $b),
-							'try' => $this->mm2px($b),
-							'brx' => $this->mm2px($width - $b),
-							'bry' => $this->mm2px($height - $b),
-							'blx' => $this->mm2px($b),
-							'bly' => $this->mm2px($height - $b),
-							'rotation' => 0,
-							'boxgroup' => array()
-							);
-		$this->layoutCP = $barcodeValue;
+			$this->SetDrawColor($this->lineColour[0]);
+		
+			$barcodeStyle = array('border' => false, 'padding' => '0', 'bgcolor' => false, 'text' => false, 'stretch' => true);
+			$lineStyle = array('width' => $this->cornerWidth, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0));
+			
+			//Top left
+			$this->Line($cb,$cb,$cb + $cl,$cb,$lineStyle);
+			$this->Line($cb,$cb,$cb,$cb + $cl,$lineStyle);
+			
+			//Top right
+			$this->Line($width - $cb,$cb,$width - $cb - $cl,$cb,$lineStyle);
+			$this->Line($width - $cb,$cb,$width - $cb,$cb + $cl,$lineStyle);
+			
+			//Bottom left
+			$this->Line($cb,$height - $cb,$cb + $cl,$height - $cb,$lineStyle);
+			$this->Line($cb,$height - $cb,$cb,$height - ($cb + $cl),$lineStyle);
+			
+			//Bottom right
+			$this->Line($width - $cb,$height - $cb,$width - $cb - $cl,$height - $cb,$lineStyle);
+			$this->Line($width - $cb,$height - $cb,$width - $cb,$height - ($cb + $cl),$lineStyle);
+	
+			$barcodeValue = substr(str_pad($this->questionnaireId,$this->idLength,"0",STR_PAD_LEFT),0,$this->idLength) . substr(str_pad($this->getPage(),$this->pageLength,"0",STR_PAD_LEFT),0,$this->pageLength);	
+	
+			//Calc X position of barcode from page width
+			$barcodeX = $width - ($this->barcodeMarginX + $this->barcodeW);
+	
+			$this->write1DBarcode($barcodeValue, $this->barcodeType, $barcodeX, $this->barcodeY, $this->barcodeW, $this->barcodeH,'', $barcodeStyle, 'N');
+		
+			//Add this page to the layout system
+			$b = $this->cornerBorder + ($this->cornerWidth / 2.0); //temp calc for middle of line
+			$this->layout[$barcodeValue] = array(	'id' => $barcodeValue,
+								'tlx' => $this->mm2px($b),
+								'tly' => $this->mm2px($b),
+								'trx' => $this->mm2px($width - $b),
+								'try' => $this->mm2px($b),
+								'brx' => $this->mm2px($width - $b),
+								'bry' => $this->mm2px($height - $b),
+								'blx' => $this->mm2px($b),
+								'bly' => $this->mm2px($height - $b),
+								'rotation' => 0,
+								'boxgroup' => array()
+								);
+			$this->layoutCP = $barcodeValue;
+	
+			$this->SetXY($cb + $this->cornerWidth, $cb + $this->cornerWidth);
+			$this->SetAutoPageBreak(true,$this->getMainPageX());
+	
+			$this->setBackground('empty');
 
-		$this->SetXY($cb + $this->cornerWidth, $cb + $this->cornerWidth);
-		$this->SetAutoPageBreak(true,$this->getMainPageX());
-
-		$this->setBackground('empty');
+			$this->columnCP = 0; //reset column pointer
+		}
+		else // move to a new column
+		{
+			$this->SetXY($this->getColumnX(),($this->cornerBorder + $this->cornerWidth));
+		}
 	}
 
 	/**
