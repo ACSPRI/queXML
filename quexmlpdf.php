@@ -2001,17 +2001,16 @@ class queXMLPDF extends TCPDF {
 		$this->SetY($ncurrentY,false);
 	}
 
+
 	/**
-	 * Draw a horizontal table of respones including "eye guides"
+	 * Draw the head of a single choice horizontal table of responses
 	 * 
 	 * @param array $categories The response categories
-	 * @param array $subquestions The subquestions if any 
-	 * @param string|bool $parenttext The question text of the parent or false if not specified
-	 *
+	 * 
 	 * @author Adam Zammit <adam.zammit@acspri.org.au>
-	 * @since  2010-09-08
+	 * @since  2012-06-05
 	 */
-	protected function drawSingleChoiceHorizontal($categories, $subquestions = array(array('text' => '')),$parenttext = false)
+	protected function drawSingleChoiceHorizontalHead($categories)
 	{
 		$total = count($categories);
 		$currentY = $this->GetY();
@@ -2050,60 +2049,103 @@ class queXMLPDF extends TCPDF {
 
 			$count++;
 		}
+	}
+
+	/**
+	 * Draw a horizontal table of respones including "eye guides"
+	 * 
+	 * @param array $categories The response categories
+	 * @param array $subquestions The subquestions if any 
+	 * @param string|bool $parenttext The question text of the parent or false if not specified
+	 *
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since  2010-09-08
+	 */
+	protected function drawSingleChoiceHorizontal($categories, $subquestions = array(array('text' => '')),$parenttext = false)
+	{
+		$total = count($categories);
+		$currentY = $this->GetY();
+
+		if ($total > $this->singleResponseHorizontalMax) //change if too many cats
+			$rwidth = $this->singleResponseVerticalAreaWidthSmall;
+		else		
+			$rwidth = $this->singleResponseVerticalAreaWidth;
+
+		$textwidth = ($this->getColumnWidth() - $this->skipColumnWidth) - ($rwidth * $total);
+
+		//draw the header
+		$this->drawSingleChoiceHorizontalHead($categories);
+
 		$currentY += $this->responseLabelHeight;
 
-		//reset font size
-
-
-		foreach ($subquestions as $s)
+		$this->startTransaction(); //start a transaction
+		for ($i = 0; $i < count($subquestions); $i++)
 		{
-			//Add box group to current layout
-			if ($parenttext == false)
-				$this->addBoxGroup(1,$s['varname'],$s['text']);
-			else				
-				$this->addBoxGroup(1,$s['varname'],$parenttext . $this->subQuestionTextSeparator . $s['text']);
+			$s = $subquestions[$i];
 
-			//$html = "<table><tr><td width=\"{$textwidth}mm\" class=\"responseText\">" . $s['text'] . "</td><td></td></tr></table>";
-			//$this->writeHTMLCell($this->getMainPageWidth(), $this->singleResponseAreaHeight, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);
-
-			//Draw background
-			$html = "<div></div>";
-			$this->setBackground('question');
-			$this->writeHTMLCell($this->getColumnWidth(), $this->singleResponseHorizontalHeight, $this->getColumnX(), $currentY, $this->style . $html,0,1,true,true);	
-			$this->setDefaultFont($this->responseTextFontSize);			
-
-			$this->MultiCell($textwidth,$this->singleResponseHorizontalHeight,$s['text'],0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$this->singleResponseHorizontalHeight,'M',true);
-
-
-
-
-
-			//Draw the categories horizontally
-			$rnum = 1;
-			foreach ($categories as $r)
+			if ($this->pageBreakOccured)
 			{
-				if ($total == 1) $num = 'only';
-				else if ($rnum == 1) $num = 'first';
-				else if ($rnum < $total) $num = 'middle';
-				else if ($rnum == $total) $num = 'last';
-
-				$position = $this->drawHorizontalResponseBox(($this->getColumnX() + $textwidth + (($rnum - 1) * $rwidth)),$currentY, $num,false,false,($total > $this->singleResponseHorizontalMax));
-	
-				//Add box to the current layout
-				$this->addBox($position[0],$position[1],$position[2],$position[3],$r['value'],$r['text']);
-
-				$rnum++;
+                                $this->pageBreakOccured = false;
+                                $this->rollBackTransaction(true);
+                                $this->SetAutoPageBreak(false); //Temporarily set so we don't trigger a page break
+                                $this->fillPageBackground();
+                                $this->newPage();
+				$this->drawSingleChoiceHorizontalHead($categories);
+				
+				//reset currentY
+				$currentY = $this->GetY() + $this->responseLabelHeight;
+				
+				$i = $i - 2; //go back and draw subquestions on the new page
 			}
-
-			if (($this->GetY() - $currentY) > $this->singleResponseHorizontalHeight)
-				$currentY = $this->GetY();
 			else
-				$currentY = $currentY + $this->singleResponseHorizontalHeight;
+			{
+				$this->commitTransaction();
+				$this->startTransaction(); //start a transaction to allow for splitting over pages if necessary
+ 
+				//Add box group to current layout
+				if ($parenttext == false)
+					$this->addBoxGroup(1,$s['varname'],$s['text']);
+				else				
+					$this->addBoxGroup(1,$s['varname'],$parenttext . $this->subQuestionTextSeparator . $s['text']);
+	
+				//$html = "<table><tr><td width=\"{$textwidth}mm\" class=\"responseText\">" . $s['text'] . "</td><td></td></tr></table>";
+				//$this->writeHTMLCell($this->getMainPageWidth(), $this->singleResponseAreaHeight, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);
+	
+				//Draw background
+				$html = "<div></div>";
+				$this->setBackground('question');
+				$this->writeHTMLCell($this->getColumnWidth(), $this->singleResponseHorizontalHeight, $this->getColumnX(), $currentY, $this->style . $html,0,1,true,true);	
+				$this->setDefaultFont($this->responseTextFontSize);			
+	
+				$this->MultiCell($textwidth,$this->singleResponseHorizontalHeight,$s['text'],0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$this->singleResponseHorizontalHeight,'M',true);
+	
 
-			$this->SetY($currentY,false);
-
+				//Draw the categories horizontally
+				$rnum = 1;
+				foreach ($categories as $r)
+				{
+					if ($total == 1) $num = 'only';
+					else if ($rnum == 1) $num = 'first';
+					else if ($rnum < $total) $num = 'middle';
+					else if ($rnum == $total) $num = 'last';
+	
+					$position = $this->drawHorizontalResponseBox(($this->getColumnX() + $textwidth + (($rnum - 1) * $rwidth)),$currentY, $num,false,false,($total > $this->singleResponseHorizontalMax));
+		
+					//Add box to the current layout
+					$this->addBox($position[0],$position[1],$position[2],$position[3],$r['value'],$r['text']);
+	
+					$rnum++;
+				}
+	
+				if (($this->GetY() - $currentY) > $this->singleResponseHorizontalHeight)
+					$currentY = $this->GetY();
+				else
+					$currentY = $currentY + $this->singleResponseHorizontalHeight;
+	
+				$this->SetY($currentY,false);
+					
+			}
 		}
-
 	}
 
 	/**
@@ -2429,7 +2471,6 @@ class queXMLPDF extends TCPDF {
 			$this->layoutCP = $barcodeValue;
 	
 			$this->SetXY($cb + $this->cornerWidth, $cb + $this->cornerWidth);
-			$this->SetAutoPageBreak(true,$this->getMainPageX());
 	
 			$this->setBackground('empty');
 
@@ -2439,6 +2480,7 @@ class queXMLPDF extends TCPDF {
 		{
 			$this->SetXY($this->getColumnX(),($this->cornerBorder + $this->cornerWidth));
 		}
+		$this->SetAutoPageBreak(true,$this->getMainPageX());
 	}
 
 	/**
