@@ -1,3 +1,14 @@
+queXML 1.3.10 - Changes since 1.3.9
+
+queXMLPDF: Create a new box group for each line of text items with identical variable names. Will display better in queXF.
+queXMLPDF: New feature: Column display (set $columns to a value greater than 1)
+queXMLPDF: Allow for singleChoiceHorizontal arrays (with subquestions) to be split over multiple pages / columns
+queXMLPDF: Updated font sizes to match default widths a bit better
+queXMLPDF: Added test of word length for response labels so they won't get "broken" over a line without being shrunk first
+queXMLPDF: Removed singleResponseAreaWidth as it was only referred once and should be the same as for vertical area width
+queXMLPDF: Made output colours|colors greyscale|grayscale 
+queXMLPDF: Long text boxes now automatically draw to available width
+
 queXML 1.3.9 - Changes since 1.3.8
 
 queXMLPDF: Limit help text to the right spot
