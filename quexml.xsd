@@ -343,6 +343,11 @@
 														<xsd:documentation>A unique name for the variable to be associated with this matrix question.</xsd:documentation>
 													</xsd:annotation>
 												</xsd:attribute>
+												<xsd:attribute name="defaultValue" type="xsd:string">
+													<xsd:annotation>
+														<xsd:documentation>The default value to pre-fill a response.</xsd:documentation>
+													</xsd:annotation>
+												</xsd:attribute>
 											</xsd:complexType>
 										</xsd:element>
 										<xsd:element name="response" maxOccurs="unbounded">
@@ -463,6 +468,11 @@
 																							<xsd:documentation>A unique name for the variable to be associated with this contingent question</xsd:documentation>
 																						</xsd:annotation>
 																					</xsd:attribute>
+																					<xsd:attribute name="defaultValue" type="xsd:string">
+																						<xsd:annotation>
+																							<xsd:documentation>The default value to pre-fill the response</xsd:documentation>
+																						</xsd:annotation>
+																					</xsd:attribute>
 																				</xsd:complexType>
 																			</xsd:element>
 																			<xsd:element name="skipTo" type="xsd:IDREF" minOccurs="0">
@@ -553,6 +563,11 @@
 												<xsd:attribute name="varName" type="xsd:ID" use="required">
 													<xsd:annotation>
 														<xsd:documentation>A unique name for the variable to be associated with this response. Will appear in the data output.</xsd:documentation>
+													</xsd:annotation>
+												</xsd:attribute>
+												<xsd:attribute name="defaultValue" type="xsd:string">
+													<xsd:annotation>
+														<xsd:documentation>The default value to pre-fill the response.</xsd:documentation>
 													</xsd:annotation>
 												</xsd:attribute>
 											</xsd:complexType>
