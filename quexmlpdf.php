@@ -340,6 +340,14 @@ class queXMLPDF extends TCPDF {
 	protected $textResponseHeight = 8;
 
 	/**
+	 * The height of a pre-filled response barcode
+	 * 
+	 * @var bool  Defaults to 6. 
+	 * @since 2012-06-22
+	 */
+	protected $barcodeResponseHeight = 6;
+
+	/**
 	 * The maximum number of text responses per line
 	 * 
 	 * @var mixed  Defaults to 24. 
@@ -1380,6 +1388,10 @@ class queXMLPDF extends TCPDF {
 							$rtmp['type'] = 'longtext';
 						else if ($format == 'number' || $format == 'numeric' || $format == 'integer')
 							$rtmp['type'] = 'number';
+						else if ($format == 'i25')
+							$rtmp['type'] = 'i25';
+						else if ($format == 'codabar')
+							$rtmp['type'] = 'codabar';
 						else
 							$rtmp['type'] = 'text';
 						$rtmp['width'] = current($r->free->length);
@@ -1602,7 +1614,12 @@ class queXMLPDF extends TCPDF {
 					case 'vas':
 						$this->drawMatrixVas($subquestions,$text,$response['labelleft'],$response['labelright']);
 						break;
-		
+					case 'i25':
+						$this->drawMatrixBarcode($subquestions, 'I25');
+						break;		
+					case 'codabar':
+						$this->drawMatrixBarcode($subquestions, 'CODABAR');
+						break;		
 				}
 			}
 			else
@@ -1647,7 +1664,13 @@ class queXMLPDF extends TCPDF {
 						$this->addBoxGroup(1,$varname,$rtext,strlen($this->vasIncrements));
 						$this->drawVas("",$response['labelleft'],$response['labelright']);
 						break;
-		
+					case 'i25':
+						$this->drawMatrixBarcode(array(array('text' => $rtext, 'varname' => $varname, 'defaultvalue' => $defaultvalue)),'I25');
+						break;		
+					case 'codabar':
+						$this->drawMatrixBarcode(array(array('text' => $rtext, 'varname' => $varname, 'defaultvalue' => $defaultvalue)),'CODABAR');
+						break;		
+
 				}
 			}
 		}}
@@ -1703,6 +1726,50 @@ class queXMLPDF extends TCPDF {
 			$this->Rect($this->getColumnX(),$this->GetY(),$this->getColumnWidth(),$this->subQuestionLineSpacing,'F',array(),$this->backgroundColourQuestion);
 			$this->SetY($currentY + $this->subQuestionLineSpacing,false);
 		}
+	}
+
+
+	/**
+	 * Draw a barcode as a "question"
+	 * 
+	 * @param string $subquestions 
+	 * @param mixed  $type         
+	 * 
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since  2012-06-22
+	 */
+	protected function drawMatrixBarcode($subquestions, $type)
+	{
+		$c = count($subquestions);
+
+		for ($i = 0; $i < $c; $i++)
+		{
+			$s = $subquestions[$i];
+
+			$this->addBoxGroup(5,$s['varname'],$s['text'],strlen($s['defaultvalue']));
+
+			$x = $this->getColumnX();
+			$y = $this->GetY();
+
+			$html = "<div></div>";
+			$this->setBackground('question');
+			$this->writeHTMLCell($this->getColumnWidth(), $this->barcodeResponseHeight, $this->getColumnX(), $this->GetY() , $this->style . $html,0,1,true,false);
+
+			//draw the barcode
+			$barcodeStyle = array('align' => 'R', 'border' => false, 'padding' => '0', 'bgcolor' => $this->backgroundColourQuestion, 'text' => false, 'stretch' => false);
+			$this->write1DBarcode($s['defaultvalue'], $type, $x, $y, $this->getColumnWidth() - $this->skipColumnWidth,$this->barcodeResponseHeight,'', $barcodeStyle, 'B');
+
+			//pointer should now be at the bottom right - but make the box the width of the whole column for better reading
+			$this->addBox($x,$y,$this->GetX(),$this->getColumnWidth() + $this->getColumnX());
+	
+			$currentY = $this->GetY();
+		
+			//Insert a gap here
+			$this->Rect($this->getColumnX(),$this->GetY(),$this->getColumnWidth(),$this->subQuestionLineSpacing,'F',array(),$this->backgroundColourQuestion);
+			$this->SetY($currentY + $this->subQuestionLineSpacing,false);
+			
+		}
+
 	}
 
 	/**
