@@ -2266,7 +2266,7 @@ class queXMLPDF extends TCPDF {
 					else if ($rnum == $total) $num = 'last';
 
 					$bfilled = false;
-					if (isset($s['defaultvalue']) && $s['defaultvalue'] == $r['value'])
+					if (isset($s['defaultvalue']) && $s['defaultvalue'] !== false && $s['defaultvalue'] == $r['value'])
 						$bfilled = true;
 	
 					$position = $this->drawHorizontalResponseBox(($this->getColumnX() + $textwidth + (($rnum - 1) * $rwidth)),$currentY, $num,false,false,($total > $this->singleResponseHorizontalMax),$bfilled);
@@ -2396,7 +2396,7 @@ class queXMLPDF extends TCPDF {
 				if (isset($r['other']) && $rnum == $total) $other = $r['other']; //only set for last in set
 
 				$bfilled = false;
-				if (isset($s['defaultvalue']) && $s['defaultvalue'] == $r['value'])
+				if (isset($s['defaultvalue']) && $s['defaultvalue'] !== false && $s['defaultvalue'] == $r['value'])
 					$bfilled = true;
 	
 				//Draw the box over the top
@@ -2429,7 +2429,7 @@ class queXMLPDF extends TCPDF {
 				$this->addBoxGroup(3,$other['varname'],$other['text'],$other['width']);	
 
 				$defaultvalue = false;
-				if (isset($other['defaultvalue']))
+				if (isset($other['defaultvalue']) && $other['defaultvalue'] !== false)
 					$defaultvalue = $other['defaultvalue'];
 
 				$this->drawText($other['text'],$other['width'],$defaultvalue);
