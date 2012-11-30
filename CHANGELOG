@@ -1,3 +1,9 @@
+queXML 1.3.11 - Changes since 1.3.10
+
+queXMLPDF: Added free response types "codabar" and "i25" to be able to pre-draw filled barcodes a questions (using the defaultValue attribute)
+queXMLPDF: Pre-print responses in PDF based on defaultValue attribute
+Schema: Added defaultValue attribute to responses
+
 queXML 1.3.10 - Changes since 1.3.9
 
 queXMLPDF: Create a new box group for each line of text items with identical variable names. Will display better in queXF.
