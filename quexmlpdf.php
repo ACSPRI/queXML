@@ -46,7 +46,7 @@ class queXMLPDF extends TCPDF {
 	 * @var int  Defaults to 15. 
 	 * @since 2010-09-02
 	 */
-	protected $cornerBorder = 13;
+	protected $cornerBorder = 14;
 
 	/**
 	 * The length in MM of a corner line
@@ -228,7 +228,7 @@ class queXMLPDF extends TCPDF {
 		span.sectionTitle {font-size:18pt; font-weight:bold;} 
 		span.sectionDescription {font-size:14pt; font-weight:bold;} 
 		div.sectionInfo {font-style:normal; font-size:10pt; text-align:left; font-weight:normal;}
-		td.questionnaireInfo {font-size:16pt; text-align:center; font-weight:bold;}
+		td.questionnaireInfo {font-size:14pt; text-align:center; font-weight:bold;}
 		</style>";
 
 	/**
@@ -241,7 +241,7 @@ class queXMLPDF extends TCPDF {
 	 * @var string  Defaults to 10.5. 
 	 * @since 2011-12-20
 	 */
-	protected $singleResponseHorizontalHeight = 10.5;
+	protected $singleResponseHorizontalHeight = 11;
 
 	/**
 	 * Height of the are of each single response (includes guiding lines)
@@ -306,6 +306,14 @@ class queXMLPDF extends TCPDF {
 	 * @since 2010-09-08
 	 */
 	protected $singleResponseHorizontalMax = 10;
+
+	/**
+	 * Allow single choice horizontal arrays to be split over multiple pages/columns
+	 * 
+	 * @var array  Defaults to false. 
+	 * @since 2012-08-10
+	 */
+	protected $allowSplittingSingleChoiceHorizontal = false;
 
 	/**
 	 * The height of an arrow
@@ -806,6 +814,83 @@ class queXMLPDF extends TCPDF {
 		$this->layout[$this->layoutCP]['boxgroup'][$this->boxGroupCP]['width'] = $width;
 	}
 
+
+	/**
+	 * Get the response label font sizes (normal and small)
+	 * 
+	 * @return array containing the normal font size as the first element and small as second
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since  2013-04-10
+	 */
+	public function getResponseLabelFontSize()
+	{
+		return array($this->responseLabelFontSize,$this->responseLabelFontSizeSmall);
+	}
+
+	/**
+	 * Set the response label font sizes
+	 * 
+	 * @param array $sizes normal font size first then small
+	 * 
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since  2013-04-10
+	 */
+	public function setResponseLabelFontSize($sizes)
+	{
+		$this->responseLabelFontSize = intval($sizes[0]);
+		$this->responseLabelFontSizeSmall = intval($sizes[1]);
+	}
+
+	/**
+	 * Get the response text font size
+	 * 
+	 * @return int The response text font size
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since  2013-04-10
+	 */
+	public function getResponseTextFontSize()
+	{
+		return $this->responseTextFontSize;
+	}
+
+	/**
+	 * Set the response text font size
+	 * 
+	 * @param int $size 
+	 * 
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since  2013-04-10
+	 */
+	public function setResponseTextFontSize($size)
+	{
+		$this->responseTextFontSize = intval($size);
+	}
+
+	/**
+	 * Get the style without any HTML/etc formatting
+	 * 
+	 * @return string The style without HTML or tabs
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since  2013-04-10
+	 */
+	public function getStyle()
+	{
+		return strip_tags(str_replace("\t","",$this->style));
+	}
+
+	/**
+	 * Set the CSS styling of some questionnaire elements
+	 * 
+	 * @param string $style The CSS styling of some questionnire elements
+	 * 
+	 * @return none
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since  2013-04-10
+	 */
+	public function setStyle($style)
+	{
+		$this->style = "<style>" . $style . "</style>";
+	}
 
 	/**
 	 * Export the layout as an XML file
@@ -2214,12 +2299,12 @@ class queXMLPDF extends TCPDF {
 
 		$currentY += $this->responseLabelHeight;
 
-		$this->startTransaction(); //start a transaction
+		if ($this->allowSplittingSingleChoiceHorizontal) $this->startTransaction(); //start a transaction
 		for ($i = 0; $i < count($subquestions); $i++)
 		{
 			$s = $subquestions[$i];
 
-			if ($this->pageBreakOccured)
+			if ($this->allowSplittingSingleChoiceHorizontal && $this->pageBreakOccured)
 			{
                                 $this->pageBreakOccured = false;
                                 $this->rollBackTransaction(true);
@@ -2235,8 +2320,11 @@ class queXMLPDF extends TCPDF {
 			}
 			else
 			{
-				$this->commitTransaction();
-				$this->startTransaction(); //start a transaction to allow for splitting over pages if necessary
+				if ($this->allowSplittingSingleChoiceHorizontal)
+				{
+					$this->commitTransaction();
+					$this->startTransaction(); //start a transaction to allow for splitting over pages if necessary
+				}
  
 				//Add box group to current layout
 				if ($parenttext == false)
