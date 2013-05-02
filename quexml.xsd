@@ -318,6 +318,40 @@
 															</xsd:simpleContent>
 														</xsd:complexType>
 													</xsd:element>
+													<xsd:element name="contingentQuestion" minOccurs="0">
+														<xsd:annotation>
+															<xsd:documentation>A free response question that is to be asked only if something in this subQuestion is chosen. For example: Please specify</xsd:documentation>
+														</xsd:annotation>
+														<xsd:complexType>
+															<xsd:all>
+																<xsd:element name="text">
+																	<xsd:annotation>
+																		<xsd:documentation>The text of the contingent question. For example: Please specify</xsd:documentation>
+																	</xsd:annotation>
+																	<xsd:complexType>
+																		<xsd:simpleContent>
+																			<xsd:extension base="xsd:string"/>
+																		</xsd:simpleContent>
+																	</xsd:complexType>
+																</xsd:element>
+																<xsd:element name="length" type="xsd:integer">
+																	<xsd:annotation>
+																		<xsd:documentation>The maximum length of the data</xsd:documentation>
+																	</xsd:annotation>
+																</xsd:element>
+															</xsd:all>
+															<xsd:attribute name="varName" type="xsd:ID" use="required">
+																<xsd:annotation>
+																	<xsd:documentation>A unique name for the variable to be associated with this contingent question</xsd:documentation>
+																</xsd:annotation>
+															</xsd:attribute>
+															<xsd:attribute name="defaultValue" type="xsd:string">
+																<xsd:annotation>
+																	<xsd:documentation>The default value to pre-fill the response</xsd:documentation>
+																</xsd:annotation>
+															</xsd:attribute>
+														</xsd:complexType>
+													</xsd:element>
 													<xsd:element name="skip" minOccurs="0">
 														<xsd:annotation>
 															<xsd:documentation>Used to skip from a particular sub question</xsd:documentation>

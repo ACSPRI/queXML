@@ -241,7 +241,17 @@ class queXMLPDF extends TCPDF {
 	 * @var string  Defaults to 10.5. 
 	 * @since 2011-12-20
 	 */
-	protected $singleResponseHorizontalHeight = 11;
+	protected $singleResponseHorizontalHeight = 11.5;
+
+	/**
+	 * The maximum number of lines of text to display
+	 * in a horizontal single response before adding additional space
+	 * 
+	 * @var string  Defaults to 2. 
+	 * @since 2013-05-02
+	 * @see $singleResponseHorizontalHeight
+	 */
+	protected $singleResponseHorizontalMaxLines = 2;
 
 	/**
 	 * Height of the are of each single response (includes guiding lines)
@@ -1176,6 +1186,14 @@ class queXMLPDF extends TCPDF {
 
 		$this->Rect($x + $linelength,$y,$this->singleResponseBoxWidth,$this->singleResponseBoxHeight,'DF',array(),$this->backgroundColourEmpty);
 
+		if ($downarrow)
+		{
+			$boxmiddle = ($x + ($this->singleResponseBoxWidth / 2.0)) + $linelength;
+			$this->SetFillColor($this->lineColour[0]);
+			$this->Polygon(array($x + $linelength, $y + $this->singleResponseBoxHeight, $boxmiddle, $y + $this->singleResponseBoxHeight + $this->arrowHeight, $x + $linelength + $this->singleResponseBoxWidth, $y + $this->singleResponseBoxHeight),'DF',array(),$this->lineColour);
+			$this->setBackground('empty');	
+		}
+
 		if ($filled)
 		{
 			//draw a cross
@@ -1419,6 +1437,20 @@ class queXMLPDF extends TCPDF {
 
 					if (isset($sq['defaultValue'])) 
 						$sqtmp['defaultvalue'] = $sq['defaultValue'];
+
+					if (isset($sq->contingentQuestion))
+					{
+						//Need to handle contingent questions
+						$oarr = array();
+						$oarr['width'] = current($sq->contingentQuestion->length);
+						$oarr['text'] = current($sq->contingentQuestion->text);
+
+						if (isset($sq->contingentQuestion['defaultValue'])) 
+							$oarr['defaultvalue'] = $sq->contingentQuestion['defaultValue'];
+
+						$oarr['varname'] = $c->contingentQuestion['varName'];
+						$sqtmp['other'] = $oarr;
+					}	
 
 					$rstmp['subquestions'][] = $sqtmp;
 				}
@@ -2340,9 +2372,34 @@ class queXMLPDF extends TCPDF {
 				$this->setBackground('question');
 				$this->writeHTMLCell($this->getColumnWidth(), $this->singleResponseHorizontalHeight, $this->getColumnX(), $currentY, $this->style . $html,0,1,true,true);	
 				$this->setDefaultFont($this->responseTextFontSize);			
-	
-				$this->MultiCell($textwidth,$this->singleResponseHorizontalHeight,$s['text'],0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$this->singleResponseHorizontalHeight,'M',true);
-	
+
+				$newlineheight = $this->singleResponseHorizontalHeight;
+				$heightadjust = 0;
+
+				$testcells = $this->getNumLines($s['text'],$textwidth);
+
+				if ($testcells > $this->singleResponseHorizontalMaxLines)
+				{
+					//more than two lines so need to increase the space between these questions
+					$heightadjust = (($this->singleResponseHorizontalHeight / $this->singleResponseHorizontalMaxLines) * ($testcells - $this->singleResponseHorizontalMaxLines));
+
+					$newlineheight = $newlineheight + $heightadjust;
+
+					$this->setBackground('question');
+					$this->writeHTMLCell($this->getColumnWidth(), $newlineheight, $this->getColumnX(), $currentY, $this->style . $html,0,1,true,false);	
+					$this->setDefaultFont($this->responseTextFontSize);			
+
+					$this->MultiCell($textwidth,$newlineheight,$s['text'],0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$newlineheight,'M',false);
+				}
+				else
+				{
+					$this->MultiCell($textwidth,$this->singleResponseHorizontalHeight,$s['text'],0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$this->singleResponseHorizontalHeight,'M',false);
+				}
+				
+				
+				$other = false;
+				if (isset($s['other']))
+					$other = true;
 
 				//Draw the categories horizontally
 				$rnum = 1;
@@ -2357,7 +2414,7 @@ class queXMLPDF extends TCPDF {
 					if (isset($s['defaultvalue']) && $s['defaultvalue'] !== false && $s['defaultvalue'] == $r['value'])
 						$bfilled = true;
 	
-					$position = $this->drawHorizontalResponseBox(($this->getColumnX() + $textwidth + (($rnum - 1) * $rwidth)),$currentY, $num,false,false,($total > $this->singleResponseHorizontalMax),$bfilled);
+					$position = $this->drawHorizontalResponseBox(($this->getColumnX() + $textwidth + (($rnum - 1) * $rwidth)),$currentY + ($heightadjust/2), $num,$other,false,($total > $this->singleResponseHorizontalMax),$bfilled);
 		
 					//Add box to the current layout
 					$this->addBox($position[0],$position[1],$position[2],$position[3],$r['value'],$r['text']);
@@ -2365,12 +2422,15 @@ class queXMLPDF extends TCPDF {
 					$rnum++;
 				}
 	
-				if (($this->GetY() - $currentY) > $this->singleResponseHorizontalHeight)
+				if (($this->GetY() - $currentY) > $newlineheight)
 					$currentY = $this->GetY();
 				else
-					$currentY = $currentY + $this->singleResponseHorizontalHeight;
+					$currentY = $currentY + $newlineheight;
 	
 				$this->SetY($currentY,false);
+
+				if ($other)
+					$this->drawOther($s['other']);
 					
 			}
 		}
@@ -2514,20 +2574,34 @@ class queXMLPDF extends TCPDF {
 			if ($other !== false)
 			{
 				//Display the "other" variable
-				$this->addBoxGroup(3,$other['varname'],$other['text'],$other['width']);	
-
-				$defaultvalue = false;
-				if (isset($other['defaultvalue']) && $other['defaultvalue'] !== false)
-					$defaultvalue = $other['defaultvalue'];
-
-				$this->drawText($other['text'],$other['width'],$defaultvalue);
-				//Insert a gap here
-				$this->Rect($this->getColumnX(),$this->GetY(),$this->getColumnWidth(),$this->subQuestionLineSpacing,'F',array(),$this->backgroundColourQuestion);
-				$this->SetY($this->GetY() + $this->subQuestionLineSpacing,false);
+				$this->drawOther($other);
 			}
 
 			$snum++;
 		}
+	}
+
+	/**
+	 * Draw an "other" box
+	 * 
+	 * @param array $other An array continaing varname,text,width,defaultvalue
+	 * 
+	 * @return TODO
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since  2013-05-01
+	 */
+	protected function drawOther($other)
+	{
+		$this->addBoxGroup(3,$other['varname'],$other['text'],$other['width']);	
+
+		$defaultvalue = false;
+		if (isset($other['defaultvalue']) && $other['defaultvalue'] !== false)
+			$defaultvalue = $other['defaultvalue'];
+
+		$this->drawText($other['text'],$other['width'],$defaultvalue);
+		//Insert a gap here
+		$this->Rect($this->getColumnX(),$this->GetY(),$this->getColumnWidth(),$this->subQuestionLineSpacing,'F',array(),$this->backgroundColourQuestion);
+		$this->SetY($this->GetY() + $this->subQuestionLineSpacing,false);
 	}
 
 	/**
