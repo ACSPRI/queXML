@@ -826,6 +826,33 @@ class queXMLPDF extends TCPDF {
 
 
 	/**
+	 * Set the minimum section height
+	 * 
+	 * @param int $height The minimum height of a section
+	 * 
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since  2013-07-30
+	 */
+	public function setSectionHeight($height)
+	{
+		$height = intval($height);
+		if ($height < 0) $height = 1;
+		$this->sectionHeight = $height;
+	}
+
+	/**
+	 * Get the section height
+	 * 
+	 * @return The section height
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since  2013-07-30
+	 */
+	public function getSectionHeight()
+	{
+		return $this->sectionHeight;
+	}
+
+	/**
 	 * Get the response label font sizes (normal and small)
 	 * 
 	 * @return array containing the normal font size as the first element and small as second
@@ -1469,6 +1496,8 @@ class queXMLPDF extends TCPDF {
 						$rtmp['width'] = count($r->fixed->category);
 						if ($r->fixed['rotate'] == "true") 
 							$rtmp['rotate'] = "true";
+						if ($r->fixed['separate'] == "true") 
+							$rtmp['separate'] = "true";
 						$ctmp = array();
 						foreach ($r->fixed->category as $c)
 						{
@@ -1690,7 +1719,11 @@ class queXMLPDF extends TCPDF {
 		}
 
 		//Question header
-		$this->drawQuestionHead($question['title'], $question['text'],$help,$specifier);
+		$helph = $help;
+		//don't display help if separate questions are involved
+		if (isset($question['responses'][0]['response']['separate'])) $helph = false;
+
+		$this->drawQuestionHead($question['title'], $question['text'],$helph,$specifier);
 
 		$text = "";
 		if (isset($question['text'])) $text = $question['text'];
@@ -1712,11 +1745,18 @@ class queXMLPDF extends TCPDF {
 				{
 					case 'fixed':
 						$categories = $response['categories'];
-						
+
 						if (isset($response['rotate']))
 							$this->drawSingleChoiceVertical($categories,$subquestions,$text);
 						else
-							$this->drawSingleChoiceHorizontal($categories,$subquestions,$text);
+						{
+							if (isset($response['separate']))
+							{
+								$this->drawSingleChoiceVerticalSeparate($categories,$subquestions,$text,$help);
+							}
+							else
+								$this->drawSingleChoiceHorizontal($categories,$subquestions,$text);
+						}
 						
 						break;
 					case 'number':
@@ -2435,6 +2475,32 @@ class queXMLPDF extends TCPDF {
 			}
 		}
 	}
+
+	
+	/**
+	 * Draw vertical questions separately instead of in a matrix
+	 * 
+	 * @param array $categories An array containing the category text, value, skipto and other
+	 * @param array $subquestions An array containing the subquestions if any
+	 * @param string|bool $parenttext The question text of the parent or false if not specified
+	 * @param string|bool $help Help text if any for the responses
+	 * 
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since  2013-07-30
+	 */
+	protected function drawSingleChoiceVerticalSeparate($categories,$subquestions,$parenttext,$help)
+	{
+		for ($sc = 0; $sc < count($subquestions); $sc++)
+		{
+			$s = $subquestions[$sc];
+
+			$this->drawQuestionHead("",$this->numberToLetter($sc + 1) . ". " . $s['text'],$help);
+			//Don't send it twice
+			unset($s['text']);
+			$this->drawSingleChoiceVertical($categories,array(array($s)),$this->subQuestionTextSeparator . $s['text']);
+		}
+	}
+
 
 	/**
 	 * Draw a vertical table of single choice responses including "eye guides"

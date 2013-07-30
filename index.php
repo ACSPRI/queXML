@@ -29,6 +29,7 @@ if(isset($_FILES['userfile']))
 
 	$quexmlpdf->setStyle($_POST['style']);
 	$quexmlpdf->setResponseTextFontSize($_POST['responseTextFontSize']);
+	$quexmlpdf->setSectionHeight($_POST['sectionHeight']);
 	$quexmlpdf->setResponseLabelFontSize(array($_POST['responseLabelFontSize'],$_POST['responseLabelFontSizeSmall']));
 
 	$quexmlpdf->create($quexmlpdf->createqueXML(file_get_contents($filename)));
@@ -73,6 +74,7 @@ else
 			<div><label for="responseTextFontSize">Response text / sub question font size</label><input name="responseTextFontSize" type="text" value="<?php echo $quexmlpdf->getResponseTextFontSize();?>"/></div>
 			<div><label for="responseLabelFontSize">Response label font size (normal)</label><input name="responseLabelFontSize" type="text" value="<?php $t = $quexmlpdf->getResponseLabelFontSize(); echo $t[0];?>"/></div>
 			<div><label for="responseLabelFontSizeSmall">Response label font size (small)</label><input name="responseLabelFontSizeSmall" type="text" value="<?php $t = $quexmlpdf->getResponseLabelFontSize(); echo $t[1];?>"/></div>
+			<div><label for="sectionHeight">Minimum section height (mm)</label><input name="sectionHeight" type="text" value="<?php echo $quexmlpdf->getSectionHeight();?>"/></div>
 			<input type="submit" value="Upload File" />
 		</form>
 	</body>
