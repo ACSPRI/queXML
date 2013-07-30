@@ -1409,6 +1409,10 @@ class queXMLPDF extends TCPDF {
 				$rstmp = array();
 				
 				$qtmp['title'] = $sl . $qcount . $this->questionTitleSuffix;
+
+				if (isset($qu['hidetitle']) && $qu['hidetitle'] == "true") 
+					$qtmp['hidetitle'] = "true";
+
 				$qtmp['text'] = "";
 
 				foreach ($qu->text as $ttmp)
@@ -1723,7 +1727,12 @@ class queXMLPDF extends TCPDF {
 		//don't display help if separate questions are involved
 		if (isset($question['responses'][0]['response']['separate'])) $helph = false;
 
-		$this->drawQuestionHead($question['title'], $question['text'],$helph,$specifier);
+		//hide if requested
+		$qtitle = $question['title'];
+		if (isset($question['hidetitle']))
+			$qtitle = "";
+
+		$this->drawQuestionHead($qtitle, $question['text'],$helph,$specifier);
 
 		$text = "";
 		if (isset($question['text'])) $text = $question['text'];
