@@ -1476,10 +1476,15 @@ class queXMLPDF extends TCPDF {
 						$oarr['width'] = current($sq->contingentQuestion->length);
 						$oarr['text'] = current($sq->contingentQuestion->text);
 
+						$oarr['format'] = 'text';
+					
+						if (isset($sq->contingentQuestion->format))
+							$oarr['format'] = current($sq->contingentQuestion->format);
+
 						if (isset($sq->contingentQuestion['defaultValue'])) 
 							$oarr['defaultvalue'] = $sq->contingentQuestion['defaultValue'];
 
-						$oarr['varname'] = $c->contingentQuestion['varName'];
+						$oarr['varname'] = $sq->contingentQuestion['varName'];
 						$sqtmp['other'] = $oarr;
 					}	
 
@@ -1520,6 +1525,11 @@ class queXMLPDF extends TCPDF {
 								$oarr = array();
 								$oarr['width'] = current($c->contingentQuestion->length);
 								$oarr['text'] = current($c->contingentQuestion->text);
+
+								$oarr['format'] = 'text';
+								
+								if (isset($c->contingentQuestion->format))
+									$oarr['format'] = current($c->contingentQuestion->format);
 
 								if (isset($c->contingentQuestion['defaultValue'])) 
 									$oarr['defaultvalue'] = $c->contingentQuestion['defaultValue'];
@@ -1988,14 +1998,22 @@ class queXMLPDF extends TCPDF {
 	 * 
 	 * @param mixed $width   The "width" of the box. This relates to the number of "lines" high
 	 * @param bool|string $defaultvalue The default text to print in the box (if any)
+         * @param bool|string $text The text to display above the box (if any) 
 	 * 
 	 * @author Adam Zammit <adam.zammit@acspri.org.au>
 	 * @since  2010-09-02
 	 */
-	protected function drawLongText($width,$defaultvalue = false)
+	protected function drawLongText($width,$defaultvalue = false,$text =false)
 	{
 		//Calculate long text box width as the width of the available column minus the skip column and question title area
 		$rwidth = $this->getColumnWidth() - $this->skipColumnWidth - $this->questionTitleWidth;
+
+		if ($text !== false && !empty($text))
+		{
+			$this->setBackground('question');
+			$html = "<table><tr><td width=\"{$this->questionTitleWidth}mm\"></td><td width=\"" . ($this->getColumnWidth() -  $this->skipColumnWidth - $this->questionTitleWidth) . "mm\" class=\"responseAboveText\">$text</td><td></td></tr></table>";
+			$this->writeHTMLCell($this->getColumnWidth(), 1, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,true);
+		}
 
 		$currentY = $this->GetY();
 		$height = $width * $this->longTextResponseHeightMultiplier;
@@ -2667,13 +2685,22 @@ class queXMLPDF extends TCPDF {
 	 */
 	protected function drawOther($other)
 	{
-		$this->addBoxGroup(3,$other['varname'],$other['text'],$other['width']);	
+		$btid = 3;
+
+		if ($other['format'] == 'longtext')
+			$btid = 6;
+		
+		$this->addBoxGroup($btid,$other['varname'],$other['text'],$other['width']);	
 
 		$defaultvalue = false;
 		if (isset($other['defaultvalue']) && $other['defaultvalue'] !== false)
 			$defaultvalue = $other['defaultvalue'];
 
-		$this->drawText($other['text'],$other['width'],$defaultvalue);
+		if ($btid == 3)
+			$this->drawText($other['text'],$other['width'],$defaultvalue);
+		else
+			$this->drawLongText($other['width'],$defaultValue,$other['text']);
+
 		//Insert a gap here
 		$this->Rect($this->getColumnX(),$this->GetY(),$this->getColumnWidth(),$this->subQuestionLineSpacing,'F',array(),$this->backgroundColourQuestion);
 		$this->SetY($this->GetY() + $this->subQuestionLineSpacing,false);

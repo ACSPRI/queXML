@@ -324,7 +324,20 @@
 														</xsd:annotation>
 														<xsd:complexType>
 															<xsd:all>
-																<xsd:element name="text">
+
+																	<xsd:element name="format" default="text">
+																		<xsd:annotation>
+																			<xsd:documentation>Defines the type of data that may be entered</xsd:documentation>
+																		</xsd:annotation>
+																		<xsd:simpleType>
+																			<xsd:restriction base="xsd:string">
+																				<xsd:enumeration value="text"/>
+																				<xsd:enumeration value="longtext"/>
+																			</xsd:restriction>
+																		</xsd:simpleType>
+																	</xsd:element>
+
+										<xsd:element name="text">
 																	<xsd:annotation>
 																		<xsd:documentation>The text of the contingent question. For example: Please specify</xsd:documentation>
 																	</xsd:annotation>
@@ -481,6 +494,18 @@
 																				</xsd:annotation>
 																				<xsd:complexType>
 																					<xsd:all>
+																						<xsd:element name="format" default="text">
+																							<xsd:annotation>
+																								<xsd:documentation>Defines the type of data that may be entered</xsd:documentation>
+																							</xsd:annotation>
+																							<xsd:simpleType>
+																								<xsd:restriction base="xsd:string">
+																									<xsd:enumeration value="text"/>
+																									<xsd:enumeration value="longtext"/>
+																								</xsd:restriction>
+																							</xsd:simpleType>
+																						</xsd:element>
+					
 																						<xsd:element name="text">
 																							<xsd:annotation>
 																								<xsd:documentation>The text of the contingent question. For example: Please specify</xsd:documentation>
