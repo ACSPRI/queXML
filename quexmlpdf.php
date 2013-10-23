@@ -1389,7 +1389,8 @@ class queXMLPDF extends TCPDF {
 			$stmp['title'] = "Section " . $sl;
 			$stmp['info'] = "";
 			$stmp['text'] = "";
-	
+			$bfc = 0;	
+
 			foreach ($s->sectionInfo as $sitmp)
 			{
 				if ($sitmp->position == 'title')
@@ -1398,7 +1399,12 @@ class queXMLPDF extends TCPDF {
 				}
 				if ($sitmp->position == 'before' || $sitmp->position == 'during')
 				{
-					$stmp['info'] .= $sitmp->text . "<br/>";
+					$stmp['info'] .= $sitmp->text;
+
+					if ($bfc > 0) 
+						$stmp['info'] .= "<br/>";
+
+					$bfc++;
 				}
 			}
 			
