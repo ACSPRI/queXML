@@ -225,6 +225,7 @@ class queXMLPDF extends TCPDF {
 		td.questionHelpAfter {text-align:center; font-weight:bold; font-size:10pt;}
 		td.questionHelpBefore {text-align:center; font-weight:bold; font-size:12pt;}
 		td.responseAboveText {font-weight:normal; font-style:normal; text-align:left; font-size:12pt;} 
+		td.matrixResponseGroupLabel {font-weight:normal; font-style:normal; text-align:left; font-size:12pt;}
 		span.sectionTitle {font-size:18pt; font-weight:bold;} 
 		span.sectionDescription {font-size:14pt; font-weight:bold;} 
 		div.sectionInfo {font-style:normal; font-size:10pt; text-align:left; font-weight:normal;}
@@ -644,7 +645,7 @@ class queXMLPDF extends TCPDF {
 	 * @var mixed  Defaults to 5. 
 	 * @since 2010-10-29
 	 */
-	protected $questionnaireInfoMargin = 20;
+	protected $questionnaireInfoMargin = 5;
 
 	/**
 	 * Height of a response label
@@ -1611,7 +1612,11 @@ class queXMLPDF extends TCPDF {
 		foreach($questionnaire['sections'] as $sk => $sv)
 		{
 			//link the section title with the first question for pagination purposes
-			$questions = count($sv['questions']);
+			if (isset($sv['questions'])) 
+			{
+				$questions = count($sv['questions']);
+			}
+			else $questions=0; 
 			
 			$this->startTransaction();
 			$this->addSection($sv['text'],$sv['title'],$sv['info']);
@@ -1754,7 +1759,11 @@ class queXMLPDF extends TCPDF {
 		if (isset($question['text'])) $text = $question['text'];
 
 		//Loop over response groups and produce questions of various types
-		if (isset($question['responses'])) { foreach($question['responses'] as $r)
+		if (isset($question['responses']))
+        	{
+		//the number of response scales is needed later on to decide on labelling scales in fixed response questions
+		$iCountResponseScales=count($question['responses']);
+		foreach($question['responses'] as $r)
 		{
 			$varname = $r['varname'];	
 
@@ -1765,6 +1774,14 @@ class queXMLPDF extends TCPDF {
 				$type = $response['type'];
 
 				$bgtype = 3; //box group type temp set to 3 (text)
+				
+				if (count($question['responses'])>1)
+				{
+					foreach ($subquestions as $index=>$sv)
+					{
+						$subquestions[$index]['varname']=$subquestions[$index]['varname'].'_'.$varname;
+					}
+				}
 
 				switch ($type)
 				{
@@ -1780,18 +1797,21 @@ class queXMLPDF extends TCPDF {
 								$this->drawSingleChoiceVerticalSeparate($categories,$subquestions,$text,$help);
 							}
 							else
-								$this->drawSingleChoiceHorizontal($categories,$subquestions,$text);
+							{
+								// if there is more than one response scale, add a label to scales in the pdf 
+								$this->drawSingleChoiceHorizontal($categories,$subquestions,$text,$iCountResponseScales >1? $varname : false);
+							}
 						}
-						
+					
 						break;
 					case 'number':
 						$bgtype = 4;
 					case 'currency':
 					case 'text':
 						if (isset($response['rotate']))
-							$this->drawMatrixTextHorizontal($subquestions,$response['width'],$text,$bgtype);
+							$this->drawMatrixTextHorizontal($subquestions,$response['width'],$text,$bgtype,$response['text']);
 						else
-							$this->drawMatrixTextVertical($subquestions,$response['width'],$text,$bgtype);
+							$this->drawMatrixTextVertical($subquestions,$response['width'],$text,$bgtype,$response['text']);
 						break;
 					case 'vas':
 						$this->drawMatrixVas($subquestions,$text,$response['labelleft'],$response['labelright']);
@@ -1880,13 +1900,20 @@ class queXMLPDF extends TCPDF {
 	 * @param int $width The width of the text element
 	 * @param string|bool $parenttext The question text of the parent or false if not specified
 	 * @param int $bgtype The box group type (default is 3 - text)
+	 * @param string|bool $responsegrouplabel The label for this response group or false if not specified
 	 * 
 	 * @author Adam Zammit <adam.zammit@acspri.org.au>
 	 * @since  2010-09-02
 	 */
-	protected function drawMatrixTextVertical($subquestions,$width,$parenttext = false,$bgtype = 3)
+	protected function drawMatrixTextVertical($subquestions,$width,$parenttext = false,$bgtype = 3, $responsegrouplabel = false)
 	{
 		$c = count($subquestions);
+		if ($responsegrouplabel)
+		{
+			$this->setBackground('question');
+			$html = "<table><tr><td width=\"{$this->questionTitleWidth}mm\"></td><td width=\"" . ($this->getColumnWidth() -  $this->skipColumnWidth - $this->questionTitleWidth) . "mm\" class=\"matrixResponseGroupLabel\">$responsegrouplabel:</td><td></td></tr></table>";
+			$this->writeHTMLCell($this->getColumnWidth(), 1, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,true);
+		}
 		for($i = 0; $i < $c; $i++)
 		{
 			$s = $subquestions[$i];
@@ -2270,11 +2297,12 @@ class queXMLPDF extends TCPDF {
 	 * @param int $width The width
 	 * @param string|bool $parenttext The question text of the parent or false if not specified
 	 * @param int $bgtype The type of the box group (defaults to 3 - text)
+	 * @param string|bool $responsegrouplabel The label for this response group or false if not specified
 	 *
 	 * @author Adam Zammit <adam.zammit@acspri.org.au>
 	 * @since  2010-09-08
 	 */
-	protected function drawMatrixTextHorizontal($subquestions,$width,$parenttext = false,$bgtype = 3)
+	protected function drawMatrixTextHorizontal($subquestions,$width,$parenttext = false,$bgtype = 3, $responsegrouplabel = false)
 	{
 		$total = count($subquestions);
 		$currentY = $this->GetY();
@@ -2292,7 +2320,7 @@ class queXMLPDF extends TCPDF {
 		$this->writeHTMLCell($this->getColumnWidth(), $this->singleResponseAreaHeight, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,true);
 		$currentY = $this->GetY();
 
-		$html = "<table><tr><td width=\"{$textwidth}mm\" class=\"responseText\"></td><td></td></tr></table>";
+		$html = "<table><tr><td width=\"{$textwidth}mm\" class=\"matrixResponseGroupLabel\">$responsegrouplabel</td><td></td></tr></table>";
 		$this->writeHTMLCell($this->getColumnWidth(), $this->singleResponseAreaHeight, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,true);
 
 		$ncurrentY = $this->GetY();
@@ -2332,11 +2360,12 @@ class queXMLPDF extends TCPDF {
 	 * Draw the head of a single choice horizontal table of responses
 	 * 
 	 * @param array $categories The response categories
+	 * @param string|bool $responsegrouplabel The label for this response group or false if not specified
 	 * 
 	 * @author Adam Zammit <adam.zammit@acspri.org.au>
 	 * @since  2012-06-05
 	 */
-	protected function drawSingleChoiceHorizontalHead($categories)
+	protected function drawSingleChoiceHorizontalHead($categories, $responsegrouplabel=false)
 	{
 		$total = count($categories);
 		$currentY = $this->GetY();
@@ -2348,6 +2377,13 @@ class queXMLPDF extends TCPDF {
 
 		$textwidth = ($this->getColumnWidth() - $this->skipColumnWidth) - ($rwidth * $total);
 
+		//Draw a label for a group of Questions/Responses (e.g. useful for dual scale matrix questions)        
+		if ($responsegrouplabel!=false)
+		{
+			$this->setBackground('question');
+			$this->setDefaultFont();
+			$this->MultiCell($textwidth,$this->responseLabelHeight,$responsegrouplabel.':',0,'L',false,0,$this->getColumnX()+$this->questionTitleWidth,$this->GetY(),true,0,false,true,$this->responseLabelHeight,'B',true);
+        	}
 
 		//First draw a background of height $this->responseLabelHeight
 		$html = "<div></div>";
@@ -2383,11 +2419,12 @@ class queXMLPDF extends TCPDF {
 	 * @param array $categories The response categories
 	 * @param array $subquestions The subquestions if any 
 	 * @param string|bool $parenttext The question text of the parent or false if not specified
+	 * @param string|bool $responsegrouplabel The label for this response group or false if not specified
 	 *
 	 * @author Adam Zammit <adam.zammit@acspri.org.au>
 	 * @since  2010-09-08
 	 */
-	protected function drawSingleChoiceHorizontal($categories, $subquestions = array(array('text' => '')),$parenttext = false)
+	protected function drawSingleChoiceHorizontal($categories, $subquestions = array(array('text' => '')),$parenttext = false, $responsegrouplabel=false)
 	{
 		$total = count($categories);
 		$currentY = $this->GetY();
@@ -2400,111 +2437,113 @@ class queXMLPDF extends TCPDF {
 		$textwidth = ($this->getColumnWidth() - $this->skipColumnWidth) - ($rwidth * $total);
 
 		//draw the header
-		$this->drawSingleChoiceHorizontalHead($categories);
-
+		$this->drawSingleChoiceHorizontalHead($categories, $responsegrouplabel);
 		$currentY += $this->responseLabelHeight;
 
-		if ($this->allowSplittingSingleChoiceHorizontal) $this->startTransaction(); //start a transaction
+		//don't continue if page break already
+		if ($this->pageBreakOccured)
+			return;
+
 		for ($i = 0; $i < count($subquestions); $i++)
 		{
+			if ($this->allowSplittingSingleChoiceHorizontal && $i == 1) 
+				$this->startTransaction(); //start a transaction when one line drawn
+			
 			$s = $subquestions[$i];
 
-			if ($this->allowSplittingSingleChoiceHorizontal && $this->pageBreakOccured)
+			//Add box group to current layout
+			if ($parenttext == false)
+				$this->addBoxGroup(1,$s['varname'],$s['text']);
+			else				
+				$this->addBoxGroup(1,$s['varname'],$parenttext . $this->subQuestionTextSeparator . $s['text']);
+	
+			//Draw background
+			$html = "<div></div>";
+			$this->setBackground('question');
+			$this->writeHTMLCell($this->getColumnWidth(), $this->singleResponseHorizontalHeight, $this->getColumnX(), $currentY, $this->style . $html,0,1,true,true);	
+			$this->setDefaultFont($this->responseTextFontSize);			
+
+			$newlineheight = $this->singleResponseHorizontalHeight;
+			$heightadjust = 0;
+
+			$testcells = $this->getNumLines($s['text'],$textwidth);
+
+			if ($testcells > $this->singleResponseHorizontalMaxLines)
 			{
-                                $this->pageBreakOccured = false;
-                                $this->rollBackTransaction(true);
-                                $this->SetAutoPageBreak(false); //Temporarily set so we don't trigger a page break
-                                $this->fillPageBackground();
-                                $this->newPage();
-				$this->drawSingleChoiceHorizontalHead($categories);
-				
-				//reset currentY
-				$currentY = $this->GetY() + $this->responseLabelHeight;
-				
-				$i = $i - 2; //go back and draw subquestions on the new page
+				//more than two lines so need to increase the space between these questions
+				$heightadjust = (($this->singleResponseHorizontalHeight / $this->singleResponseHorizontalMaxLines) * ($testcells - $this->singleResponseHorizontalMaxLines));
+
+				$newlineheight = $newlineheight + $heightadjust;
+
+				$this->setBackground('question');
+				$this->writeHTMLCell($this->getColumnWidth(), $newlineheight, $this->getColumnX(), $currentY, $this->style . $html,0,1,true,false);	
+				$this->setDefaultFont($this->responseTextFontSize);			
+
+				$this->MultiCell($textwidth,$newlineheight,$s['text'],0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$newlineheight,'M',false);
 			}
 			else
 			{
-				if ($this->allowSplittingSingleChoiceHorizontal)
-				{
-					$this->commitTransaction();
-					$this->startTransaction(); //start a transaction to allow for splitting over pages if necessary
-				}
- 
-				//Add box group to current layout
-				if ($parenttext == false)
-					$this->addBoxGroup(1,$s['varname'],$s['text']);
-				else				
-					$this->addBoxGroup(1,$s['varname'],$parenttext . $this->subQuestionTextSeparator . $s['text']);
-	
-				//$html = "<table><tr><td width=\"{$textwidth}mm\" class=\"responseText\">" . $s['text'] . "</td><td></td></tr></table>";
-				//$this->writeHTMLCell($this->getMainPageWidth(), $this->singleResponseAreaHeight, $this->getMainPageX(), $this->GetY(), $this->style . $html,0,1,true,true);
-	
-				//Draw background
-				$html = "<div></div>";
-				$this->setBackground('question');
-				$this->writeHTMLCell($this->getColumnWidth(), $this->singleResponseHorizontalHeight, $this->getColumnX(), $currentY, $this->style . $html,0,1,true,true);	
-				$this->setDefaultFont($this->responseTextFontSize);			
-
-				$newlineheight = $this->singleResponseHorizontalHeight;
-				$heightadjust = 0;
-
-				$testcells = $this->getNumLines($s['text'],$textwidth);
-
-				if ($testcells > $this->singleResponseHorizontalMaxLines)
-				{
-					//more than two lines so need to increase the space between these questions
-					$heightadjust = (($this->singleResponseHorizontalHeight / $this->singleResponseHorizontalMaxLines) * ($testcells - $this->singleResponseHorizontalMaxLines));
-
-					$newlineheight = $newlineheight + $heightadjust;
-
-					$this->setBackground('question');
-					$this->writeHTMLCell($this->getColumnWidth(), $newlineheight, $this->getColumnX(), $currentY, $this->style . $html,0,1,true,false);	
-					$this->setDefaultFont($this->responseTextFontSize);			
-
-					$this->MultiCell($textwidth,$newlineheight,$s['text'],0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$newlineheight,'M',false);
-				}
-				else
-				{
-					$this->MultiCell($textwidth,$this->singleResponseHorizontalHeight,$s['text'],0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$this->singleResponseHorizontalHeight,'M',false);
-				}
+				$this->MultiCell($textwidth,$this->singleResponseHorizontalHeight,$s['text'],0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$this->singleResponseHorizontalHeight,'M',false);
+			}
 				
 				
-				$other = false;
-				if (isset($s['other']))
-					$other = true;
+			$other = false;
+			if (isset($s['other']))
+				$other = true;
 
-				//Draw the categories horizontally
-				$rnum = 1;
-				foreach ($categories as $r)
-				{
-					if ($total == 1) $num = 'only';
-					else if ($rnum == 1) $num = 'first';
-					else if ($rnum < $total) $num = 'middle';
-					else if ($rnum == $total) $num = 'last';
+			//Draw the categories horizontally
+			$rnum = 1;
+			foreach ($categories as $r)
+			{
+				if ($total == 1) $num = 'only';
+				else if ($rnum == 1) $num = 'first';
+				else if ($rnum < $total) $num = 'middle';
+				else if ($rnum == $total) $num = 'last';
 
-					$bfilled = false;
-					if (isset($s['defaultvalue']) && $s['defaultvalue'] !== false && $s['defaultvalue'] == $r['value'])
-						$bfilled = true;
+				$bfilled = false;
+				if (isset($s['defaultvalue']) && $s['defaultvalue'] !== false && $s['defaultvalue'] == $r['value'])
+					$bfilled = true;
 	
-					$position = $this->drawHorizontalResponseBox(($this->getColumnX() + $textwidth + (($rnum - 1) * $rwidth)),$currentY + ($heightadjust/2), $num,$other,false,($total > $this->singleResponseHorizontalMax),$bfilled);
+				$position = $this->drawHorizontalResponseBox(($this->getColumnX() + $textwidth + (($rnum - 1) * $rwidth)),$currentY + ($heightadjust/2), $num,$other,false,($total > $this->singleResponseHorizontalMax),$bfilled);
 		
-					//Add box to the current layout
-					$this->addBox($position[0],$position[1],$position[2],$position[3],$r['value'],$r['text']);
+				//Add box to the current layout
+				$this->addBox($position[0],$position[1],$position[2],$position[3],$r['value'],$r['text']);
 	
-					$rnum++;
-				}
+				$rnum++;
+			}
 	
-				if (($this->GetY() - $currentY) > $newlineheight)
-					$currentY = $this->GetY();
-				else
-					$currentY = $currentY + $newlineheight;
-	
-				$this->SetY($currentY,false);
+			if (($this->GetY() - $currentY) > $newlineheight)
+				$currentY = $this->GetY();
+			else
+				$currentY = $currentY + $newlineheight;
 
-				if ($other)
-					$this->drawOther($s['other']);
-					
+			$this->SetY($currentY,false);
+
+			if ($other)
+				$this->drawOther($s['other']);
+
+			//only allow a page break if defined and we have more than one item already on this page
+			if ($this->allowSplittingSingleChoiceHorizontal && $this->pageBreakOccured && $i > 0) 
+			{
+				$this->pageBreakOccured = false;
+				$this->rollBackTransaction(true);
+				$this->SetAutoPageBreak(false); //Temporarily set so we don't trigger a page break
+				$this->fillPageBackground();
+				$this->newPage();
+				$this->drawSingleChoiceHorizontalHead($categories, $responsegrouplabel);
+							
+				//reset currentY
+				$currentY = $this->GetY() + $this->responseLabelHeight;
+				
+				$i = $i - 1; //go back and draw subquestions on the new page
+			}
+			else
+			{
+				if ($this->allowSplittingSingleChoiceHorizontal && $i > 0)
+				{
+				    $this->commitTransaction();
+				    $this->startTransaction(); //start a transaction to allow for splitting over pages if necessary
+				}
 			}
 		}
 	}
@@ -2900,6 +2939,9 @@ class queXMLPDF extends TCPDF {
 			$this->SetXY($this->getColumnX(),($this->cornerBorder + $this->cornerWidth));
 		}
 		$this->SetAutoPageBreak(true,$this->getMainPageX());
+
+        //after a new page was begun....page should not have already ended
+        $this->pageBreakOccured = false;
 	}
 
 	/**
