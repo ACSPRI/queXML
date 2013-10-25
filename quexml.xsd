@@ -554,6 +554,11 @@
 																	<xsd:documentation>If the response is a matrix question (subQuestions defined) then display these as separate questions instead of in the matrix style</xsd:documentation>
 																</xsd:annotation>
 															</xsd:attribute>
+																<xsd:attribute name="split" type="xsd:boolean" use="optional">
+																<xsd:annotation>
+																	<xsd:documentation>If set, override the default for allowing this response to be split over multiple pages</xsd:documentation>
+																</xsd:annotation>
+															</xsd:attribute>
 														</xsd:complexType>
 													</xsd:element>
 													<xsd:element name="vas">
