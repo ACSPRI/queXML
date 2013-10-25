@@ -1992,7 +1992,8 @@ class queXMLPDF extends TCPDF {
 				$type = $response['type'];
 
 				$bgtype = 3; //box group type temp set to 3 (text)
-				
+
+	            // question with > 1 responses and >1 subquestions --> matrix question --> need to come up with unique variable names				
 				if (count($question['responses'])>1)
 				{
 					foreach ($subquestions as $index=>$sv)
@@ -2154,6 +2155,8 @@ class queXMLPDF extends TCPDF {
 			$split = $this->allowSplittingMatrixText;
 
 		$c = count($subquestions);
+		
+		//draw second axis label
 		if ($responsegrouplabel)
 		{
 			$this->setBackground('question');
@@ -2639,6 +2642,7 @@ class queXMLPDF extends TCPDF {
 		$this->writeHTMLCell($this->getColumnWidth(), $this->singleResponseAreaHeight, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,true);
 		$currentY = $this->GetY();
 
+		//label "vertical axis"
 		$html = "<table><tr><td width=\"{$textwidth}mm\" class=\"matrixResponseGroupLabel\">$responsegrouplabel</td><td></td></tr></table>";
 		$this->writeHTMLCell($this->getColumnWidth(), $this->singleResponseAreaHeight, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,true);
 
@@ -2892,7 +2896,7 @@ class queXMLPDF extends TCPDF {
 
 			$this->drawQuestionHead("",$this->numberToLetter($sc + 1) . ". " . $s['text'],$help);
 			//Don't send it twice
-			notset($s['text']);
+			unset($s['text']);
 			$this->drawSingleChoiceVertical($categories,array(array($s)),$this->subQuestionTextSeparator . $s['text'],$split);
 		}
 	}
