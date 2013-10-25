@@ -322,7 +322,7 @@ class queXMLPDF extends TCPDF {
 	 * Allows all single choice horizontal arrays to be split over multiple pages/columns
 	 * Can override with "split" attribute on "fixed" in queXML
 	 * 
-	 * @var array  Defaults to false. 
+	 * @var bool  Defaults to false. 
 	 * @since 2012-08-10
 	 */
 	protected $allowSplittingSingleChoiceHorizontal = false;
@@ -331,10 +331,18 @@ class queXMLPDF extends TCPDF {
 	 * Allows all single choice vertical arrays to be split over multiple pages/columns
 	 * Can override with "split" attribute on "fixed" in queXML
 	 * 
-	 * @var array  Defaults to false. 
+	 * @var bool  Defaults to false. 
 	 * @since 2013-10-24
 	 */
 	protected $allowSplittingSingleChoiceVertical = false;
+
+	/**
+	 * Allows multiple responses to the same question to be split over multiple pages/columns
+	 * 
+	 * @var bool  Defaults to false. 
+	 * @since 2013-10-25
+	 */
+	protected $allowSplittingResponses = false;
 
 	/**
 	 * The height of an arrow
@@ -1782,8 +1790,18 @@ class queXMLPDF extends TCPDF {
         	{
 		//the number of response scales is needed later on to decide on labelling scales in fixed response questions
 		$iCountResponseScales=count($question['responses']);
-		foreach($question['responses'] as $r)
+
+		if ($this->pageBreakOccured) //don't continue if page break already
+			return;
+
+		for ($rcount = 0; $rcount < count($question['responses']); $rcount++)
 		{
+			$r = $question['responses'][$rcount];
+	
+			//only split after one response
+			if ($this->allowSplittingResponses && $rcount == 1)
+				$this->startTransaction();
+
 			$varname = $r['varname'];	
 
 			if (isset($r['subquestions']))
@@ -1892,6 +1910,27 @@ class queXMLPDF extends TCPDF {
 						$this->drawMatrixBarcode(array(array('text' => $rtext, 'varname' => $varname, 'defaultvalue' => $defaultvalue)),'CODABAR');
 						break;		
 
+				}
+			}
+
+			//only allow a page break if defined and we have more than one item already on this page
+			if ($this->allowSplittingResponses && $this->pageBreakOccured && $rcount > 0) 
+			{
+				$this->pageBreakOccured = false;
+				$this->rollBackTransaction(true);
+				$this->SetAutoPageBreak(false); //Temporarily set so we don't trigger a page break
+				$this->fillPageBackground();
+				$this->newPage();
+
+				//go back to last response
+				$rcount = $rcount - 1;
+			}
+			else
+			{
+				if ($this->allowSplittingResponses && $rcount > 0)
+				{
+				    $this->commitTransaction();
+				    $this->startTransaction(); //start a transaction to allow for splitting over pages if necessary
 				}
 			}
 		}}
