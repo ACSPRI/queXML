@@ -862,6 +862,150 @@ class queXMLPDF extends TCPDF {
 		$this->layout[$this->layoutCP]['boxgroup'][$this->boxGroupCP]['width'] = $width;
 	}
 
+	/**
+	 * Set allow splitting
+	 * 
+	 * @param bool $allow Whether to allow or not (default true)
+	 *
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since 2013-10-25
+	 */
+	public function setAllowSplittingSingleChoiceVertical($allow = true)
+	{
+		if ($allow)
+			$this->allowSplittingSingleChoiceVertical = true;
+		else
+			$this->allowSplittingSingleChoiceVertical = false;
+	}
+
+	/**
+	 * Get allow splitting
+	 * 
+	 * @return bool Whether to allow or not 
+	 *
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since 2013-10-25
+	 */
+	public function getAllowSplittingSingleChoiceVertical()
+	{
+		return $this->allowSplittingSingleChoiceVertical;
+	}
+
+	/**
+	 * Set allow splitting
+	 * 
+	 * @param bool $allow Whether to allow or not (default true)
+	 *
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since 2013-10-25
+	 */
+	public function setAllowSplittingSingleChoiceHorizontal($allow = true)
+	{
+		if ($allow)
+			$this->allowSplittingSingleChoiceHorizontal = true;
+		else
+			$this->allowSplittingSingleChoiceHorizontal = false;
+	}
+
+	/**
+	 * Get allow splitting
+	 * 
+	 * @return bool Whether to allow or not 
+	 *
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since 2013-10-25
+	 */
+	public function getAllowSplittingSingleChoiceHorizontal()
+	{
+		return $this->allowSplittingSingleChoiceHorizontal;
+	}
+
+	/**
+	 * Set allow splitting
+	 * 
+	 * @param bool $allow Whether to allow or not (default true)
+	 *
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since 2013-10-25
+	 */
+	public function setAllowSplittingVas($allow = true)
+	{
+		if ($allow)
+			$this->allowSplittingVas = true;
+		else
+			$this->allowSplittingVas = false;
+	}
+
+	/**
+	 * Get allow splitting
+	 * 
+	 * @return bool Whether to allow or not 
+	 *
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since 2013-10-25
+	 */
+	public function getAllowSplittingVas()
+	{
+		return $this->allowSplittingVas;
+	}
+
+	/**
+	 * Set allow splitting
+	 * 
+	 * @param bool $allow Whether to allow or not (default true)
+	 *
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since 2013-10-25
+	 */
+	public function setAllowSplittingMatrixText($allow = true)
+	{
+		if ($allow)
+			$this->allowSplittingMatrixText = true;
+		else
+			$this->allowSplittingMatrixText = false;
+	}
+
+	/**
+	 * Get allow splitting
+	 * 
+	 * @return bool Whether to allow or not 
+	 *
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since 2013-10-25
+	 */
+	public function getAllowSplittingMatrixText()
+	{
+		return $this->allowSplittingMatrixText;
+	}
+
+	/**
+	 * Set allow splitting
+	 * 
+	 * @param bool $allow Whether to allow or not (default true)
+	 *
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since 2013-10-25
+	 */
+	public function setAllowSplittingResponses($allow = true)
+	{
+		if ($allow)
+			$this->allowSplittingResponses = true;
+		else
+			$this->allowSplittingResponses = false;
+	}
+
+	/**
+	 * Get allow splitting
+	 * 
+	 * @return bool Whether to allow or not 
+	 *
+	 * @author Adam Zammit <adam.zammit@acspri.org.au>
+	 * @since 2013-10-25
+	 */
+	public function getAllowSplittingResponses()
+	{
+		return $this->allowSplittingResponses;
+	}
 
 	/**
 	 * Set the minimum section height
