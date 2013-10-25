@@ -320,7 +320,7 @@ class queXMLPDF extends TCPDF {
 
 	/**
 	 * Allows all single choice horizontal arrays to be split over multiple pages/columns
-	 * Can override with "split" attribute on "fixed" in queXML
+	 * Can override with "split" attribute on "response" in queXML
 	 * 
 	 * @var bool  Defaults to false. 
 	 * @since 2012-08-10
@@ -329,7 +329,7 @@ class queXMLPDF extends TCPDF {
 
 	/**
 	 * Allows all single choice vertical arrays to be split over multiple pages/columns
-	 * Can override with "split" attribute on "fixed" in queXML
+	 * Can override with "split" attribute on "response" in queXML
 	 * 
 	 * @var bool  Defaults to false. 
 	 * @since 2013-10-24
@@ -338,11 +338,30 @@ class queXMLPDF extends TCPDF {
 
 	/**
 	 * Allows multiple responses to the same question to be split over multiple pages/columns
-	 * 
+	 * Can override with "split" attribute on "question" in queXML 
+	 *
 	 * @var bool  Defaults to false. 
 	 * @since 2013-10-25
 	 */
 	protected $allowSplittingResponses = false;
+
+	/**
+	 * Allows vertical matrix texts to be split over multiple pages/columns
+	 * Can override with "split" attribute on "response" in queXML 
+	 * 
+	 * @var bool  Defaults to false. 
+	 * @since 2013-10-25
+	 */
+	protected $allowSplittingMatrixText = false;
+
+	/**
+	 * Allows matrix VAS items to be split over multiple pages/columns
+	 * Can override with "split" attribute on "response" in queXML 
+	 * 
+	 * @var bool  Defaults to false. 
+	 * @since 2013-10-25
+	 */
+	protected $allowSplittingVas = false;
 
 	/**
 	 * The height of an arrow
@@ -1433,6 +1452,16 @@ class queXMLPDF extends TCPDF {
 				$qtmp = array();
 				$rstmp = array();
 				
+				$qtmp['split'] = 'notset';			
+	
+				if (isset($qu['split']))
+				{
+					if (current($qu['split']) == "true")
+						$qtmp['split'] = true;
+					else
+						$qtmp['split'] = false;
+				}
+
 				$qtmp['title'] = $sl . $qcount . $this->questionTitleSuffix;
 
 				if (isset($qu['hidetitle']) && $qu['hidetitle'] == "true") 
@@ -1521,13 +1550,22 @@ class queXMLPDF extends TCPDF {
 					$rtmp = array();
 					$rstmp['varname'] = $r['varName'];
 
+					$rtmp['split'] = 'notset';
+
+					if (isset($r['split']))
+					{
+						if (current($r['split']) == "true")
+							$rtmp['split'] = true;
+						else
+							$rtmp['split'] = false;
+					}
+
 					if (isset($r['defaultValue'])) 
 						$rstmp['defaultvalue'] = $r['defaultValue'];
 
 					if (isset($r->fixed))
 					{
 						$rtmp['type'] = 'fixed';
-						$rtmp['split'] = 'unset';
 						$rtmp['width'] = count($r->fixed->category);
 
 						if ($r->fixed['rotate'] == "true") 
@@ -1535,11 +1573,6 @@ class queXMLPDF extends TCPDF {
 
 						if ($r->fixed['separate'] == "true") 
 							$rtmp['separate'] = "true";
-
-						if ($r->fixed['split'] == "true")
-							$rtmp['split'] = true;
-						else if ($r->fixed['split'] == "false")
-							$rtmp['split'] = false;
 
 						$ctmp = array();
 						foreach ($r->fixed->category as $c)
@@ -1785,6 +1818,10 @@ class queXMLPDF extends TCPDF {
 		$text = "";
 		if (isset($question['text'])) $text = $question['text'];
 
+		$split = $question['split'];
+		if ($split === 'notset')
+			$split = $this->allowSplittingResponses;	
+
 		//Loop over response groups and produce questions of various types
 		if (isset($question['responses']))
         	{
@@ -1799,7 +1836,7 @@ class queXMLPDF extends TCPDF {
 			$r = $question['responses'][$rcount];
 	
 			//only split after one response
-			if ($this->allowSplittingResponses && $rcount == 1)
+			if ($split && $rcount == 1)
 				$this->startTransaction();
 
 			$varname = $r['varname'];	
@@ -1835,8 +1872,11 @@ class queXMLPDF extends TCPDF {
 							}
 							else
 							{
-								// if there is more than one response scale, add a label to scales in the pdf 
-								$this->drawSingleChoiceHorizontal($categories,$subquestions,$text,$iCountResponseScales >1? $varname : false,$response['split']);
+								// if there is more than one response scale, add a label to scales in the pdf
+								$vn = false;
+								if ($iCountResponseScales > 1)
+									$vn = $varname; 
+								$this->drawSingleChoiceHorizontal($categories,$subquestions,$text,$vn,$response['split']);
 							}
 						}
 					
@@ -1848,10 +1888,10 @@ class queXMLPDF extends TCPDF {
 						if (isset($response['rotate']))
 							$this->drawMatrixTextHorizontal($subquestions,$response['width'],$text,$bgtype,$response['text']);
 						else
-							$this->drawMatrixTextVertical($subquestions,$response['width'],$text,$bgtype,$response['text']);
+							$this->drawMatrixTextVertical($subquestions,$response['width'],$text,$bgtype,$response['text'],$response['split']);
 						break;
 					case 'vas':
-						$this->drawMatrixVas($subquestions,$text,$response['labelleft'],$response['labelright']);
+						$this->drawMatrixVas($subquestions,$text,$response['labelleft'],$response['labelright'],$response['split']);
 						break;
 					case 'i25':
 						$this->drawMatrixBarcode($subquestions, 'I25');
@@ -1914,7 +1954,7 @@ class queXMLPDF extends TCPDF {
 			}
 
 			//only allow a page break if defined and we have more than one item already on this page
-			if ($this->allowSplittingResponses && $this->pageBreakOccured && $rcount > 0) 
+			if ($split && $this->pageBreakOccured && $rcount > 0) 
 			{
 				$this->pageBreakOccured = false;
 				$this->rollBackTransaction(true);
@@ -1927,7 +1967,7 @@ class queXMLPDF extends TCPDF {
 			}
 			else
 			{
-				if ($this->allowSplittingResponses && $rcount > 0)
+				if ($split && $rcount > 0)
 				{
 				    $this->commitTransaction();
 				    $this->startTransaction(); //start a transaction to allow for splitting over pages if necessary
@@ -1959,12 +1999,16 @@ class queXMLPDF extends TCPDF {
 	 * @param string|bool $parenttext The question text of the parent or false if not specified
 	 * @param int $bgtype The box group type (default is 3 - text)
 	 * @param string|bool $responsegrouplabel The label for this response group or false if not specified
+	 * @param string|bool $split Allow splitting this over multiple pages. 'notset' means leave default. Otherwise force setting
 	 * 
 	 * @author Adam Zammit <adam.zammit@acspri.org.au>
 	 * @since  2010-09-02
 	 */
-	protected function drawMatrixTextVertical($subquestions,$width,$parenttext = false,$bgtype = 3, $responsegrouplabel = false)
+	protected function drawMatrixTextVertical($subquestions,$width,$parenttext = false,$bgtype = 3, $responsegrouplabel = false, $split = 'notset')
 	{
+		if ($split === 'notset')
+			$split = $this->allowSplittingMatrixText;
+
 		$c = count($subquestions);
 		if ($responsegrouplabel)
 		{
@@ -1972,8 +2016,16 @@ class queXMLPDF extends TCPDF {
 			$html = "<table><tr><td width=\"{$this->questionTitleWidth}mm\"></td><td width=\"" . ($this->getColumnWidth() -  $this->skipColumnWidth - $this->questionTitleWidth) . "mm\" class=\"matrixResponseGroupLabel\">$responsegrouplabel:</td><td></td></tr></table>";
 			$this->writeHTMLCell($this->getColumnWidth(), 1, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,true);
 		}
+
+		//don't proceed if breaking the page already
+		if ($this->pageBreakOccured)
+			return;
+
 		for($i = 0; $i < $c; $i++)
 		{
+			if ($split && $i == 1) 
+				$this->startTransaction(); //start a transaction when one line drawn
+			
 			$s = $subquestions[$i];
 
 			if ($parenttext == false)
@@ -1992,6 +2044,35 @@ class queXMLPDF extends TCPDF {
 			//Insert a gap here
 			$this->Rect($this->getColumnX(),$this->GetY(),$this->getColumnWidth(),$this->subQuestionLineSpacing,'F',array(),$this->backgroundColourQuestion);
 			$this->SetY($currentY + $this->subQuestionLineSpacing,false);
+
+			//only allow a page break if defined and we have more than one item already on this page
+			if ($split && $this->pageBreakOccured && $i > 0) 
+			{
+				$this->pageBreakOccured = false;
+				$this->rollBackTransaction(true);
+				$this->SetAutoPageBreak(false); //Temporarily set so we don't trigger a page break
+				$this->fillPageBackground();
+				$this->newPage();
+	
+				//fill page background at top	
+				$html = "<div></div>";
+				$this->setBackground('question');
+				$this->writeHTMLCell($this->getColumnWidth(), $this->subQuestionLineSpacing, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,true);
+
+				//move from top of page
+				$currentY = $this->GetY();
+		
+				$i = $i - 1; //go back and draw subquestions on the new page
+			}
+			else
+			{
+				if ($split && $i > 0)
+				{
+				    $this->commitTransaction();
+				    $this->startTransaction(); //start a transaction to allow for splitting over pages if necessary
+				}
+			}
+
 		}
 	}
 
@@ -2046,27 +2127,33 @@ class queXMLPDF extends TCPDF {
 	 * @param string|bool $parenttext The question text of the parent or false if not specified
 	 * @param string $labelleft The left hand side label
 	 * @param string $labelright The right hand side label
+	 * @param string|bool $split Allow splitting this over multiple pages. 'notset' means leave default. Otherwise force setting
 	 * 
 	 * @author Adam Zammit <adam.zammit@acspri.org.au>
 	 * @since  2010-09-20
 	 */
-	protected function drawMatrixVas($subquestions,$parenttext = false,$labelleft,$labelright)
+	protected function drawMatrixVas($subquestions,$parenttext = false,$labelleft,$labelright,$split = 'notset')
 	{
+		if ($split === 'notset')
+			$split = $this->allowSplittingVas;
+
 		$c = count($subquestions);
 		
 		$width = strlen($this->vasIncrements);	
 
 		$heading = true;
+
 		for ($i = 0; $i < $c; $i++)
 		{
+			if ($split && $i == 1) 
+				$this->startTransaction(); //start a transaction when one line drawn
+	
 			$s = $subquestions[$i];
 
 			if ($parenttext == false)
 				$this->addBoxGroup(1,$s['varname'],$s['text'],$width);
 			else				
 				$this->addBoxGroup(1,$s['varname'],$parenttext . $this->subQuestionTextSeparator . $s['text'],$width);
-
-
 
 
 			$this->drawVas($s['text'],$labelleft,$labelright,$heading);
@@ -2079,6 +2166,36 @@ class queXMLPDF extends TCPDF {
 			
 			$heading = false;
 
+			//only allow a page break if defined and we have more than one item already on this page
+			if ($split && $this->pageBreakOccured && $i > 0) 
+			{
+				$this->pageBreakOccured = false;
+				$this->rollBackTransaction(true);
+				$this->SetAutoPageBreak(false); //Temporarily set so we don't trigger a page break
+				$this->fillPageBackground();
+				$this->newPage();
+	
+				//fill page background at top	
+				$html = "<div></div>";
+				$this->setBackground('question');
+				$this->writeHTMLCell($this->getColumnWidth(), $this->subQuestionLineSpacing, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,true);
+
+				//move from top of page
+				$currentY = $this->GetY();
+		
+				$i = $i - 1; //go back and draw subquestions on the new page
+
+				//draw heading again
+				$heading = true;
+			}
+			else
+			{
+				if ($split && $i > 0)
+				{
+				    $this->commitTransaction();
+				    $this->startTransaction(); //start a transaction to allow for splitting over pages if necessary
+				}
+			}
 		}
 		
 	}
@@ -2478,14 +2595,14 @@ class queXMLPDF extends TCPDF {
 	 * @param array $subquestions The subquestions if any 
 	 * @param string|bool $parenttext The question text of the parent or false if not specified
 	 * @param string|bool $responsegrouplabel The label for this response group or false if not specified
-	 * @param string|bool $split Allow splitting this over multiple pages. 'unset' means leave default. Otherwise force setting
+	 * @param string|bool $split Allow splitting this over multiple pages. 'notset' means leave default. Otherwise force setting
 	 *
 	 * @author Adam Zammit <adam.zammit@acspri.org.au>
 	 * @since  2010-09-08
 	 */
-	protected function drawSingleChoiceHorizontal($categories, $subquestions = array(array('text' => '')),$parenttext = false, $responsegrouplabel=false,$split = 'unset')
+	protected function drawSingleChoiceHorizontal($categories, $subquestions = array(array('text' => '')),$parenttext = false, $responsegrouplabel=false, $split = "notset")
 	{
-		if ($split == 'unset')
+		if ($split === "notset")
 			$split = $this->allowSplittingSingleChoiceHorizontal;
 
 		$total = count($categories);
@@ -2618,12 +2735,12 @@ class queXMLPDF extends TCPDF {
 	 * @param array $subquestions An array containing the subquestions if any
 	 * @param string|bool $parenttext The question text of the parent or false if not specified
 	 * @param string|bool $help Help text if any for the responses
-	 * @param string|bool $split Allow splitting this over multiple pages. 'unset' means leave default. Otherwise force setting
+	 * @param string|bool $split Allow splitting this over multiple pages. 'notset' means leave default. Otherwise force setting
 	 * 
 	 * @author Adam Zammit <adam.zammit@acspri.org.au>
 	 * @since  2013-07-30
 	 */
-	protected function drawSingleChoiceVerticalSeparate($categories,$subquestions,$parenttext,$help,$split='unset')
+	protected function drawSingleChoiceVerticalSeparate($categories,$subquestions,$parenttext,$help,$split='notset')
 	{
 		for ($sc = 0; $sc < count($subquestions); $sc++)
 		{
@@ -2631,7 +2748,7 @@ class queXMLPDF extends TCPDF {
 
 			$this->drawQuestionHead("",$this->numberToLetter($sc + 1) . ". " . $s['text'],$help);
 			//Don't send it twice
-			unset($s['text']);
+			notset($s['text']);
 			$this->drawSingleChoiceVertical($categories,array(array($s)),$this->subQuestionTextSeparator . $s['text'],$split);
 		}
 	}
@@ -2698,14 +2815,14 @@ class queXMLPDF extends TCPDF {
 	 * @param array $categories An array containing the category text, value, skipto and other
 	 * @param array $subquestions An array containing the subquestions if any
 	 * @param string|bool $parenttext The question text of the parent or false if not specified
-	 * @param string|bool $split Allow splitting this over multiple pages. 'unset' means leave default. Otherwise force setting
+	 * @param string|bool $split Allow splitting this over multiple pages. 'notset' means leave default. Otherwise force setting
 	 * 
 	 * @author Adam Zammit <adam.zammit@acspri.org.au>
 	 * @since  2010-09-02
 	 */
-	protected function drawSingleChoiceVertical($categories, $subquestions = array(array('text' => '')),$parenttext = false,$split = 'unset')
+	protected function drawSingleChoiceVertical($categories, $subquestions = array(array('text' => '')),$parenttext = false,$split = 'notset')
 	{
-		if ($split == 'unset')
+		if ($split === 'notset')
 			$split = $this->allowSplittingSingleChoiceVertical;
 
 		//draw subquestions if more than one category (otherwise probably a multiple choice question)
