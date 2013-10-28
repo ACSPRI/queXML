@@ -2170,8 +2170,14 @@ class queXMLPDF extends TCPDF {
 
 		for($i = 0; $i < $c; $i++)
 		{
-			if ($split && $i == 1) 
+			if ($split && $i == 1)
+			{
+				//don't proceed if breaking the page already
+				if ($this->pageBreakOccured)
+					return;
+				
 				$this->startTransaction(); //start a transaction when one line drawn
+			}
 			
 			$s = $subquestions[$i];
 
@@ -2293,7 +2299,13 @@ class queXMLPDF extends TCPDF {
 		for ($i = 0; $i < $c; $i++)
 		{
 			if ($split && $i == 1) 
+			{
+				//don't proceed if breaking the page already
+				if ($this->pageBreakOccured)
+					return;
+				
 				$this->startTransaction(); //start a transaction when one line drawn
+			}
 	
 			$s = $subquestions[$i];
 
@@ -2774,7 +2786,13 @@ class queXMLPDF extends TCPDF {
 		for ($i = 0; $i < count($subquestions); $i++)
 		{
 			if ($split && $i == 1) 
+			{
+				//don't proceed if breaking the page already
+				if ($this->pageBreakOccured)
+					return;
+
 				$this->startTransaction(); //start a transaction when one line drawn
+			}
 			
 			$s = $subquestions[$i];
 
