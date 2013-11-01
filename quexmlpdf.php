@@ -1980,8 +1980,13 @@ class queXMLPDF extends TCPDF {
 			$r = $question['responses'][$rcount];
 	
 			//only split after one response
-			if ($split && $rcount == 1)
-				$this->startTransaction();
+      if ($split && $rcount == 1)
+      {
+        if ($this->pageBreakOccured)
+          return;
+
+        $this->startTransaction();
+      }
 
 			$varname = $r['varname'];	
 
