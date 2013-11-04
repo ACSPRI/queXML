@@ -3009,7 +3009,16 @@ class queXMLPDF extends TCPDF {
 
 		for ($i = 0; $i < count($categories); $i++)
 		{
-			$rnum = $i + 1;
+			//don't continue if page break already (start on new page)
+      if ($i == 1 && $split)
+      {
+        if ($this->pageBreakOccured)
+  				return;
+
+        $this->startTransaction(); //allow for splitting
+      }
+
+	  	$rnum = $i + 1;
 			$r = $categories[$i];
 
 			if ($total == 1) $num = 'only';
@@ -3037,7 +3046,7 @@ class queXMLPDF extends TCPDF {
 			{
 				$s = $subquestions[$j];
 
-				if ($i == 0) // only need to do this once
+        if ($i == 0) // only need to do this once
 				{				
 					if ($parenttext == false)
 						$this->addBoxGroup(1,$s['varname'],$s['text']);
@@ -3065,12 +3074,6 @@ class queXMLPDF extends TCPDF {
 				//Add box to the current layout
 				$this->addBox($position[0],$position[1],$position[2],$position[3],$r['value'],$r['text']);
 			}
-
-			//don't continue if page break already (start on new page)
-			if ($i == 0 && $this->pageBreakOccured)
-				return;
-			if ($i == 0 && $split)
-				$this->startTransaction(); //allow for splitting
 
 			if (($this->GetY() - $currentY) > $this->singleResponseAreaHeight)
 				$currentY = $this->GetY();
