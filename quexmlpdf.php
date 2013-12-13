@@ -3094,7 +3094,16 @@ class queXMLPDF extends TCPDF {
 				$this->pageBreakOccured = false;
 				$this->rollBackTransaction(true);
 				$this->SetAutoPageBreak(false); //Temporarily set so we don't trigger a page break
-				$this->fillPageBackground();
+        $this->fillPageBackground();
+
+        //draw an arrow indicating that this was split and will be on the next page
+  			$boxmiddle = ($x + ($this->singleResponseBoxWidth / 2.0));
+        $this->SetFillColor($this->lineColour[0]);
+        //set the bottom of the box to be the bottom of the page
+        $y = $this->getPageHeight() - $this->cornerBorder - $this->arrowHeight;
+  			$this->Polygon(array($x, $y, $boxmiddle, $y + $this->arrowHeight, $x + $this->singleResponseBoxWidth, $y),'DF',array(),$this->lineColour);
+  			$this->setBackground('empty');	
+	
 				$this->newPage();
 						
 				if (count($categories) > 1)
