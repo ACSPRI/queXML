@@ -3002,9 +3002,6 @@ class queXMLPDF extends TCPDF {
    */
   protected function drawSingleChoiceVertical($categories, $subquestions = array(array('text' => '')),$parenttext = false,$split = 'notset')
   {
-    if ($split === 'notset')
-      $split = $this->allowSplittingSingleChoiceVertical;
-
     //draw subquestions if more than one category (otherwise probably a multiple choice question)
     if (count($categories) > 1)
       $this->drawSingleChoiceVerticalHead($subquestions);
@@ -3015,6 +3012,10 @@ class queXMLPDF extends TCPDF {
     $currentY = $this->GetY();
     $total = count($categories);
     $boxcp = array();
+
+    //restrict splitting to minSplittingSingleChoiceVertical where not explicitly set in queXML
+    if ($split === 'notset')
+      $split = $this->allowSplittingSingleChoiceVertical && ($total >= $this->minSplittingSingleChoiceVertical);
 
     for ($i = 0; $i < count($categories); $i++)
     {
