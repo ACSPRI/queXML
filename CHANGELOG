@@ -1,3 +1,22 @@
+queXML 1.14.0 - Changes since 1.13.12
+
+Schema: Allow for contingentQuestions to be specified on subQuestions (for matrix "Other")
+Schema: Added "split" attribute to question tag for splitting multiple responses
+Schema: Added format to contingentQuestion attribute
+queXMLPDF: Make sure font size for response items is fixed (in subQuestions so far) and add more space if it would overflow
+queXMLPDF: Allow for the specifying of sectionHeight
+queXMLPDF: Added feature of setting matrix fixed questions as separate to allow for looped display of matrix style questions
+queXMLPDF: Allow for hiding of the question title
+queXMLPDF: Don't add a newline for sectionInfo unless there is more than one line
+queXMLPDF: Added paginiation improvements and bug fixes from downstream (LimeSurvey) thank you mfaber!
+queXMLPDF: Added split over page functions to vertical response boxes
+queXMLPDF: Added "split" attribute to "fixed" tag to allow for overriding defaults in queXMLPDF
+queXMLPDF: Added allowSplittingResponses - multiple responses in the same question can be split over multiple pages
+queXMLPDF: Allow for splitting multiple text items and multiple vas items
+queXMLPDF: lp:1245331 Note explaining item is over multiple pages
+queXMLPDF: Added minSplittingSingleChoiceVertical
+queXMLPDF: Fixes lp:1260155 conditional splitting with new question splitting option
+
 queXML 1.3.12 - Changes since 1.3.11
 
 queXMLPDF: Add setters and getters for font size and style
