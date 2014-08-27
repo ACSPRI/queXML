@@ -21,9 +21,10 @@ if(isset($_FILES['userfile']))
 	}
 
 	$filename = $_FILES['userfile']['tmp_name'];
-	
+
+
 	// create new queXMLPDF document
-	$quexmlpdf = new queXMLPDF(PDF_PAGE_ORIENTATION, 'mm', PDF_PAGE_FORMAT, true, 'UTF-8', false);
+	$quexmlpdf = new queXMLPDF($_POST['orientation'], 'mm', $_POST['format'], true, 'UTF-8', false);
 
 	set_time_limit(120);
 
@@ -74,8 +75,10 @@ else
 			<div><label for="responseTextFontSize">Response text / sub question font size</label><input name="responseTextFontSize" type="text" value="<?php echo $quexmlpdf->getResponseTextFontSize();?>"/></div>
 			<div><label for="responseLabelFontSize">Response label font size (normal)</label><input name="responseLabelFontSize" type="text" value="<?php $t = $quexmlpdf->getResponseLabelFontSize(); echo $t[0];?>"/></div>
 			<div><label for="responseLabelFontSizeSmall">Response label font size (small)</label><input name="responseLabelFontSizeSmall" type="text" value="<?php $t = $quexmlpdf->getResponseLabelFontSize(); echo $t[1];?>"/></div>
-			<div><label for="sectionHeight">Minimum section height (mm)</label><input name="sectionHeight" type="text" value="<?php echo $quexmlpdf->getSectionHeight();?>"/></div>
-			<input type="submit" value="Upload File" />
+      <div><label for="sectionHeight">Minimum section height (mm)</label><input name="sectionHeight" type="text" value="<?php echo $quexmlpdf->getSectionHeight();?>"/></div>
+      <div><label for="orientation">Page orientation</label><select name="orientation"><option value="P">Portrait</option><option value="L">Landscape</option></select></div>
+      <div><label for="format">Page format</label><select name="format"><option value="A4">A4</option><option value="A3">A3</option><option value="USLETTER">USLETTER</option></select></div>
+      <input type="submit" value="Upload File" />
 		</form>
 	</body>
 	</html>
