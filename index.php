@@ -31,6 +31,8 @@ if(isset($_FILES['userfile']))
 	$quexmlpdf->setStyle($_POST['style']);
 	$quexmlpdf->setResponseTextFontSize($_POST['responseTextFontSize']);
 	$quexmlpdf->setSectionHeight($_POST['sectionHeight']);
+	$quexmlpdf->setBackgroundColourQuestion($_POST['backgroundColourQuestion']);
+	$quexmlpdf->setBackgroundColourSection($_POST['backgroundColourSection']);
 	$quexmlpdf->setResponseLabelFontSize(array($_POST['responseLabelFontSize'],$_POST['responseLabelFontSizeSmall']));
 
 	$quexmlpdf->create($quexmlpdf->createqueXML(file_get_contents($filename)));
@@ -76,6 +78,8 @@ else
 			<div><label for="responseLabelFontSize">Response label font size (normal)</label><input name="responseLabelFontSize" type="text" value="<?php $t = $quexmlpdf->getResponseLabelFontSize(); echo $t[0];?>"/></div>
 			<div><label for="responseLabelFontSizeSmall">Response label font size (small)</label><input name="responseLabelFontSizeSmall" type="text" value="<?php $t = $quexmlpdf->getResponseLabelFontSize(); echo $t[1];?>"/></div>
       <div><label for="sectionHeight">Minimum section height (mm)</label><input name="sectionHeight" type="text" value="<?php echo $quexmlpdf->getSectionHeight();?>"/></div>
+      <div><label for="backgroundColourQuestion">Background colour for question (0 black - 255 white)</label><input name="backgroundColourQuestion" type="text" value="<?php echo $quexmlpdf->getBackgroundColourQuestion();?>"/></div>
+      <div><label for="backgroundColourSection">Background colour for section (0 black - 255 white)</label><input name="backgroundColourSection" type="text" value="<?php echo $quexmlpdf->getBackgroundColourSection();?>"/></div>
       <div><label for="orientation">Page orientation</label><select name="orientation"><option value="P">Portrait</option><option value="L">Landscape</option></select></div>
       <div><label for="format">Page format</label><select name="format"><option value="A4">A4</option><option value="A3">A3</option><option value="USLETTER">USLETTER</option></select></div>
       <input type="submit" value="Upload File" />

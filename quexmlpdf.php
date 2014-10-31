@@ -930,6 +930,61 @@ class queXMLPDF extends TCPDF {
   }
 
   /**
+   * Set background colour for a question
+   * 
+   * @param int $colour Background colour between 0 and 255
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2013-10-25
+   */
+  public function setBackgroundColourQuestion($colour)
+  {
+    if ($colour >= 0 && $colour <= 255)
+      $this->backgroundColourQuestion = array($colour);
+  }
+
+  /**
+   * Get background colour for a question
+   * 
+   * @return int Background colour between 0 and 255
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2013-10-25
+   */
+  public function getBackgroundColourQuestion()
+  {
+      return $this->backgroundColourQuestion[0];
+  }
+
+  /**
+   * Set background colour for a section
+   * 
+   * @param int $colour Background colour between 0 and 255
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2013-10-25
+   */
+  public function setBackgroundColourSection($colour)
+  {
+    if ($colour >= 0 && $colour <= 255)
+      $this->backgroundColourSection = array($colour);
+  }
+
+  /**
+   * Get background colour for a section
+   * 
+   * @return int Background colour between 0 and 255
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2013-10-25
+   */
+  public function getBackgroundColourSection()
+  {
+      return $this->backgroundColourSection[0];
+  }
+
+
+  /**
    * Set allow splitting
    * 
    * @param bool $allow Whether to allow or not (default true)
