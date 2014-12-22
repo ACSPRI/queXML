@@ -28,6 +28,9 @@ if(isset($_FILES['userfile']))
 
 	set_time_limit(120);
 
+  if ($_POST['eformat'] == "boxes")
+    $quexmlpdf->setCornerBoxes();
+
 	$quexmlpdf->setStyle($_POST['style']);
 	$quexmlpdf->setResponseTextFontSize($_POST['responseTextFontSize']);
 	$quexmlpdf->setSectionHeight($_POST['sectionHeight']);
@@ -82,6 +85,7 @@ else
       <div><label for="backgroundColourSection">Background colour for section (0 black - 255 white)</label><input name="backgroundColourSection" type="text" value="<?php echo $quexmlpdf->getBackgroundColourSection();?>"/></div>
       <div><label for="orientation">Page orientation</label><select name="orientation"><option value="P">Portrait</option><option value="L">Landscape</option></select></div>
       <div><label for="format">Page format</label><select name="format"><option value="A4">A4</option><option value="A3">A3</option><option value="USLETTER">USLETTER</option></select></div>
+      <div><label for="eformat">Edge detection format</label><select name="eformat"><option value="lines">Corner lines</option><option value="boxes">Corner boxes</option></select></div>
       <input type="submit" value="Upload File" />
 		</form>
 	</body>

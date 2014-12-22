@@ -66,6 +66,15 @@ class queXMLPDF extends TCPDF {
 
 
   /**
+   * The width in MM of a corner box
+   * 4.57mm is approx 54 pixels at 300dpi
+   *
+   * @var float Defaults to 4.57
+   * @since 2014-12-22
+   */
+  protected $cornerBoxWidth = 4.57;
+
+  /**
    * The TCPDF barcode type
    * 
    * @var bool  Defaults to 'I25'. 
@@ -758,6 +767,15 @@ class queXMLPDF extends TCPDF {
   protected $sectionHeight = 18;
 
   /**
+   * Use corner lines (default) or corner boxes
+   *
+   * @var bool Defaults to true
+   * @since 2014-12-22
+   */
+  protected $cornerLines = true;
+
+
+  /**
    * Return the length of the longest word
    * 
    * @param mixed $txt   
@@ -1176,6 +1194,30 @@ class queXMLPDF extends TCPDF {
   }
 
   /**
+   * Set whether to use corner lines
+   *
+   * @return none
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2014-12-22
+   */
+  public function setCornerLines()
+  {
+    $this->cornerLines = true;
+  }
+
+  /**
+   * Set whether to use corner boxes
+   *
+   * @return none
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2014-12-22
+   */
+  public function setCornerBoxes()
+  {
+    $this->cornerLines = false;
+  }
+
+  /**
    * Export the layout as an XML file
    * 
    * @return string The XML layout in queXF Banding XML format
@@ -1316,6 +1358,10 @@ class queXMLPDF extends TCPDF {
 
     //set column pointer
     $this->columnCP = -1;
+
+    //set corner lines values
+    if (!$this->cornerLines)
+      $this->cornerWidth = 0;
   }
 
   /**
@@ -3368,28 +3414,56 @@ class queXMLPDF extends TCPDF {
       $height = $this->getPageHeight();
       $cb = $this->cornerBorder;
       $cl = $this->cornerLength;
-  
+      $calc = $this->cornerWidth;
+
       $this->SetDrawColor($this->lineColour[0]);
     
       $barcodeStyle = array('border' => false, 'padding' => '0', 'bgcolor' => false, 'text' => false, 'stretch' => true);
-      $lineStyle = array('width' => $this->cornerWidth, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0));
-      
-      //Top left
-      $this->Line($cb,$cb,$cb + $cl,$cb,$lineStyle);
-      $this->Line($cb,$cb,$cb,$cb + $cl,$lineStyle);
-      
-      //Top right
-      $this->Line($width - $cb,$cb,$width - $cb - $cl,$cb,$lineStyle);
-      $this->Line($width - $cb,$cb,$width - $cb,$cb + $cl,$lineStyle);
-      
-      //Bottom left
-      $this->Line($cb,$height - $cb,$cb + $cl,$height - $cb,$lineStyle);
-      $this->Line($cb,$height - $cb,$cb,$height - ($cb + $cl),$lineStyle);
-      
-      //Bottom right
-      $this->Line($width - $cb,$height - $cb,$width - $cb - $cl,$height - $cb,$lineStyle);
-      $this->Line($width - $cb,$height - $cb,$width - $cb,$height - ($cb + $cl),$lineStyle);
-  
+
+      if ($this->cornerLines)
+      {
+        //corner lines (Default)
+        $lineStyle = array('width' => $this->cornerWidth, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0));
+        
+        //Top left
+        $this->Line($cb,$cb,$cb + $cl,$cb,$lineStyle);
+        $this->Line($cb,$cb,$cb,$cb + $cl,$lineStyle);
+        
+        //Top right
+        $this->Line($width - $cb,$cb,$width - $cb - $cl,$cb,$lineStyle);
+        $this->Line($width - $cb,$cb,$width - $cb,$cb + $cl,$lineStyle);
+        
+        //Bottom left
+        $this->Line($cb,$height - $cb,$cb + $cl,$height - $cb,$lineStyle);
+        $this->Line($cb,$height - $cb,$cb,$height - ($cb + $cl),$lineStyle);
+        
+        //Bottom right
+        $this->Line($width - $cb,$height - $cb,$width - $cb - $cl,$height - $cb,$lineStyle);
+        $this->Line($width - $cb,$height - $cb,$width - $cb,$height - ($cb + $cl),$lineStyle);
+
+        $calc = $cl;
+      }
+      else
+      {
+        //corner boxes instead
+        $cw = $this->cornerBoxWidth;
+        
+        //Top left
+        $this->Rect(($cb - $cw),($cb - $cw),$cw,$cw,'DF',NULL,$this->lineColour);
+        
+        //Top right
+        $this->Rect(($width - $cb),($cb - $cw),$cw,$cw,'DF',NULL,$this->lineColour);
+        
+        //Bottom left
+        $this->Rect(($cb - $cw),($height - $cb),$cw,$cw,'DF',NULL,$this->lineColour);
+        
+        //Bottom right
+        $this->Rect(($width - $cb),($height - $cb),$cw,$cw,'DF',NULL,$this->lineColour);
+
+        $calc = -$cw;
+      }
+
+    
       $barcodeValue = substr(str_pad($this->questionnaireId,$this->idLength,"0",STR_PAD_LEFT),0,$this->idLength) . substr(str_pad($this->getPage(),$this->pageLength,"0",STR_PAD_LEFT),0,$this->pageLength);  
   
       //Calc X position of barcode from page width
@@ -3398,7 +3472,7 @@ class queXMLPDF extends TCPDF {
       $this->write1DBarcode($barcodeValue, $this->barcodeType, $barcodeX, $this->barcodeY, $this->barcodeW, $this->barcodeH,'', $barcodeStyle, 'N');
     
       //Add this page to the layout system
-      $b = $this->cornerBorder + ($this->cornerWidth / 2.0); //temp calc for middle of line
+      $b = $this->cornerBorder + ($calc / 2.0); //temp calc for middle of line
       $this->layout[$barcodeValue] = array(  'id' => $barcodeValue,
                 'tlx' => $this->mm2px($b),
                 'tly' => $this->mm2px($b),
