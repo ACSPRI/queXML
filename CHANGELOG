@@ -1,4 +1,10 @@
-queXML 1.14.0 - Changes since 1.13.12
+queXML 1.4.1 - Changes since 1.4.0
+
+queXMLPDF: New Feature: Corner boxes can be generated for page alignment
+queXMLPDF: New Feature: Added setters and getters for background and section colours
+queXMLPDF: New Feature: Add orientation and page format to index page
+
+queXML 1.4.0 - Changes since 1.3.12
 
 Schema: Allow for contingentQuestions to be specified on subQuestions (for matrix "Other")
 Schema: Added "split" attribute to question tag for splitting multiple responses
