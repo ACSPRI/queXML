@@ -37,7 +37,7 @@ if(isset($_FILES['userfile']))
 	$quexmlpdf->setBackgroundColourQuestion($_POST['backgroundColourQuestion']);
 	$quexmlpdf->setBackgroundColourSection($_POST['backgroundColourSection']);
 	$quexmlpdf->setSingleResponseAreaHeight($_POST['singleResponseAreaHeight']);
-	$quexmlpdf->setSingleResponseHorizontalHeight($_POST['singleResponseHorizintalHeight']);
+	$quexmlpdf->setSingleResponseHorizontalHeight($_POST['singleResponseHorizontalHeight']);
   $quexmlpdf->setResponseLabelFontSize(array($_POST['responseLabelFontSize'],$_POST['responseLabelFontSizeSmall']));
 
 
