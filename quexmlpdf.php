@@ -948,6 +948,60 @@ class queXMLPDF extends TCPDF {
   }
 
   /**
+   * Set the height of responses items in a sub question matrix
+   * 
+   * @param int $height Height between 1 and 100mm
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2013-10-25
+   */
+  public function setSingleResponseHorizontalHeight($height)
+  {
+    if ($height >= 1 && $height <= 100)
+      $this->singleResponseHorizontalHeight = $height;
+  }
+
+  /**
+   * Get the height of responses in a sub question matrix
+   * 
+   * @return int Height in mm between 1 and 100
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2013-10-25
+   */
+  public function getSingleResponseHorizontalHeight()
+  {
+      return $this->singleResponseHorizontalHeight;
+  }
+
+  /**
+   * Set vertical height of a single response item
+   * 
+   * @param int $height Height between 1 and 100mm
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2013-10-25
+   */
+  public function setSingleResponseAreaHeight($height)
+  {
+    if ($height >= 1 && $height <= 100)
+      $this->singleResponseAreaHeight = $height;
+  }
+
+  /**
+   * Get vertical height of a single response item
+   * 
+   * @return int Height in mm between 1 and 100
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2013-10-25
+   */
+  public function getSingleResponseAreaHeight()
+  {
+      return $this->singleResponseAreaHeight;
+  }
+
+  /**
    * Set background colour for a question
    * 
    * @param int $colour Background colour between 0 and 255
@@ -2980,7 +3034,10 @@ class queXMLPDF extends TCPDF {
       $this->SetY($currentY,false);
 
       if ($other)
+      {
+        $this->SetY($this->GetY() + $this->subQuestionLineSpacing,false);
         $this->drawOther($s['other']);
+      }
 
       //only allow a page break if defined and we have more than one item already on this page
       if ($split && $this->pageBreakOccured && $i > 0) 
@@ -3137,22 +3194,26 @@ class queXMLPDF extends TCPDF {
       else if ($rnum < $total) $num = 'middle';
       else if ($rnum == $total) $num = 'last';
 
+      $bheight = $this->singleResponseAreaHeight;
+      $skipto = false;
+      if (isset($r['skipto'])) $skipto = $r['skipto']; 
+      $other = false;
+      if (isset($r['other']) && $rnum == $total)
+      {
+        $other = $r['other']; //only set for last in set
+        $bheight += $this->arrowHeight;
+      }
+
       //Draw background
       $html = "<div></div>";
       $this->setBackground('question');
-      $this->writeHTMLCell($this->getColumnWidth(), $this->singleResponseAreaHeight, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,true);  
+      $this->writeHTMLCell($this->getColumnWidth(), $bheight, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,true);  
       $this->setDefaultFont($this->responseTextFontSize);      
 
       //draw text
-      $this->MultiCell($textwidth,$this->singleResponseAreaHeight,$r['text'],0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$this->singleResponseAreaHeight,'M',true);
+      $this->MultiCell($textwidth,$bheight,$r['text'],0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$bheight,'M',true);
       
-      $skipto = false;
-      $other = false;
-
-      if (isset($r['skipto'])) $skipto = $r['skipto'];
-      if (isset($r['other']) && $rnum == $total) $other = $r['other']; //only set for last in set
-
-      //draw the response boxes
+            //draw the response boxes
       for ($j = 0; $j < count($subquestions); $j++)
       {
         $s = $subquestions[$j];
@@ -3186,10 +3247,10 @@ class queXMLPDF extends TCPDF {
         $this->addBox($position[0],$position[1],$position[2],$position[3],$r['value'],$r['text']);
       }
 
-      if (($this->GetY() - $currentY) > $this->singleResponseAreaHeight)
+      if (($this->GetY() - $currentY) > $bheight)
         $currentY = $this->GetY();
       else
-        $currentY = $currentY + $this->singleResponseAreaHeight;
+        $currentY = $currentY + $bheight;
       
       $this->SetY($currentY,false);
 
