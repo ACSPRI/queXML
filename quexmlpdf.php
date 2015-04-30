@@ -3035,7 +3035,6 @@ class queXMLPDF extends TCPDF {
 
       if ($other)
       {
-        $this->SetY($this->GetY() + $this->subQuestionLineSpacing,false);
         $this->drawOther($s['other']);
       }
 
@@ -3211,7 +3210,7 @@ class queXMLPDF extends TCPDF {
       $this->setDefaultFont($this->responseTextFontSize);      
 
       //draw text
-      $this->MultiCell($textwidth,$bheight,$r['text'],0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$bheight,'M',true);
+      $this->MultiCell($textwidth,$this->singleResponseAreaHeight,$r['text'],0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$this->singleResponseAreaHeight,'M',true);
       
             //draw the response boxes
       for ($j = 0; $j < count($subquestions); $j++)
