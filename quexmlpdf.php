@@ -948,6 +948,33 @@ class queXMLPDF extends TCPDF {
   }
 
   /**
+   * Set margin before questionnare info
+   * 
+   * @param int $margin between 0 and 100mm
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2013-10-25
+   */
+  public function setQuestionnaireInfoMargin($margin)
+  {
+    if ($margin >= 0 && $margin <= 100)
+      $this->questionnaireInfoMargin = $margin;
+  }
+
+  /**
+   * Get the margin before questionnaire info
+   * 
+   * @return int Height in mm between 0 and 100
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2013-10-25
+   */
+  public function getQuestionnaireInfoMargin()
+  {
+      return $this->questionnaireInfoMargin;
+  }
+
+  /**
    * Set the height of responses items in a sub question matrix
    * 
    * @param int $height Height between 1 and 100mm
