@@ -28,19 +28,25 @@ if(isset($_FILES['userfile']))
 
 	set_time_limit(120);
 
-  if ($_POST['eformat'] == "boxes")
-    $quexmlpdf->setCornerBoxes();
-
-	$quexmlpdf->setStyle($_POST['style']);
-	$quexmlpdf->setResponseTextFontSize($_POST['responseTextFontSize']);
-	$quexmlpdf->setSectionHeight($_POST['sectionHeight']);
-	$quexmlpdf->setBackgroundColourQuestion($_POST['backgroundColourQuestion']);
-	$quexmlpdf->setBackgroundColourSection($_POST['backgroundColourSection']);
-	$quexmlpdf->setSingleResponseAreaHeight($_POST['singleResponseAreaHeight']);
-	$quexmlpdf->setSingleResponseHorizontalHeight($_POST['singleResponseHorizontalHeight']);
-	$quexmlpdf->setQuestionnaireInfoMargin($_POST['questionnaireInfoMargin']);
-  $quexmlpdf->setResponseLabelFontSize(array($_POST['responseLabelFontSize'],$_POST['responseLabelFontSizeSmall']));
-
+  if (is_uploaded_file($_FILES['stylefile']['tmp_name']))
+  {
+    $quexmlpdf->importStyleXML(file_get_contents($_FILES['stylefile']['tmp_name']));
+  }
+  else
+  {
+    if ($_POST['eformat'] == "boxes")
+      $quexmlpdf->setCornerBoxes();
+  
+  	$quexmlpdf->setStyle($_POST['style']);
+  	$quexmlpdf->setResponseTextFontSize($_POST['responseTextFontSize']);
+  	$quexmlpdf->setSectionHeight($_POST['sectionHeight']);
+  	$quexmlpdf->setBackgroundColourQuestion($_POST['backgroundColourQuestion']);
+  	$quexmlpdf->setBackgroundColourSection($_POST['backgroundColourSection']);
+  	$quexmlpdf->setSingleResponseAreaHeight($_POST['singleResponseAreaHeight']);
+  	$quexmlpdf->setSingleResponseHorizontalHeight($_POST['singleResponseHorizontalHeight']);
+  	$quexmlpdf->setQuestionnaireInfoMargin($_POST['questionnaireInfoMargin']);
+    $quexmlpdf->setResponseLabelFontSize(array($_POST['responseLabelFontSize'],$_POST['responseLabelFontSizeSmall']));
+  }
 
 	$quexmlpdf->create($quexmlpdf->createqueXML(file_get_contents($filename)));
 
@@ -55,6 +61,7 @@ if(isset($_FILES['userfile']))
 	}
 	
 	$zip->addFromString("quexf_banding_$qid.xml", $quexmlpdf->getLayout());
+	$zip->addFromString("quexmlpdf_style_$qid.xml", $quexmlpdf->exportStyleXML());
 	$zip->addFromString("quexmlpdf_$qid.pdf", $quexmlpdf->Output("quexml_$qid.pdf", 'S'));
 	$zip->close();
 	
@@ -79,7 +86,8 @@ else
 	<br>
 		<form enctype="multipart/form-data" action="?" method="post">
 			<input type="hidden" name="MAX_FILE_SIZE" value="1000000000" />
-			Choose a queXML file to upload: <input name="userfile" type="file" /><br/>
+			<label for="userfile">Choose a queXML file to upload: </label><input name="userfile" type="file" /><br/>
+			<label for="stylefile">(Optional otherwise set below) Choose a queXML style settings file to upload: </label><input name="stylefile" type="file" /><br/>
 			<div><label for="style">Style:</label><textarea name="style" id="style" cols="120" rows="14"><?php echo $quexmlpdf->getStyle(); ?></textarea></div>
 			<div><label for="responseTextFontSize">Response text / sub question font size</label><input name="responseTextFontSize" type="text" value="<?php echo $quexmlpdf->getResponseTextFontSize();?>"/></div>
 			<div><label for="responseLabelFontSize">Response label font size (normal)</label><input name="responseLabelFontSize" type="text" value="<?php $t = $quexmlpdf->getResponseLabelFontSize(); echo $t[0];?>"/></div>

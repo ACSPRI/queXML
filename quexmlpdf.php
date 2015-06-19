@@ -957,6 +957,7 @@ class queXMLPDF extends TCPDF {
    */
   public function setQuestionnaireInfoMargin($margin)
   {
+    $margin = floatval($margin);
     if ($margin >= 0 && $margin <= 100)
       $this->questionnaireInfoMargin = $margin;
   }
@@ -984,6 +985,7 @@ class queXMLPDF extends TCPDF {
    */
   public function setSingleResponseHorizontalHeight($height)
   {
+    $height = floatval($height);
     if ($height >= 1 && $height <= 100)
       $this->singleResponseHorizontalHeight = $height;
   }
@@ -1011,6 +1013,7 @@ class queXMLPDF extends TCPDF {
    */
   public function setSingleResponseAreaHeight($height)
   {
+    $height = floatval($height);
     if ($height >= 1 && $height <= 100)
       $this->singleResponseAreaHeight = $height;
   }
@@ -1038,6 +1041,7 @@ class queXMLPDF extends TCPDF {
    */
   public function setBackgroundColourQuestion($colour)
   {
+    $colour = intval($colour);
     if ($colour >= 0 && $colour <= 255)
       $this->backgroundColourQuestion = array($colour);
   }
@@ -1065,6 +1069,7 @@ class queXMLPDF extends TCPDF {
    */
   public function setBackgroundColourSection($colour)
   {
+    $colour = intval($colour);
     if ($colour >= 0 && $colour <= 255)
       $this->backgroundColourSection = array($colour);
   }
@@ -1299,6 +1304,78 @@ class queXMLPDF extends TCPDF {
   }
 
   /**
+   * Get whether to use corner lines
+   *
+   * @return bool whether to use corner lines
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2014-12-22
+   */
+  public function getCornerLines()
+  {
+    return $this->cornerLines;
+  }
+
+  /**
+   * Get whether to use corner boxes
+   *
+   * @return bool whether to use corner boxes
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2014-12-22
+   */
+  public function getCornerBoxes()
+  {
+    return !$this->cornerLines;
+  }
+
+   /**
+   * Get page format
+   *
+   * @return string page format
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2015-06-19
+   */
+  public function getPageFormat()
+  {
+    return 'A4';
+  }
+
+  /**
+   * Set page format
+   *
+   * @param string $format page format
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2015-06-19
+   */
+  public function setPageFormat($format)
+  {
+    parent::setPageFormat($format);
+  }
+
+  /**
+   * Get page orientation
+   *
+   * @return string page orientation
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2015-06-19
+   */
+  public function getPageOrientation()
+  {
+    return $this->CurOrientation;
+  }
+
+  /**
+   * Set page orientation
+   *
+   * @param string $orientation page orientation
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2015-06-19
+   */
+  public function setPageOrientation($orientation)
+  {
+    parent::setPageOrientation($orientation);
+  }
+
+  /**
    * Export the layout as an XML file
    * 
    * @return string The XML layout in queXF Banding XML format
@@ -1493,7 +1570,7 @@ class queXMLPDF extends TCPDF {
    * @author Adam Zammit <adam.zammit@acspri.org.au>
    * @since  2010-09-02
    */
-  public function getMainPageX()
+  protected function getMainPageX()
   {
     return ($this->cornerBorder + $this->cornerWidth);
   }
@@ -1505,7 +1582,7 @@ class queXMLPDF extends TCPDF {
    * @author Adam Zammit <adam.zammit@acspri.org.au>
    * @since  2012-05-30
    */
-  public function getColumnX()
+  protected function getColumnX()
   {
     $border = 0;
     if ($this->columnCP > 0) 
@@ -1520,7 +1597,7 @@ class queXMLPDF extends TCPDF {
    * @author Adam Zammit <adam.zammit@acspri.org.au>
    * @since  2010-09-02
    */
-  public function getMainPageWidth()
+  protected function getMainPageWidth()
   {
     return ($this->getPageWidth() - (($this->cornerBorder * 2.0) + ($this->cornerWidth * 2.0)));
   }
@@ -1532,7 +1609,7 @@ class queXMLPDF extends TCPDF {
    * @author Adam Zammit <adam.zammit@acspri.org.au>
    * @since  2012-05-30
    */
-  public function getColumnWidth()
+  protected function getColumnWidth()
   {
     $border = 0;
     if ($this->columnCP > 0) 
@@ -2083,6 +2160,119 @@ class queXMLPDF extends TCPDF {
 
     //fill to the end of the last page
     $this->fillLastPageBackground();
+  }
+
+  /**
+   * Import the settings/styles set from XML
+   * 
+   * @param string $xml The settings in XML format
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since  2015-06-18
+   */
+  public function importStyleXML($xmlsettings)
+  {
+    $xml = new SimpleXMLElement($xmlsettings);
+  
+    //do some reflection and find all getters with matching setters
+    $class = new ReflectionClass('queXMLPDF');
+    $methods = $class->getMethods(ReflectionMethod::IS_PUBLIC);
+    $nmethods = array();
+
+    //make an array of relevant classes
+    foreach ($methods as $m)
+    {
+      if ($m->class == "queXMLPDF")
+        $nmethods[$m->name] = $m->name;
+    }
+
+    unset($methods);
+
+    foreach($nmethods as $m)
+    {
+      //if class starting with get has a matching set method
+      if (substr($m,0,3) == 'get' && isset($nmethods['set' . substr($m,3)]))
+      {
+        $itemname = substr($m,3);
+        $setname = 'set' . $itemname;
+        $iv = $this->$m(); // get the current data
+
+        if (isset($xml->$itemname)) //if setting exists in xml then set it
+        {
+          if (is_bool($iv))
+          {
+            if ($xml->$itemname == "true")
+              $this->$setname(true);
+            else
+              $this->$setname(false);
+          }
+          else if (is_array($iv) || is_object($iv))
+          {
+            $this->$setname(explode(',',$xml->$itemname));
+          }
+          else
+          {
+            $this->$setname($xml->$itemname);
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Export the settings/styles set in XML
+   * 
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since  2015-06-18
+   */
+  public function exportStyleXML()
+  {
+    $doc = new DomDocument('1.0');
+    $root = $doc->createElement('queXMLPDFStyle');
+
+    //do some reflection and find all getters with matching setters
+    $class = new ReflectionClass('queXMLPDF');
+    $methods = $class->getMethods(ReflectionMethod::IS_PUBLIC);
+    $nmethods = array();
+
+    //make an array of relevant classes
+    foreach ($methods as $m)
+    {
+      if ($m->class == "queXMLPDF")
+        $nmethods[$m->name] = $m->name;
+    }
+
+    unset($methods);
+
+    foreach($nmethods as $m)
+    {
+      //if class starting with get has a matching set method
+      if (substr($m,0,3) == 'get' && isset($nmethods['set' . substr($m,3)]))
+      {
+        $itemname = substr($m,3);
+        $iv = $this->$m(); // get the data
+        $itemval = "false";
+
+        if (is_bool($iv))
+        {
+          if ($iv)
+            $itemval = "true";
+        }
+        else if (is_array($iv) || is_object($iv))
+        {
+          $itemval = implode(',',$iv);
+        }
+        else
+          $itemval = $iv;
+
+        $id = $doc->createElement($itemname);
+        $value = $doc->createTextNode($itemval);
+        $id->appendChild($value);
+        $root->appendChild($id);
+      }
+    }
+    $doc->appendChild($root);
+    $doc->formatOutput = true; //make it look nice
+    return $doc->saveXML();
   }
 
 
