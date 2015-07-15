@@ -1185,7 +1185,7 @@ class queXMLPDF extends TCPDF {
    */
   public function setSectionHeight($height)
   {
-    $height = intval($height);
+    $height = floatval($height);
     if ($height < 0) $height = 1;
     $this->sectionHeight = $height;
   }
@@ -1224,8 +1224,8 @@ class queXMLPDF extends TCPDF {
    */
   public function setResponseLabelFontSize($sizes)
   {
-    $this->responseLabelFontSize = intval($sizes[0]);
-    $this->responseLabelFontSizeSmall = intval($sizes[1]);
+    $this->responseLabelFontSize = floatval($sizes[0]);
+    $this->responseLabelFontSizeSmall = floatval($sizes[1]);
   }
 
   /**
@@ -1250,7 +1250,7 @@ class queXMLPDF extends TCPDF {
    */
   public function setResponseTextFontSize($size)
   {
-    $this->responseTextFontSize = intval($size);
+    $this->responseTextFontSize = floatval($size);
   }
 
   /**
