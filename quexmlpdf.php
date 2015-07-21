@@ -1384,14 +1384,15 @@ class queXMLPDF extends TCPDF {
    * Set page format
    *
    * @param string $format page format
+   * @param string $orientation page orientation
+   *
    * @author Adam Zammit <adam.zammit@acspri.org.au>
    * @since 2015-06-19
    */
-  public function setPageFormat($format)
-  {
-    parent::setPageFormat($format);
+  public function setPageFormat($format, $orientation='') {
+    parent::setPageFormat($format, $orientation);
   }
-
+ 
   /**
    * Get page orientation
    *
@@ -1408,12 +1409,15 @@ class queXMLPDF extends TCPDF {
    * Set page orientation
    *
    * @param string $orientation page orientation
+   * @param string $autopagebreak see TCPDF docs
+   * @param string $bottommargin see TCPDF docs
+   *
    * @author Adam Zammit <adam.zammit@acspri.org.au>
    * @since 2015-06-19
    */
-  public function setPageOrientation($orientation)
+  public function setPageOrientation($orientation, $autopagebreak='', $bottommargin='') 
   {
-    parent::setPageOrientation($orientation);
+    parent::setPageOrientation($orientation, $autopagebreak, $bottommargin);
   }
 
   /**
