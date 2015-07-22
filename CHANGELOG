@@ -1,3 +1,12 @@
+queXML 1.5.0 - Changes since 1.4.1
+
+queXMLPDF: New Feature: Added import/export of queXMLPDF style settings via XML
+
+queXMLPDF: Text alignment fix where down arrow present
+queXMLPDF: Added more setters/getters
+queXMLPDF: Fixed issue with "other" boxes being too close to the down pointing arrow
+queMXLPDF: Allow font sizes to be specified as floating point values
+
 queXML 1.4.1 - Changes since 1.4.0
 
 queXMLPDF: New Feature: Corner boxes can be generated for page alignment
