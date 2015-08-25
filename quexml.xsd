@@ -652,6 +652,12 @@
 									</xsd:annotation>
 									</xsd:attribute>
 
+								<xsd:attribute name="breakbefore" type="xsd:boolean" use="optional">
+									<xsd:annotation>
+										<xsd:documentation>If set, insert a page break before this question</xsd:documentation>
+									</xsd:annotation>
+									</xsd:attribute>
+
 								</xsd:complexType>
 							</xsd:element>
 						</xsd:sequence>
@@ -660,7 +666,16 @@
 							<xsd:annotation>
 								<xsd:documentation>If this section is the respondent selection part of the questionnaire</xsd:documentation>
 							</xsd:annotation>
-						</xsd:attribute>
+            </xsd:attribute>
+
+								<xsd:attribute name="breakbefore" type="xsd:boolean" use="optional">
+									<xsd:annotation>
+										<xsd:documentation>If set, insert a page break before this section</xsd:documentation>
+									</xsd:annotation>
+									</xsd:attribute>
+
+
+
 					</xsd:complexType>
 				</xsd:element>
 			</xsd:sequence>

@@ -1885,6 +1885,16 @@ class queXMLPDF extends TCPDF {
       $stmp['info'] = "";
       $stmp['text'] = "";
       $bfc = 0;  
+  
+      $stmp['breakbefore'] = false;
+
+      if (isset($s['breakbefore']))
+      {
+        if (current($s['breakbefore']) == "true")
+          $stmp['breakbefore'] = true;
+        else
+          $stmp['breakbefore'] = false;
+      }
 
       foreach ($s->sectionInfo as $sitmp)
       {
@@ -1910,6 +1920,7 @@ class queXMLPDF extends TCPDF {
         $rstmp = array();
         
         $qtmp['split'] = 'notset';      
+        $qtmp['breakbefore'] = false;
   
         if (isset($qu['split']))
         {
@@ -1917,6 +1928,14 @@ class queXMLPDF extends TCPDF {
             $qtmp['split'] = true;
           else
             $qtmp['split'] = false;
+        }
+
+        if (isset($qu['breakbefore']))
+        {
+          if (current($qu['breakbefore']) == "true")
+            $qtmp['breakbefore'] = true;
+          else
+            $qtmp['breakbefore'] = false;
         }
 
         $qtmp['title'] = $sl . $qcount . $this->questionTitleSuffix;
@@ -2080,6 +2099,25 @@ class queXMLPDF extends TCPDF {
               $rtmp['type'] = 'text';
             $rtmp['width'] = current($r->free->length);
             $rtmp['text'] = current($r->free->label);
+            $c = $r->free;
+            if (isset($c->contingentQuestion))
+            {
+              //Need to handle contingent questions
+              $oarr = array();
+              $oarr['width'] = current($c->contingentQuestion->length);
+              $oarr['text'] = current($c->contingentQuestion->text);
+
+              $oarr['format'] = 'text';
+                
+              if (isset($c->contingentQuestion->format))
+                $oarr['format'] = current($c->contingentQuestion->format);
+
+              if (isset($c->contingentQuestion['defaultValue'])) 
+                $oarr['defaultvalue'] = $c->contingentQuestion['defaultValue'];
+
+              $oarr['varname'] = $c->contingentQuestion['varName'];
+              $rtmp['other'] = $oarr;
+            }  
           }
           else if (isset($r->vas))
           {
@@ -2136,6 +2174,12 @@ class queXMLPDF extends TCPDF {
       else $questions=0; 
       
       $this->startTransaction();
+      if ($sv['breakbefore'] == true)
+      {  
+        $this->SetAutoPageBreak(false); //Temporarily set so we don't trigger a page break
+        $this->fillPageBackground();
+        $this->newPage();
+      }
       $this->addSection($sv['text'],$sv['title'],$sv['info']);
       if ($questions != 0) $this->createQuestion($sv['questions'][0]);
       if ($this->pageBreakOccured)
@@ -2157,6 +2201,12 @@ class queXMLPDF extends TCPDF {
         foreach(array_slice($sv['questions'], 1) as $qk => $qv)
         {
           $this->startTransaction();
+          if ($qv['breakbefore'] == true)
+          {  
+            $this->SetAutoPageBreak(false); //Temporarily set so we don't trigger a page break
+            $this->fillPageBackground();
+            $this->newPage();
+          }
           //add question here
           $this->createQuestion($qv);
           if ($this->pageBreakOccured)
@@ -2511,6 +2561,10 @@ class queXMLPDF extends TCPDF {
           case 'text':
             $this->addBoxGroup($bgtype,$varname,$rtext,$response['width']);  
             $this->drawText($response['text'],$response['width'],$defaultvalue);
+            if (isset($response['other']))
+            {
+              $this->drawOther($response['other']);
+            }
             //Insert a gap here
             $this->Rect($this->getColumnX(),$this->GetY(),$this->getColumnWidth(),$this->subQuestionLineSpacing,'F',array(),$this->backgroundColourQuestion);
             $this->SetY($this->GetY() + $this->subQuestionLineSpacing,false);
