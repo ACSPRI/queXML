@@ -1510,6 +1510,34 @@ class queXMLPDF extends TCPDF {
   }
 
   /**
+   * Set style based on text content
+   * Search for HTML <i> or <b> or <u> tags and apply styling
+   * Remove tags on return
+   * 
+   * @param string $text The string to parse
+   * 
+   * @return string The text with tags removed
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since  2010-11-05
+   */
+  protected function setStyleFromText($text)
+  {
+    //counts of tags
+    $icount = $bcount = $ucount = 0;
+    $text = str_ireplace(array("<i>","</i>"),"",$text,$icount);
+    $text = str_ireplace(array("<b>","</b>"),"",$text,$bcount);
+    $text = str_ireplace(array("<u>","</u>"),"",$text,$ucount);
+    if ($icount > 0)
+      $this->SetFont($this->defaultFont,'I');
+    if ($bcount > 0)
+      $this->SetFont($this->defaultFont,'B');
+    if ($ucount > 0)
+      $this->SetFont($this->defaultFont,'U');
+
+    return $text;
+  }
+
+  /**
    * Set font size and style
    * 
    * @param string $size  Optional, defaults to 12
@@ -1540,10 +1568,12 @@ class queXMLPDF extends TCPDF {
       $this->AddFont('freesans','');
       $this->AddFont('freesans','B');
       $this->AddFont('freesans','I');
+      $this->AddFont('freesans','U');
       $this->AddFont('freesans','BI');
       $this->AddFont('freeserif','');
       $this->AddFont('freeserif','B');
       $this->AddFont('freeserif','I');
+      $this->AddFont('freeserif','U');
       $this->AddFont('freeserif','BI');
       
       $this->SetFont($this->defaultFont);
@@ -3019,6 +3049,9 @@ class queXMLPDF extends TCPDF {
       {
         $this->setDefaultFont($this->responseTextFontSize);      
 
+        //Check for styling to apply to font from text contents
+        $text = $this->setStyleFromText($text);
+ 
         $this->MultiCell($textwidth,$this->textResponseHeight,$text,0,'R',false,1,$this->getColumnX(),$currentY,true,0,false,true,$this->textResponseHeight,'M',true);
 
 
@@ -3202,8 +3235,12 @@ class queXMLPDF extends TCPDF {
     {
       $this->setBackground('question');
       $this->setDefaultFont();
+
+      //Check for styling to apply to font from text contents
+      $responsegrouplabel = $this->setStyleFromText($responsegrouplabel);
+ 
       $this->MultiCell($textwidth,$this->responseLabelHeight,$responsegrouplabel.':',0,'L',false,0,$this->getColumnX()+$this->questionTitleWidth,$this->GetY(),true,0,false,true,$this->responseLabelHeight,'B',true);
-          }
+    }
 
     //First draw a background of height $this->responseLabelHeight
     $html = "<div></div>";
@@ -3223,11 +3260,13 @@ class queXMLPDF extends TCPDF {
       if ($this->wordLength($r['text']) > $this->responseLabelSmallWordLength)
         $this->setDefaultFont($this->responseLabelFontSizeSmall);      
 
-      $this->MultiCell($rwidth,$this->responseLabelHeight,$r['text'],0,'C',false,0,$x,$y,true,0,false,true,$this->responseLabelHeight,'B',true);
+      //Check for styling to apply to font from text contents
+      $rtext = $this->setStyleFromText($r['text']);
+
+      $this->MultiCell($rwidth,$this->responseLabelHeight,$rtext,0,'C',false,0,$x,$y,true,0,false,true,$this->responseLabelHeight,'B',true);
 
       //reset font
-      if ($this->wordLength($r['text']) > $this->responseLabelSmallWordLength)
-        $this->setDefaultFont($this->responseLabelFontSize);      
+      $this->setDefaultFont($this->responseLabelFontSize);      
 
       $count++;
     }
@@ -3308,12 +3347,18 @@ class queXMLPDF extends TCPDF {
         $this->setBackground('question');
         $this->writeHTMLCell($this->getColumnWidth(), $newlineheight, $this->getColumnX(), $currentY, $this->style . $html,0,1,true,false);  
         $this->setDefaultFont($this->responseTextFontSize);      
-
-        $this->MultiCell($textwidth,$newlineheight,$s['text'],0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$newlineheight,'M',false);
+  
+        //Check for styling to apply to font from text contents
+        $stext = $this->setStyleFromText($s['text']);
+  
+        $this->MultiCell($textwidth,$newlineheight,$stext,0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$newlineheight,'M',false);
       }
       else
       {
-        $this->MultiCell($textwidth,$this->singleResponseHorizontalHeight,$s['text'],0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$this->singleResponseHorizontalHeight,'M',false);
+        //Check for styling to apply to font from text contents
+        $stext = $this->setStyleFromText($s['text']);
+  
+        $this->MultiCell($textwidth,$this->singleResponseHorizontalHeight,$stext,0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$this->singleResponseHorizontalHeight,'M',false);
       }
         
         
@@ -3444,12 +3489,15 @@ class queXMLPDF extends TCPDF {
       if ($this->wordLength($r['text']) > $this->responseLabelSmallWordLength)
         $this->setDefaultFont($this->responseLabelFontSizeSmall);      
 
-      $this->MultiCell($rwidth,$this->responseLabelHeight,$r['text'],0,'C',false,0,$x,$y,true,0,false,true,$this->responseLabelHeight,'B',true);
-      
-      if ($this->wordLength($r['text']) > $this->responseLabelSmallWordLength)
-        $this->setDefaultFont($this->responseLabelFontSize);      
+      //Check for styling to apply to font from text contents
+      $rtext = $this->setStyleFromText($r['text']);
+ 
+      $this->MultiCell($rwidth,$this->responseLabelHeight,$rtext,0,'C',false,0,$x,$y,true,0,false,true,$this->responseLabelHeight,'B',true);
+
+      //Reset font
+      $this->setDefaultFont($this->responseLabelFontSize);      
   
-      if (!empty($r['text'])) 
+      if (!empty($rtext)) 
         $isempty = false;
       
       $count++;
@@ -3525,10 +3573,16 @@ class queXMLPDF extends TCPDF {
       $this->writeHTMLCell($this->getColumnWidth(), $bheight, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,true);  
       $this->setDefaultFont($this->responseTextFontSize);      
 
+      //Check for styling to apply to font from text contents
+      $rtext = $this->setStyleFromText($r['text']);
+ 
       //draw text
-      $this->MultiCell($textwidth,$this->singleResponseAreaHeight,$r['text'],0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$this->singleResponseAreaHeight,'M',true);
-      
-            //draw the response boxes
+      $this->MultiCell($textwidth,$this->singleResponseAreaHeight,$rtext,0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$this->singleResponseAreaHeight,'M',true);
+
+      //Reset font
+      $this->setDefaultFont();
+
+      //draw the response boxes
       for ($j = 0; $j < count($subquestions); $j++)
       {
         $s = $subquestions[$j];
