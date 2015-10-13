@@ -48,6 +48,7 @@ if(isset($_FILES['userfile']))
     if ($_POST['displayCodeValues'] == "true")
     	$quexmlpdf->setDisplayCodeValues(true);
     $quexmlpdf->setResponseLabelFontSize(array($_POST['responseLabelFontSize'],$_POST['responseLabelFontSizeSmall']));
+    $quexmlpdf->setCodeValuesFontSize($_POST['codeValuesFontSize']);
   }
 
 	$quexmlpdf->create($quexmlpdf->createqueXML(file_get_contents($filename)));
@@ -104,6 +105,7 @@ else
       <div><label for="format">Page format</label><select name="format"><option value="A4">A4</option><option value="A3">A3</option><option value="USLETTER">USLETTER</option></select></div>
       <div><label for="eformat">Edge detection format</label><select name="eformat"><option value="lines">Corner lines</option><option value="boxes">Corner boxes</option></select></div>
       <div><label for="displayCodeValues">Display code values and variable names?</label><select name="displayCodeValues"><option value="false">No</option><option value="true">Yes</option></select></div>
+      <div><label for="codeValuesFontSize">Code value font size</label><input name="codeValuesFontSize" type="text" value="<?php echo $quexmlpdf->getCodeValuesFontSize();?>"/></div>
       <input type="submit" value="Upload File" />
 		</form>
 	</body>

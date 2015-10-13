@@ -526,6 +526,14 @@ class queXMLPDF extends TCPDF {
   protected $displayCodeValues = false;
 
   /**
+   * Code value font size
+   * 
+   * @var int  Defaults to 8. 
+   * @since 2015-10-12
+   */
+  protected $codeValuesFontSize = 8;
+
+  /**
    * The layout of the form for importing in to queXF
    *
    * @var array Defaults to empty array
@@ -1291,6 +1299,31 @@ class queXMLPDF extends TCPDF {
   }
 
   /**
+   * Get the code value font size
+   * 
+   * @return int The code value font size
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since  2015-10-12
+   */
+  public function getCodeValuesFontSize()
+  {
+    return $this->codeValuesFontSize;
+  }
+
+  /**
+   * Set the code values font size
+   * 
+   * @param int $size 
+   * 
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since  2015-10-12
+   */
+  public function setCodeValuesFontSize($size)
+  {
+    $this->codeValuesFontSize = floatval($size);
+  }
+
+  /**
    * Get the style without any HTML/etc formatting
    * 
    * @return string The style without HTML or tabs
@@ -1798,8 +1831,9 @@ class queXMLPDF extends TCPDF {
       $xpos = $this->GetX();
       $this->SetY($y,false);
       $this->SetX($x + $linelength,false);
-      $this->setDefaultFont();
+      $this->setDefaultFont($this->codeValuesFontSize);
       $this->Cell($this->singleResponseBoxWidth,$this->singleResponseBoxHeight,$codevalue,0,0,'C',false,'',1,false,'T','M');
+      $this->setDefaultFont();
       $this->SetY($ypos,false);
       $this->SetX($xpos,false);
     }
@@ -1888,8 +1922,9 @@ class queXMLPDF extends TCPDF {
       $xpos = $this->GetX();
       $this->SetY($y,false);
       $this->SetX($x,false);
-      $this->setDefaultFont();
+      $this->setDefaultFont($this->codeValuesFontSize);
       $this->Cell($this->singleResponseBoxWidth,$this->singleResponseBoxHeight,$codevalue,0,0,'C',false,'',1,false,'T','M');
+      $this->setDefaultFont();
       $this->SetY($ypos,false);
       $this->SetX($xpos,false);
     }
