@@ -518,6 +518,14 @@ class queXMLPDF extends TCPDF {
   protected $columnBorder = 1;
 
   /**
+   * Whether to display codes alongside boxes
+   * 
+   * @var bool  Defaults to false. 
+   * @since 2015-10-12
+   */
+  protected $displayCodeValues = false;
+
+  /**
    * The layout of the form for importing in to queXF
    *
    * @var array Defaults to empty array
@@ -1147,6 +1155,35 @@ class queXMLPDF extends TCPDF {
   }
 
   /**
+   * Set display code values
+   * 
+   * @param bool $allow Whether to allow or not (default true)
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2015-10-12
+   */
+  public function setDisplayCodeValues($allow = true)
+  {
+    if ($allow)
+      $this->displayCodeValues = true;
+    else
+      $this->displayCodeValues = false;
+  }
+
+  /**
+   * Get display cod evalues
+   * 
+   * @return bool Whether to display or not
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2015-10-12
+   */
+  public function getDisplayCodeValues()
+  {
+    return $this->displayCodeValues;
+  }
+
+ /**
    * Set allow splitting
    * 
    * @param bool $allow Whether to allow or not (default true)
@@ -1702,9 +1739,10 @@ class queXMLPDF extends TCPDF {
    * @param bool $rightarrow Draw an arrow to the right?
    * @param bool $smallwidth Whether or not to use the small width
    * @param bool $filled Whether or not to have the box pre-filled
+   * @param bool $codevalue If not false, the code value to display in the box
    *
    */
-  protected function drawHorizontalResponseBox($x,$y,$position = 'only',$downarrow = false, $rightarrow = false, $smallwidth = false, $filled =false)
+  protected function drawHorizontalResponseBox($x,$y,$position = 'only',$downarrow = false, $rightarrow = false, $smallwidth = false, $filled =false, $codevalue = false)
   {
     $this->SetDrawColor($this->lineColour[0]);
     $this->SetLineWidth($this->singleResponseBoxBorder);
@@ -1754,6 +1792,18 @@ class queXMLPDF extends TCPDF {
       $this->Line($x + $linelength + $this->singleResponseBoxWidth, $y, $x + $linelength, $y + $this->singleResponseBoxHeight);
     }
 
+    if ($codevalue !== false)
+    {
+      $ypos = $this->GetY();
+      $xpos = $this->GetX();
+      $this->SetY($y,false);
+      $this->SetX($x + $linelength,false);
+      $this->setDefaultFont();
+      $this->Cell($this->singleResponseBoxWidth,$this->singleResponseBoxHeight,$codevalue,0,0,'C',false,'',1,false,'T','M');
+      $this->SetY($ypos,false);
+      $this->SetX($xpos,false);
+    }
+
     $this->setBackground('question');    
     return array($x + $linelength,$y,$x + $linelength + $this->singleResponseBoxWidth, $y + $this->singleResponseBoxHeight); //return the posistion for banding
   }
@@ -1767,9 +1817,10 @@ class queXMLPDF extends TCPDF {
    * @param bool $downarrow Draw a down arrow?
    * @param bool $rightarrow Draw an arrow to the right?
    * @param bool $filled Whether or not to have the box pre-filled
+   * @param bool $codevalue If not false, the code value to display in the box
    *
    */
-  protected function drawVerticalResponseBox($x,$y,$position = 'only',$downarrow = false, $rightarrow = false, $filled = false)
+  protected function drawVerticalResponseBox($x,$y,$position = 'only',$downarrow = false, $rightarrow = false, $filled = false, $codevalue = false)
   {
     $this->SetDrawColor($this->lineColour[0]);
     $this->SetLineWidth($this->singleResponseBoxBorder);
@@ -1829,6 +1880,18 @@ class queXMLPDF extends TCPDF {
       $this->SetLineWidth($this->defaultValueLineWidth);
       $this->Line($x, $y, $x + $this->singleResponseBoxWidth, $y + $this->singleResponseBoxHeight);
       $this->Line($x + $this->singleResponseBoxWidth, $y, $x, $y + $this->singleResponseBoxHeight);
+    }
+
+    if ($codevalue !== false)
+    {
+      $ypos = $this->GetY();
+      $xpos = $this->GetX();
+      $this->SetY($y,false);
+      $this->SetX($x,false);
+      $this->setDefaultFont();
+      $this->Cell($this->singleResponseBoxWidth,$this->singleResponseBoxHeight,$codevalue,0,0,'C',false,'',1,false,'T','M');
+      $this->SetY($ypos,false);
+      $this->SetX($xpos,false);
     }
 
     $this->setBackground('question');    
@@ -2583,14 +2646,22 @@ class queXMLPDF extends TCPDF {
             break;
           case 'longtext':
             $this->addBoxGroup(6,$varname,$rtext);
-            $this->drawLongText($response['width'],$defaultvalue);
+            $stext = "";
+            if ($this->displayCodeValues)
+              $stext = "[{$varname}]";
+            $this->drawLongText($response['width'],$defaultvalue,$stext);
             break;
           case 'number':
             $bgtype = 4;
           case 'currency':
           case 'text':
-            $this->addBoxGroup($bgtype,$varname,$rtext,$response['width']);  
-            $this->drawText($response['text'],$response['width'],$defaultvalue);
+            $this->addBoxGroup($bgtype,$varname,$rtext,$response['width']); 
+
+            $stext = $response['text'];
+            if ($this->displayCodeValues)
+              $stext = "[{$varname}] " . $stext;
+
+            $this->drawText($stext,$response['width'],$defaultvalue);
             if (isset($response['other']))
             {
               $this->drawOther($response['other']);
@@ -2601,7 +2672,10 @@ class queXMLPDF extends TCPDF {
             break;
           case 'vas':
             $this->addBoxGroup(1,$varname,$rtext,strlen($this->vasIncrements));
-            $this->drawVas("",$response['labelleft'],$response['labelright']);
+            $stext = "";
+            if ($this>displayCodeValues)
+              $stext = "[{$varname}]";
+            $this->drawVas($stext,$response['labelleft'],$response['labelright']);
             break;
           case 'i25':
             $this->drawMatrixBarcode(array(array('text' => $rtext, 'varname' => $varname, 'defaultvalue' => $defaultvalue)),'I25');
@@ -2705,7 +2779,11 @@ class queXMLPDF extends TCPDF {
       if (isset($s['defaultvalue']))
         $defaultvalue = $s['defaultvalue'];
 
-      $this->drawText($s['text'],$width,$defaultvalue);
+      $stext = $s['text'];
+      if ($this->displayCodeValues)
+        $stext = "[{$s['varname']}] " . $stext;
+
+      $this->drawText($stext,$width,$defaultvalue);
     
       $currentY = $this->GetY();
     
@@ -2829,8 +2907,11 @@ class queXMLPDF extends TCPDF {
       else        
         $this->addBoxGroup(1,$s['varname'],$parenttext . $this->subQuestionTextSeparator . $s['text'],$width);
 
+      $stext = $s['text'];
+      if ($this->displayCodeValues)
+        $stext = "[{$s['varname']}] " . $stext;
 
-      $this->drawVas($s['text'],$labelleft,$labelright,$heading);
+      $this->drawVas($stext,$labelleft,$labelright,$heading);
     
       $currentY = $this->GetY();
     
@@ -3166,7 +3247,11 @@ class queXMLPDF extends TCPDF {
     $html = "<table><tr><td width=\"{$textwidth}mm\" class=\"responseText\"></td>";
     foreach ($subquestions as $r)
     {
-      $html .= "<td class=\"responseLabel\" width=\"{$rwidth}mm\">{$r['text']}</td>";
+      $rtext = $r['text'];
+      if ($this->displayCodeValues)
+        $rtext = "[{$r['varname']}] " . $rtext;
+
+      $html .= "<td class=\"responseLabel\" width=\"{$rwidth}mm\">{$rtext}</td>";
     }
     $html .= "<td></td></tr></table>";
     $this->writeHTMLCell($this->getColumnWidth(), $this->singleResponseAreaHeight, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,true);
@@ -3351,13 +3436,19 @@ class queXMLPDF extends TCPDF {
         //Check for styling to apply to font from text contents
         $stext = $this->setStyleFromText($s['text']);
   
+        if ($this->displayCodeValues)
+          $stext = "[{$s['varname']}] " . $stext;
+
         $this->MultiCell($textwidth,$newlineheight,$stext,0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$newlineheight,'M',false);
       }
       else
       {
         //Check for styling to apply to font from text contents
         $stext = $this->setStyleFromText($s['text']);
-  
+
+        if ($this->displayCodeValues)
+          $stext = "[{$s['varname']}] " . $stext;
+
         $this->MultiCell($textwidth,$this->singleResponseHorizontalHeight,$stext,0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$this->singleResponseHorizontalHeight,'M',false);
       }
         
@@ -3378,8 +3469,12 @@ class queXMLPDF extends TCPDF {
         $bfilled = false;
         if (isset($s['defaultvalue']) && $s['defaultvalue'] !== false && $s['defaultvalue'] == $r['value'])
           $bfilled = true;
-  
-        $position = $this->drawHorizontalResponseBox(($this->getColumnX() + $textwidth + (($rnum - 1) * $rwidth)),$currentY + ($heightadjust/2), $num,$other,false,($total > $this->singleResponseHorizontalMax),$bfilled);
+        
+        $cvalue = false;
+        if ($this->displayCodeValues)
+          $cvalue = $r['value'];
+
+        $position = $this->drawHorizontalResponseBox(($this->getColumnX() + $textwidth + (($rnum - 1) * $rwidth)),$currentY + ($heightadjust/2), $num,$other,false,($total > $this->singleResponseHorizontalMax),$bfilled,$cvalue);
     
         //Add box to the current layout
         $this->addBox($position[0],$position[1],$position[2],$position[3],$r['value'],$r['text']);
@@ -3444,10 +3539,14 @@ class queXMLPDF extends TCPDF {
     {
       $s = $subquestions[$sc];
 
-      $this->drawQuestionHead("",$this->numberToLetter($sc + 1) . ". " . $s['text'],$help);
+      $stext = $s['text'];
+      if ($this->displayCodeValues)
+        $stext = "[{$s['varname']}] " . $stext;
+
+      $this->drawQuestionHead("",$this->numberToLetter($sc + 1) . ". " . $stext,$help);
       //Don't send it twice
       unset($s['text']);
-      $this->drawSingleChoiceVertical($categories,array(array($s)),$this->subQuestionTextSeparator . $s['text'],$split);
+      $this->drawSingleChoiceVertical($categories,array(array($s)),$this->subQuestionTextSeparator . $stext,$split);
     }
   }
 
@@ -3491,7 +3590,10 @@ class queXMLPDF extends TCPDF {
 
       //Check for styling to apply to font from text contents
       $rtext = $this->setStyleFromText($r['text']);
- 
+
+      if ($this->displayCodeValues)
+        $rtext = "[{$r['varname']}] " . $rtext;
+
       $this->MultiCell($rwidth,$this->responseLabelHeight,$rtext,0,'C',false,0,$x,$y,true,0,false,true,$this->responseLabelHeight,'B',true);
 
       //Reset font
@@ -3575,7 +3677,10 @@ class queXMLPDF extends TCPDF {
 
       //Check for styling to apply to font from text contents
       $rtext = $this->setStyleFromText($r['text']);
- 
+
+      if ($this->displayCodeValues && count($categories) == 1)
+        $rtext = "[{$subquestions[0]['varname']}] " . $rtext;
+
       //draw text
       $this->MultiCell($textwidth,$this->singleResponseAreaHeight,$rtext,0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$this->singleResponseAreaHeight,'M',true);
 
@@ -3606,11 +3711,15 @@ class queXMLPDF extends TCPDF {
         $bfilled = false;
         if (isset($s['defaultvalue']) && $s['defaultvalue'] !== false && $s['defaultvalue'] == $r['value'])
           $bfilled = true;
-  
+
+        $cvalue = false;
+        if ($this->displayCodeValues)
+          $cvalue = $r['value'];
+
         $x = $this->getColumnX() + $textwidth + ($rwidth * $j) + ((($rwidth - $this->singleResponseBoxWidth) / 2.0 ));
 
         //Draw the box over the top
-        $position = $this->drawVerticalResponseBox($x,$currentY, $num, $other, $skipto, $bfilled);
+        $position = $this->drawVerticalResponseBox($x,$currentY, $num, $other, $skipto, $bfilled, $cvalue);
   
         //Add box to the current layout
         $this->addBox($position[0],$position[1],$position[2],$position[3],$r['value'],$r['text']);
@@ -3702,10 +3811,15 @@ class queXMLPDF extends TCPDF {
     if (isset($other['defaultvalue']) && $other['defaultvalue'] !== false)
       $defaultvalue = $other['defaultvalue'];
 
+    $otext = $other['text'];
+    if ($this->displayCodeValues)
+      $otext = "[{$other['varname']}] " . $otext;
+
+
     if ($btid == 3)
-      $this->drawText($other['text'],$other['width'],$defaultvalue);
+      $this->drawText($otext,$other['width'],$defaultvalue);
     else
-      $this->drawLongText($other['width'],$defaultValue,$other['text']);
+      $this->drawLongText($other['width'],$defaultValue,$otext);
 
     //Insert a gap here
     $this->Rect($this->getColumnX(),$this->GetY(),$this->getColumnWidth(),$this->subQuestionLineSpacing,'F',array(),$this->backgroundColourQuestion);

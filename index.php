@@ -44,7 +44,9 @@ if(isset($_FILES['userfile']))
   	$quexmlpdf->setBackgroundColourSection($_POST['backgroundColourSection']);
   	$quexmlpdf->setSingleResponseAreaHeight($_POST['singleResponseAreaHeight']);
   	$quexmlpdf->setSingleResponseHorizontalHeight($_POST['singleResponseHorizontalHeight']);
-  	$quexmlpdf->setQuestionnaireInfoMargin($_POST['questionnaireInfoMargin']);
+    $quexmlpdf->setQuestionnaireInfoMargin($_POST['questionnaireInfoMargin']);
+    if ($_POST['displayCodeValues'] == "true")
+    	$quexmlpdf->setDisplayCodeValues(true);
     $quexmlpdf->setResponseLabelFontSize(array($_POST['responseLabelFontSize'],$_POST['responseLabelFontSizeSmall']));
   }
 
@@ -101,6 +103,7 @@ else
       <div><label for="orientation">Page orientation</label><select name="orientation"><option value="P">Portrait</option><option value="L">Landscape</option></select></div>
       <div><label for="format">Page format</label><select name="format"><option value="A4">A4</option><option value="A3">A3</option><option value="USLETTER">USLETTER</option></select></div>
       <div><label for="eformat">Edge detection format</label><select name="eformat"><option value="lines">Corner lines</option><option value="boxes">Corner boxes</option></select></div>
+      <div><label for="displayCodeValues">Display code values and variable names?</label><select name="displayCodeValues"><option value="false">No</option><option value="true">Yes</option></select></div>
       <input type="submit" value="Upload File" />
 		</form>
 	</body>
