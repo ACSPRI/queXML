@@ -1297,9 +1297,41 @@ class queXMLPDF extends TCPDF {
    */
   public function setResponseLabelFontSize($sizes)
   {
-    $this->responseLabelFontSize = floatval($sizes[0]);
-    $this->responseLabelFontSizeSmall = floatval($sizes[1]);
+    if (is_array($sizes))
+    {
+      $this->responseLabelFontSize = floatval($sizes[0]);
+      $this->responseLabelFontSizeSmall = floatval($sizes[1]);
+    }
+    else
+      $this->responseLabelFontSize = floatval($sizes);
   }
+
+  /**
+   * Get the response label font sizes small
+   * 
+   * @return float containing the small font size
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since  2015-10-19
+   */
+  public function getResponseLabelFontSizeSmall()
+  {
+    return $this->responseLabelFontSizeSmall;
+  }
+
+  /**
+   * Set the response label font size (small)
+   * 
+   * @param float $size normal font size small
+   * 
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since  2015-10-19
+   */
+  public function setResponseLabelFontSizeSmall($size)
+  {
+    $this->responseLabelFontSizeSmall = floatval($size);
+  }
+
+
 
   /**
    * Get the response text font size
