@@ -49,6 +49,7 @@ if(isset($_FILES['userfile']))
     	$quexmlpdf->setDisplayCodeValues(true);
     $quexmlpdf->setResponseLabelFontSize(array($_POST['responseLabelFontSize'],$_POST['responseLabelFontSizeSmall']));
     $quexmlpdf->setCodeValuesFontSize($_POST['codeValuesFontSize']);
+    $quexmlpdf->setQuestionTextRightMargin($_POST['questionTextRightMargin']);
   }
 
 	$quexmlpdf->create($quexmlpdf->createqueXML(file_get_contents($filename)));
@@ -97,6 +98,7 @@ else
 			<div><label for="responseLabelFontSizeSmall">Response label font size (small)</label><input name="responseLabelFontSizeSmall" type="text" value="<?php $t = $quexmlpdf->getResponseLabelFontSize(); echo $t[1];?>"/></div>
       <div><label for="sectionHeight">Minimum section height (mm)</label><input name="sectionHeight" type="text" value="<?php echo $quexmlpdf->getSectionHeight();?>"/></div>
       <div><label for="questionnaireInfoMargin">Margin before questionnaireInfo element (mm)</label><input name="questionnaireInfoMargin" type="text" value="<?php echo $quexmlpdf->getQuestionnaireInfoMargin();?>"/></div>
+      <div><label for="questionTextRightMargin">Right hand margin of question text (mm)</label><input name="questionTextRightMargin" type="text" value="<?php echo $quexmlpdf->getQuestionTextRightMargin();?>"/></div>
       <div><label for="singleResponseAreaHeight">Minimum height of single choice response boxes</label><input name="singleResponseAreaHeight" type="text" value="<?php echo $quexmlpdf->getSingleResponseAreaHeight();?>"/></div>
       <div><label for="singleResponseHorizontalHeight">Minimum height of sub question items</label><input name="singleResponseHorizontalHeight" type="text" value="<?php echo $quexmlpdf->getSingleResponseHorizontalHeight();?>"/></div>
       <div><label for="backgroundColourQuestion">Background colour for question (0 black - 255 white)</label><input name="backgroundColourQuestion" type="text" value="<?php echo $quexmlpdf->getBackgroundColourQuestion();?>"/></div>

@@ -964,6 +964,34 @@ class queXMLPDF extends TCPDF {
   }
 
   /**
+   * Set right hand margin of question text
+   * 
+   * @param int $margin between 0 and 1000mm
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2015-10-19
+   */
+  public function setQuestionTextRightMargin($margin)
+  {
+    $margin = floatval($margin);
+    if ($margin >= 0 && $margin <= 1000)
+      $this->questionTextRightMargin = $margin;
+  }
+
+  /**
+   * Get the right hand margin of question text
+   * 
+   * @return fload width in mm between 0 and 1000mm
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2015-10-19
+   */
+  public function getQuestionTextRightMargin()
+  {
+      return $this->questionTextRightMargin;
+  }
+
+  /**
    * Set margin before questionnare info
    * 
    * @param int $margin between 0 and 100mm
