@@ -2314,6 +2314,24 @@ class queXMLPDF extends TCPDF {
             $rtmp['labelleft'] = current($r->vas->labelleft);
             $rtmp['labelright'] = current($r->vas->labelright);
           }
+          else if (isset($r->dvas))
+          {
+            $rtmp['type'] = 'dvas';
+            $rtmp['labelleft'] = current($r->dvas->labelleft);
+            $rtmp['labelright'] = current($r->dvas->labelright);
+
+            $rtmp['width'] = count($r->dvas->category);
+
+            $ctmp = array();
+            foreach ($r->dvas->category as $c)
+            {
+              $cat = array();
+              $cat['text'] = current($c->label);
+              $cat['value'] = current($c->value);
+              $ctmp[] = $cat;  
+            }
+            $rtmp['categories'] = $ctmp;
+          }
           $rstmp['response'] = $rtmp;
           $qtmp['responses'][] = $rstmp;
         }
@@ -2707,7 +2725,7 @@ class queXMLPDF extends TCPDF {
           case 'vas':
             $this->drawMatrixVas($subquestions,$text,$response['labelleft'],$response['labelright'],$response['split']);
             break;
-          case 'i25':
+         case 'i25':
             $this->drawMatrixBarcode($subquestions, 'I25');
             break;    
           case 'codabar':
@@ -2772,6 +2790,8 @@ class queXMLPDF extends TCPDF {
               $stext = "[{$varname}]";
             $this->drawVas($stext,$response['labelleft'],$response['labelright']);
             break;
+          case 'dvas':
+            $this->drawSingleChoiceHorizontal($response['categories'],array(array('text'=>$response['labelleft'], 'varname' => $varname, 'defaultvalue' => $defaultvalue)),$rtext,false,$response['split'],$response['labelright']);
           case 'i25':
             $this->drawMatrixBarcode(array(array('text' => $rtext, 'varname' => $varname, 'defaultvalue' => $defaultvalue)),'I25');
             break;    
@@ -3394,11 +3414,12 @@ class queXMLPDF extends TCPDF {
    * 
    * @param array $categories The response categories
    * @param string|bool $responsegrouplabel The label for this response group or false if not specified
+   * @param bool $dvas If there should be two text fields (one on left and one on right
    * 
    * @author Adam Zammit <adam.zammit@acspri.org.au>
    * @since  2012-06-05
    */
-  protected function drawSingleChoiceHorizontalHead($categories, $responsegrouplabel=false)
+  protected function drawSingleChoiceHorizontalHead($categories, $responsegrouplabel=false, $dvas = false)
   {
     $total = count($categories);
     $currentY = $this->GetY();
@@ -3409,6 +3430,10 @@ class queXMLPDF extends TCPDF {
       $rwidth = $this->singleResponseVerticalAreaWidth;
 
     $textwidth = ($this->getColumnWidth() - $this->skipColumnWidth) - ($rwidth * $total);
+
+    // If two scales make the response categories centred
+    if ($dvas !== false)
+      $textwidth = $textwidth / 2.0;
 
     //Draw a label for a group of Questions/Responses (e.g. useful for dual scale matrix questions)        
     if ($responsegrouplabel!=false)
@@ -3460,11 +3485,12 @@ class queXMLPDF extends TCPDF {
    * @param string|bool $parenttext The question text of the parent or false if not specified
    * @param string|bool $responsegrouplabel The label for this response group or false if not specified
    * @param string|bool $split Allow splitting this over multiple pages. 'notset' means leave default. Otherwise force setting
+   * @param string|bool $dvas False if a single label otherwise the right hand label text
    *
    * @author Adam Zammit <adam.zammit@acspri.org.au>
    * @since  2010-09-08
    */
-  protected function drawSingleChoiceHorizontal($categories, $subquestions = array(array('text' => '')),$parenttext = false, $responsegrouplabel=false, $split = "notset")
+  protected function drawSingleChoiceHorizontal($categories, $subquestions = array(array('text' => '')),$parenttext = false, $responsegrouplabel=false, $split = "notset", $dvas = false)
   {
     if ($split === "notset")
       $split = $this->allowSplittingSingleChoiceHorizontal;
@@ -3479,8 +3505,11 @@ class queXMLPDF extends TCPDF {
 
     $textwidth = ($this->getColumnWidth() - $this->skipColumnWidth) - ($rwidth * $total);
 
+    if ($dvas !== false)
+      $textwidth = $textwidth / 2.0;
+
     //draw the header
-    $this->drawSingleChoiceHorizontalHead($categories, $responsegrouplabel);
+    $this->drawSingleChoiceHorizontalHead($categories, $responsegrouplabel, $dvas);
     $currentY += $this->responseLabelHeight;
 
     //don't continue if page break already
@@ -3516,6 +3545,13 @@ class queXMLPDF extends TCPDF {
       $heightadjust = 0;
 
       $testcells = $this->getNumLines($s['text'],$textwidth);
+
+      if ($dvas !== false)
+      {
+        $testcells2 = $this->getNumLines($dvas,$textwidth);
+        if ($testcells2 > $testcells)
+          $testcells = $testcells2;
+      }
 
       if ($testcells > $this->singleResponseHorizontalMaxLines)
       {
@@ -3576,7 +3612,10 @@ class queXMLPDF extends TCPDF {
   
         $rnum++;
       }
-  
+
+      if ($dvas !== false)
+        $this->MultiCell($textwidth,$newlineheight,$dvas,0,'R',false,0,($this->getColumnX() + $textwidth + (($rnum -1) * $rwidth)),$currentY,true,0,false,true,$newlineheight,'M',false);
+
       if (($this->GetY() - $currentY) > $newlineheight)
         $currentY = $this->GetY();
       else
