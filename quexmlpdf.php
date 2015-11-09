@@ -229,7 +229,8 @@ class queXMLPDF extends TCPDF {
     td.questionTitleSkipTo {font-weight:bold; font-size:16pt;}
     td.questionText {font-weight:bold; font-size:12pt;} 
     td.questionSpecifier {font-weight:normal; font-size:12pt;} 
-    td.vasLabel {font-weight:bold; font-size:10pt; text-align:center;}
+    td.vasLabelLeft {font-weight:bold; font-size:10pt; text-align:center;}
+    td.vasLabelRight {font-weight:bold; font-size:10pt; text-align:center;}
     td.questionHelp {font-weight:normal; text-align:right; font-style:italic; font-size:8pt;}
     td.questionHelpAfter {text-align:center; font-weight:bold; font-size:10pt;}
     td.questionHelpBefore {text-align:center; font-weight:bold; font-size:12pt;}
@@ -3141,7 +3142,7 @@ class queXMLPDF extends TCPDF {
       $gapwidth = ($this->vasLength + ($this->vasLineWidth * 2.0)) - $lwidth;
   
   
-      $html = "<table><tr><td width=\"{$slwidth}mm\"></td><td width=\"{$lwidth}mm\" class=\"vasLabel\">$labelleft</td><td width=\"{$gapwidth}mm\"></td><td width=\"{$lwidth}mm\" class=\"vasLabel\">$labelright</td></tr></table>";
+      $html = "<table><tr><td width=\"{$slwidth}mm\"></td><td width=\"{$lwidth}mm\" class=\"vasLabelLeft\">$labelleft</td><td width=\"{$gapwidth}mm\"></td><td width=\"{$lwidth}mm\" class=\"vasLabelRight\">$labelright</td></tr></table>";
   
   
       $this->writeHTMLCell($this->getColumnWidth(), 0, $this->getColumnX(), $this->GetY(), $this->style . $html,0,1,true,false);
@@ -3414,7 +3415,7 @@ class queXMLPDF extends TCPDF {
    * 
    * @param array $categories The response categories
    * @param string|bool $responsegrouplabel The label for this response group or false if not specified
-   * @param bool $dvas If there should be two text fields (one on left and one on right
+   * @param bool $dvas If there should be two text fields (one on left and one on right)
    * 
    * @author Adam Zammit <adam.zammit@acspri.org.au>
    * @since  2012-06-05
@@ -3614,7 +3615,7 @@ class queXMLPDF extends TCPDF {
       }
 
       if ($dvas !== false)
-        $this->MultiCell($textwidth,$newlineheight,$dvas,0,'R',false,0,($this->getColumnX() + $textwidth + (($rnum -1) * $rwidth)),$currentY,true,0,false,true,$newlineheight,'M',false);
+        $this->MultiCell($textwidth,$newlineheight,$dvas,0,'L',false,0,($this->getColumnX() + $textwidth + (($rnum -1) * $rwidth)),$currentY,true,0,false,true,$newlineheight,'M',false);
 
       if (($this->GetY() - $currentY) > $newlineheight)
         $currentY = $this->GetY();
