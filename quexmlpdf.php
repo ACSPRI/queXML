@@ -1086,9 +1086,14 @@ class queXMLPDF extends TCPDF {
    */
   public function setBackgroundColourQuestion($colour)
   {
-    $colour = intval($colour);
-    if ($colour >= 0 && $colour <= 255)
-      $this->backgroundColourQuestion = array($colour);
+    $colour = explode(",",$colour);
+    for ($i=0; $i<count($colour); $i++)
+    {
+      $colour[$i] = intval($colour[$i]);
+      if (!($colour[$i] >= 0 && $colour[$i] <= 255))
+        $colour[$i] = 0;
+    }
+    $this->backgroundColourQuestion = $colour;
   }
 
   /**
@@ -1101,35 +1106,41 @@ class queXMLPDF extends TCPDF {
    */
   public function getBackgroundColourQuestion()
   {
-      return $this->backgroundColourQuestion[0];
+      return implode(",",$this->backgroundColourQuestion);
   }
 
   /**
    * Set background colour for a section
    * 
-   * @param int $colour Background colour between 0 and 255
+   * @param string $colour Background colour between 0 and 255
    *
    * @author Adam Zammit <adam.zammit@acspri.org.au>
    * @since 2013-10-25
    */
   public function setBackgroundColourSection($colour)
   {
-    $colour = intval($colour);
-    if ($colour >= 0 && $colour <= 255)
-      $this->backgroundColourSection = array($colour);
+    $colour = explode(",",$colour);
+    for ($i=0; $i<count($colour); $i++)
+    {
+      $colour[$i] = intval($colour[$i]);
+      if (!($colour[$i] >= 0 && $colour[$i] <= 255))
+        $colour[$i] = 0;
+    }
+    $this->backgroundColourSection = $colour;
   }
 
   /**
    * Get background colour for a section
    * 
-   * @return int Background colour between 0 and 255
+   * @return string Background colour between 0 and 255 for greyscale, 3 comma 
+   * separated for RGB or 4 comma separated for CMYK
    *
    * @author Adam Zammit <adam.zammit@acspri.org.au>
    * @since 2013-10-25
    */
   public function getBackgroundColourSection()
   {
-      return $this->backgroundColourSection[0];
+      return implode(",",$this->backgroundColourSection);
   }
 
 
@@ -1757,13 +1768,13 @@ class queXMLPDF extends TCPDF {
   {
     switch ($type) {
       case 'question':
-        $this->SetFillColor($this->backgroundColourQuestion[0]);
+        $this->SetFillColorArray($this->backgroundColourQuestion);
         break;
       case 'section':
-        $this->SetFillColor($this->backgroundColourSection[0]);
+        $this->SetFillColorArray($this->backgroundColourSection);
         break;
       case 'empty':
-        $this->SetFillColor($this->backgroundColourEmpty[0]);
+        $this->SetFillColorArray($this->backgroundColourEmpty);
         break;
 
     }
