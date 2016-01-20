@@ -3556,7 +3556,13 @@ class queXMLPDF extends TCPDF {
       $newlineheight = $this->singleResponseHorizontalHeight;
       $heightadjust = 0;
 
-      $testcells = $this->getNumLines($s['text'],$textwidth);
+      //Check for styling to apply to font from text contents
+      $stext = $this->setStyleFromText($s['text']);
+  
+      if ($this->displayCodeValues)
+        $stext = "[{$s['varname']}] " . $stext;
+
+      $testcells = $this->getNumLines($stext,$textwidth);
 
       if ($dvas !== false)
       {
@@ -3591,7 +3597,7 @@ class queXMLPDF extends TCPDF {
 
         if ($this->displayCodeValues)
           $stext = "[{$s['varname']}] " . $stext;
-
+ 
         $this->MultiCell($textwidth,$this->singleResponseHorizontalHeight,$stext,0,'R',false,0,$this->getColumnX(),$currentY,true,0,false,true,$this->singleResponseHorizontalHeight,'M',false);
       }
         
