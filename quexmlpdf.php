@@ -1422,30 +1422,6 @@ class queXMLPDF extends TCPDF {
   }
 
   /**
-   * Set whether to use corner lines
-   *
-   * @return none
-   * @author Adam Zammit <adam.zammit@acspri.org.au>
-   * @since 2014-12-22
-   */
-  public function setCornerLines()
-  {
-    $this->cornerLines = true;
-  }
-
-  /**
-   * Set whether to use corner boxes
-   *
-   * @return none
-   * @author Adam Zammit <adam.zammit@acspri.org.au>
-   * @since 2014-12-22
-   */
-  public function setCornerBoxes()
-  {
-    $this->cornerLines = false;
-  }
-
-  /**
    * Wrapper function for setCornerBoxes and setCornerLines methods
    * @return none
    * @author A A D V S Abeysinghe <venura@acspri.org.au>
@@ -1454,39 +1430,14 @@ class queXMLPDF extends TCPDF {
   */
   public function setEdgeDetectionFormat($format) 
   {
-    if ($format === 'lines') 
+    if ($format == 'lines') 
     {
       $this->cornerLines = true;
     } 
-    else if ($format === 'boxes') 
+    else if ($format == 'boxes') 
     {
       $this->cornerLines = false;
     }
-  }
-
-
-  /**
-   * Get whether to use corner lines
-   *
-   * @return bool whether to use corner lines
-   * @author Adam Zammit <adam.zammit@acspri.org.au>
-   * @since 2014-12-22
-   */
-  public function getCornerLines()
-  {
-    return $this->cornerLines;
-  }
-
-  /**
-   * Get whether to use corner boxes
-   *
-   * @return bool whether to use corner boxes
-   * @author Adam Zammit <adam.zammit@acspri.org.au>
-   * @since 2014-12-22
-   */
-  public function getCornerBoxes()
-  {
-    return !$this->cornerLines;
   }
 
   /**
@@ -1499,7 +1450,7 @@ class queXMLPDF extends TCPDF {
   public function getEdgeDetectionFormat() 
   {
     $value = '';
-    if ($this->getCornerLines()) 
+    if ($this->cornerLines == true) 
     {
       $value = 'lines';
     }
