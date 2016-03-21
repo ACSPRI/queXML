@@ -5,29 +5,10 @@ function print_header($title)
 <html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">
 <head>
 <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"></meta>
-<title>$title</title>";
-?>
-<!-- Piwik -->
-<script type="text/javascript">
-  var _paq = _paq || [];
-    _paq.push(["setDomains", ["*.surveys.acspri.org.au"]]);
-    _paq.push(['trackPageView']);
-      _paq.push(['enableLinkTracking']);
-      (function() {
-    var u="//www.acspri.org.au/piwik/";
-    _paq.push(['setTrackerUrl', u+'piwik.php']);
-    _paq.push(['setSiteId', 9]);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-  })();
-</script>
-<noscript><p><img src="//www.acspri.org.au/piwik/piwik.php?idsite=9" style="border:0;" alt="" /></p></noscript>
-</p></noscript>
-<!-- End Piwik Code -->
+<title>$title</title>
 </head>
-<body>
-
-<?php }
+<body>";
+}
 
 
 include "quexmlpdf.php";
