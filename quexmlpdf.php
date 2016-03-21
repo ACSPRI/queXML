@@ -690,18 +690,18 @@ class queXMLPDF extends TCPDF {
   /**
    * Length of the vas line itself
    * 
-   * @var mixed  Defaults to 100. 
+   * @var mixed  Defaults to 101. 
    * @since 2010-09-20
    */
-  protected $vasLength = 100;
+  protected $vasLength = 101;
 
   /**
    * The number of increments stored on a vas line
    * 
-   * @var mixed  Defaults to 100. 
+   * @var mixed  Defaults to 101. 
    * @since 2010-09-20
    */
-  protected $vasIncrements = 100;
+  protected $vasIncrements = 101;
 
   /**
    * The text to separate parent text and subquestion text
@@ -2273,7 +2273,7 @@ class queXMLPDF extends TCPDF {
           else if (isset($r->vas))
           {
             $rtmp['type'] = 'vas';
-            $rtmp['width'] = 100; 
+            $rtmp['width'] = 101; 
             $rtmp['labelleft'] = current($r->vas->labelleft);
             $rtmp['labelright'] = current($r->vas->labelright);
           }
@@ -3147,7 +3147,7 @@ class queXMLPDF extends TCPDF {
     $ly = (($this->vasAreaHeight - $this->vasHeight) / 2.0) + $currentY;    
     for ($i = 0; $i < $this->vasIncrements; $i++)
     {
-      $this->addBox($lx,$ly,$lx + $bw,$ly + $this->vasHeight, $i + 1, $i + 1);
+      $this->addBox($lx,$ly,$lx + $bw,$ly + $this->vasHeight, $i, $i);
       $lx += $bw;
     }
 
