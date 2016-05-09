@@ -1,3 +1,15 @@
+queXML 1.6.0 - Changes since 1.5.0
+
+queXMLPDF: Allow basic styling tags (i,b,u) for response labels and categories
+queXMLPDF: New Feature: Added function to display code values and variable names in PDF
+queXMLPDF: New Feature: Implemented DVAS item type
+queXMLPDF: Fixed bug: Allow the specification of colours to be as greyscale (single value), RGB (3 comma separated values) or CMYK (4 comma separated values)
+queXMLPDF: Fixed bug: Fixed Bug: Line heights not taking into account additional text when displayCodes is selected
+queXMLPDF: Fixed bug: lp:1557855 EdgeDetectionFormat in queXMLPDFStyle not being recognised
+queXMLPDF: Fixed bug: Make VAS run from 0 to 100 (101 increments)
+
+New Feature: breakbefore added as attribute to section and question elements to allow for forced page breaking
+
 queXML 1.5.0 - Changes since 1.4.1
 
 queXMLPDF: New Feature: Added import/export of queXMLPDF style settings via XML
