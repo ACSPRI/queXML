@@ -4,7 +4,6 @@
  * Modify these two lines to point to your TCPDF installation
  * Tested with TCPDF 5.8.008 - see http://www.tcpdf.org/
  */
-require_once('/var/lib/tcpdf/config/lang/eng.php');
 require_once('/var/lib/tcpdf/tcpdf.php');
 
 /**
