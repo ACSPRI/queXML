@@ -13,6 +13,8 @@ function print_header($title)
 
 include "quexmlpdf.php";
 
+$splitting = array("AllowSplittingSingleChoiceVertical","AllowSplittingSingleChoiceHorizontal","AllowSplittingVas","AllowSplittingMatrixText","AllowSplittingResponses");
+
 if(isset($_FILES['userfile']))
 {
 	if((!is_uploaded_file($_FILES['userfile']['tmp_name']))) {
@@ -34,9 +36,7 @@ if(isset($_FILES['userfile']))
   }
   else
   {
-    if ($_POST['eformat'] == "boxes")
-      $quexmlpdf->setCornerBoxes();
-  
+    $quexmlpdf->setEdgeDetectionFormat($_POST['eformat']); 
   	$quexmlpdf->setStyle($_POST['style']);
   	$quexmlpdf->setResponseTextFontSize($_POST['responseTextFontSize']);
   	$quexmlpdf->setSectionHeight($_POST['sectionHeight']);
@@ -46,7 +46,17 @@ if(isset($_FILES['userfile']))
   	$quexmlpdf->setSingleResponseHorizontalHeight($_POST['singleResponseHorizontalHeight']);
     $quexmlpdf->setQuestionnaireInfoMargin($_POST['questionnaireInfoMargin']);
     if ($_POST['displayCodeValues'] == "true")
-    	$quexmlpdf->setDisplayCodeValues(true);
+      $quexmlpdf->setDisplayCodeValues(true);
+
+    foreach ($splitting as $s)
+    {
+      $f = "set" . $s;
+      if ($_POST[$s] == "true")
+        $quexmlpdf->$f(true);
+      else
+        $quexmlpdf->$f(false);
+    }
+
     $quexmlpdf->setResponseLabelFontSize(array($_POST['responseLabelFontSize'],$_POST['responseLabelFontSizeSmall']));
     $quexmlpdf->setCodeValuesFontSize($_POST['codeValuesFontSize']);
     $quexmlpdf->setQuestionTextRightMargin($_POST['questionTextRightMargin']);
@@ -108,6 +118,19 @@ else
       <div><label for="eformat">Edge detection format</label><select name="eformat"><option value="lines">Corner lines</option><option value="boxes">Corner boxes</option></select></div>
       <div><label for="displayCodeValues">Display code values and variable names?</label><select name="displayCodeValues"><option value="false">No</option><option value="true">Yes</option></select></div>
       <div><label for="codeValuesFontSize">Code value font size</label><input name="codeValuesFontSize" type="text" value="<?php echo $quexmlpdf->getCodeValuesFontSize();?>"/></div>
+<?php 
+      foreach($splitting as $s)
+      {
+        $f = "get" . $s;
+        $sn = $sy = "";
+        if ($quexmlpdf->$f())
+          $sy = "selected='selected'";
+        else
+          $sn = "selected='selected'";
+
+        print "<div><label for='$s'>$s</label><select name='$s'><option $sn value='false'>No</option><option $sy value='true'>Yes</option></select></div>";
+      }
+      ?>
       <input type="submit" value="Upload File" />
 		</form>
 	</body>
