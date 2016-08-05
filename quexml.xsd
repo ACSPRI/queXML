@@ -652,7 +652,13 @@
 									</xsd:annotation>
 									</xsd:attribute>
 
-								<xsd:attribute name="breakbefore" type="xsd:boolean" use="optional">
+									<xsd:attribute name="hidetitle" type="xsd:boolean" use="optional">
+									<xsd:annotation>
+										<xsd:documentation>If set, hide the question number on the paper form for this question</xsd:documentation>
+									</xsd:annotation>
+									</xsd:attribute>
+
+							<xsd:attribute name="breakbefore" type="xsd:boolean" use="optional">
 									<xsd:annotation>
 										<xsd:documentation>If set, insert a page break before this question</xsd:documentation>
 									</xsd:annotation>
