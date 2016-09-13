@@ -13,7 +13,7 @@ function print_header($title)
 
 include "quexmlpdf.php";
 
-$splitting = array("AllowSplittingSingleChoiceVertical","AllowSplittingSingleChoiceHorizontal","AllowSplittingVas","AllowSplittingMatrixText","AllowSplittingResponses");
+$splitting = array("AllowSplittingSingleChoiceVertical","AllowSplittingSingleChoiceHorizontal","AllowSplittingVas","AllowSplittingMatrixText","AllowSplittingResponses","EmbedFonts");
 
 if(isset($_FILES['userfile']))
 {

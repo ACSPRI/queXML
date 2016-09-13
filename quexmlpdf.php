@@ -1395,6 +1395,34 @@ class queXMLPDF extends TCPDF {
   }
 
   /**
+   * Are fonts to be embeded?
+   * 
+   * @return bool 
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since  2016-09-12
+   */
+  public function getEmbedFonts()
+  {
+    return $this->embedFonts;
+  }
+
+  /**
+   * Are fonts to be embeded?
+   * 
+   * @param bool $embed
+   * 
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since  2016-09-12
+   */
+  public function setEmbedFonts($embed)
+  {
+    if ($embed == true || $embed == 1)
+      $this->embedFonts = true;
+    else
+      $this->embedFonts = false;
+  }
+
+  /**
    * Get the style without any HTML/etc formatting
    * 
    * @return string The style without HTML or tabs
