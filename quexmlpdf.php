@@ -559,6 +559,15 @@ class queXMLPDF extends TCPDF {
   protected $skipToRegistry = array();
 
   /**
+   * An array of key: queXML varName, value: document question
+   * Used to renumber skips to appear valid in the document
+   * 
+   * @var string  Defaults to array(). 
+   * @since 2016-09-28
+   */
+  protected $skipToIndex = array();
+
+  /**
    * Page counter pointer (links to barcode id of page)
    * 
    * @var mixed  Defaults to "". 
@@ -2173,6 +2182,7 @@ class queXMLPDF extends TCPDF {
             $sqtmp['text'] .= $ttmp;
           }
           $sqtmp['varname'] = $sq['varName'];
+          $this->skipToIndex[current($sq['varName'])] = $sl . $qcount;
 
           if (isset($sq['defaultValue'])) 
             $sqtmp['defaultvalue'] = $sq['defaultValue'];
@@ -2193,6 +2203,7 @@ class queXMLPDF extends TCPDF {
               $oarr['defaultvalue'] = $sq->contingentQuestion['defaultValue'];
 
             $oarr['varname'] = $sq->contingentQuestion['varName'];
+            $this->skipToIndex[current($oarr['varname'])] = $sl . $qcount;
             $sqtmp['other'] = $oarr;
           }  
 
@@ -2203,6 +2214,7 @@ class queXMLPDF extends TCPDF {
         {
           $rtmp = array();
           $rstmp['varname'] = $r['varName'];
+          $this->skipToIndex[current($r['varName'])] = $sl . $qcount;
 
           $rtmp['split'] = 'notset';
 
@@ -2256,6 +2268,7 @@ class queXMLPDF extends TCPDF {
                   $oarr['defaultvalue'] = $c->contingentQuestion['defaultValue'];
   
                 $oarr['varname'] = $c->contingentQuestion['varName'];
+                $this->skipToIndex[current($oarr['varname'])] = $sl . $qcount;
                 $cat['other'] = $oarr;
               }  
               $ctmp[] = $cat;  
@@ -2294,6 +2307,7 @@ class queXMLPDF extends TCPDF {
                 $oarr['defaultvalue'] = $c->contingentQuestion['defaultValue'];
 
               $oarr['varname'] = $c->contingentQuestion['varName'];
+              $this->skipToIndex[current($oarr['varname'])] = $sl . $qcount;
               $rtmp['other'] = $oarr;
             }  
           }
@@ -3791,7 +3805,14 @@ class queXMLPDF extends TCPDF {
 
       $bheight = $this->singleResponseAreaHeight;
       $skipto = false;
-      if (isset($r['skipto'])) $skipto = $r['skipto']; 
+      if (isset($r['skipto']))
+      {
+        $skipto = $r['skipto']; 
+        if (isset($this->skipToIndex[$skipto]))
+        {
+          $skipto = $this->skipToIndex[$skipto];
+        }
+      }
       $other = false;
       if (isset($r['other']) && $rnum == $total)
       {
