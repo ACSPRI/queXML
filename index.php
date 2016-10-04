@@ -45,6 +45,7 @@ if(isset($_FILES['userfile']))
   	$quexmlpdf->setSingleResponseAreaHeight($_POST['singleResponseAreaHeight']);
   	$quexmlpdf->setSingleResponseHorizontalHeight($_POST['singleResponseHorizontalHeight']);
     $quexmlpdf->setQuestionnaireInfoMargin($_POST['questionnaireInfoMargin']);
+    $quexmlpdf->setColumns($_POST['columns']);
     if ($_POST['displayCodeValues'] == "true")
       $quexmlpdf->setDisplayCodeValues(true);
 
@@ -118,6 +119,7 @@ else
       <div><label for="eformat">Edge detection format</label><select name="eformat"><option value="lines">Corner lines</option><option value="boxes">Corner boxes</option></select></div>
       <div><label for="displayCodeValues">Display code values and variable names?</label><select name="displayCodeValues"><option value="false">No</option><option value="true">Yes</option></select></div>
       <div><label for="codeValuesFontSize">Code value font size</label><input name="codeValuesFontSize" type="text" value="<?php echo $quexmlpdf->getCodeValuesFontSize();?>"/></div>
+      <div><label for="columns">Number of columns to display</label><select name="columns"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
 <?php 
       foreach($splitting as $s)
       {

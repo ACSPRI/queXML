@@ -1001,6 +1001,35 @@ class queXMLPDF extends TCPDF {
   }
 
   /**
+   * Set the number of columns to display
+   * 
+   * @param int $columns between 1 and 5
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2016-10-04
+   */
+  public function setColumns($columns)
+  {
+    $columns = intval($columns);
+    if ($columns >= 1 && $columns <= 5)
+      $this->columns = $columns;
+  }
+
+  /**
+   * Get the number of columns
+   * 
+   * @return int number of columns to be displayed
+   * 
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2016-10-04
+   */
+  public function getColumns()
+  {
+      return $this->columns;
+  }
+
+  /**
    * Set margin before questionnare info
    * 
    * @param int $margin between 0 and 100mm
