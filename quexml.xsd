@@ -140,6 +140,7 @@
 								</xsd:annotation>
 								<xsd:simpleType>
 									<xsd:restriction base="xsd:string">
+										<xsd:enumeration value="title"/>
 										<xsd:enumeration value="before"/>
 										<xsd:enumeration value="during"/>
 										<xsd:enumeration value="after"/>

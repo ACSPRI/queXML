@@ -236,6 +236,7 @@ class queXMLPDF extends TCPDF {
     td.responseAboveText {font-weight:normal; font-style:normal; text-align:left; font-size:12pt;} 
     td.matrixResponseGroupLabel {font-weight:normal; font-style:normal; text-align:left; font-size:12pt;}
     span.sectionTitle {font-size:18pt; font-weight:bold;} 
+    span.questionnaireTitle {font-size:22pt; font-weight:bold; text-align:center;} 
     span.sectionDescription {font-size:14pt; font-weight:bold;} 
     div.sectionInfo {font-style:normal; font-size:10pt; text-align:left; font-weight:normal;}
     td.questionnaireInfo {font-size:14pt; text-align:center; font-weight:bold;}
@@ -2091,6 +2092,10 @@ class queXMLPDF extends TCPDF {
 
         $q['infobefore'] .= $qitmp->text . "<br/><br/>";
       }
+      else if ($qitmp->position == 'title')
+      {
+        $q['infotitle'] .= $qitmp->text;
+      }
     }
   
     foreach($xml->section as $s)
@@ -2396,6 +2401,15 @@ class queXMLPDF extends TCPDF {
     $this->init();
     $this->questionnaireId = intval($questionnaire['id']);
     $this->newPage(true); //first page
+
+    //Draw questionnaireInfo title if exists
+    if (isset($questionnaire['infotitle'])) {
+      $html = "<span class=\"questionnaireTitle\">{$questionnaire['infotitle']}</span>";
+
+      $this->setBackground('section');
+      $this->writeHTMLCell($this->getColumnWidth(),$this->sectionHeight,$this->getColumnX(),$this->getY(),$this->style . $html,array('B' => array('width' => 1, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $this->backgroundColourEmpty)),1,true,true,'');
+      $this->setBackground('empty');
+    }
 
     //Draw questionnaireInfo before if exists
     if (isset($questionnaire['infobefore']))
