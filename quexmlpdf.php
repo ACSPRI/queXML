@@ -13,8 +13,8 @@ require_once('/var/lib/tcpdf/tcpdf.php');
  * @copyright (c) 2010 Australian Consortium for Social and Political Research Incorporated (ACSPRI)
  * @since     2010-09-02
  * @link      http://www.acspri.org.au/software
- * @link      http://quexml.sourceforge.net
- * @link      http://quexf.sourceforge.net
+ * @link      http://quexml.acspri.org.au
+ * @link      http://quexf.acspri.org.au
  */
 class queXMLPDF extends TCPDF {
 
@@ -538,7 +538,7 @@ class queXMLPDF extends TCPDF {
    * The layout of the form for importing in to queXF
    *
    * @var array Defaults to empty array
-   * @link http://quexf.sourceforge.net/
+   * @link http://quexf.acspri.org.au/
    */
   protected $layout = array();  
 
@@ -1734,12 +1734,11 @@ class queXMLPDF extends TCPDF {
       $this->AddFont('freeserif','I');
       $this->AddFont('freeserif','U');
       $this->AddFont('freeserif','BI');
-      
-      $this->SetFont($this->defaultFont);
     }
+    $this->SetFont($this->defaultFont);
     
     // set document information
-    $this->SetCreator('queXMLPDF (http://quexml.sourceforge.net)');
+    $this->SetCreator('queXMLPDF (http://quexml.acspri.org.au)');
     $this->SetAuthor('Adam Zammit <adam.zammit@acspri.org.au>');
     $this->SetTitle('queXML Document');
     $this->SetSubject('queXML');
