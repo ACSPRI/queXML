@@ -682,6 +682,20 @@
 									</xsd:attribute>
 
 
+									<xsd:attribute name="hidetitle" type="xsd:boolean" use="optional">
+									<xsd:annotation>
+										<xsd:documentation>If set, hide the section title on the paper form for this section</xsd:documentation>
+									</xsd:annotation>
+									</xsd:attribute>
+
+
+									<xsd:attribute name="hideinfo" type="xsd:boolean" use="optional">
+									<xsd:annotation>
+										<xsd:documentation>If set, hide the section info on the paper form for this section</xsd:documentation>
+									</xsd:annotation>
+									</xsd:attribute>
+
+
 
 					</xsd:complexType>
 				</xsd:element>
