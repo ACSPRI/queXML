@@ -25,10 +25,20 @@ if(isset($_FILES['userfile']))
 	$filename = $_FILES['userfile']['tmp_name'];
 
 
-	// create new queXMLPDF document
-	$quexmlpdf = new queXMLPDF($_POST['orientation'], 'mm', $_POST['format'], true, 'UTF-8', false);
-
-	set_time_limit(120);
+  if (is_uploaded_file($_FILES['stylefile']['tmp_name']))
+  {
+    //need to extract orientation and format from the XML file
+    $xml = new SimpleXMLElement(file_get_contents($_FILES['stylefile']['tmp_name']));
+    $orientation = $xml->PageOrientation;
+    $format = $xml->PageFormat;
+  } else {
+    $orientation = $_POST['orientation'];
+    $format = $_POST['format'];
+  }
+ 
+ 	// create new queXMLPDF document
+  $quexmlpdf = new queXMLPDF($orientation, 'mm', $format, true, 'UTF-8', false); 
+  set_time_limit(120);
 
   if (is_uploaded_file($_FILES['stylefile']['tmp_name']))
   {
@@ -64,6 +74,7 @@ if(isset($_FILES['userfile']))
   }
 
 	$quexmlpdf->create($quexmlpdf->createqueXML(file_get_contents($filename)));
+  $quexmlpdf->savePageFormat($format);
 
 	//NEED TO GET QID from $quexmlpdf
 	$qid = intval($quexmlpdf->getQuestionnaireId());

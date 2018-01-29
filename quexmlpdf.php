@@ -32,6 +32,14 @@ class queXMLPDF extends TCPDF {
    */
   protected $ppi = 300;
 
+
+  /**
+   * Remembers the current page format
+   *
+   * @var string Defaults to "A4"
+   */
+  protected $pageFormatSet = 'A4';
+
   /**
    * Whether a page break has occured
    * Should be a private var but crash occurs on PHP 5.1.6, see Limesurvey Bug 5824
@@ -1536,22 +1544,20 @@ class queXMLPDF extends TCPDF {
    */
   public function getPageFormat()
   {
-    return 'A4';
+    return (string) $this->pageFormatSet;
   }
 
-  /**
+   /**
    * Set page format
-   *
-   * @param string $format page format
-   * @param string $orientation page orientation
    *
    * @author Adam Zammit <adam.zammit@acspri.org.au>
    * @since 2015-06-19
-   */
-  public function setPageFormat($format, $orientation='') {
-    parent::setPageFormat($format, $orientation);
+    */
+  public function savePageFormat($format)
+  {
+    $this->pageFormatSet = $format;
   }
- 
+
   /**
    * Get page orientation
    *
@@ -1562,21 +1568,6 @@ class queXMLPDF extends TCPDF {
   public function getPageOrientation()
   {
     return $this->CurOrientation;
-  }
-
-  /**
-   * Set page orientation
-   *
-   * @param string $orientation page orientation
-   * @param string $autopagebreak see TCPDF docs
-   * @param string $bottommargin see TCPDF docs
-   *
-   * @author Adam Zammit <adam.zammit@acspri.org.au>
-   * @since 2015-06-19
-   */
-  public function setPageOrientation($orientation, $autopagebreak='', $bottommargin='') 
-  {
-    parent::setPageOrientation($orientation, $autopagebreak, $bottommargin);
   }
 
   /**
@@ -2600,13 +2591,14 @@ class queXMLPDF extends TCPDF {
 
     foreach($nmethods as $m)
     {
-      //if class starting with get has a matching set method
-      if (substr($m,0,3) == 'get' && isset($nmethods['set' . substr($m,3)]))
+      //if class starting with get has a matching set method (but always 
+      //include page orientation and format
+      if (substr($m,0,3) == 'get' && (isset($nmethods['set' . substr($m,3)]) || $m == "getPageOrientation" || $m == "getPageFormat"))
       {
         $itemname = substr($m,3);
         $iv = $this->$m(); // get the data
         $itemval = "false";
-
+       
         if (is_bool($iv))
         {
           if ($iv)
@@ -2617,11 +2609,11 @@ class queXMLPDF extends TCPDF {
           $itemval = implode(',',$iv);
         }
         else
+        {
           $itemval = $iv;
+        }
 
-        $id = $doc->createElement($itemname);
-        $value = $doc->createTextNode($itemval);
-        $id->appendChild($value);
+        $id = $doc->createElement($itemname,$itemval);
         $root->appendChild($id);
       }
     }
