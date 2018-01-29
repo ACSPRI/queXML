@@ -1,3 +1,17 @@
+queXML 1.7.0 - Changes since 1.6.0
+
+Fixed issue: Setting and saving page orientation and format in the style document
+Fixed issue: Fix font display of first section/question where fonts not embedded
+Fixed issue: Replace sourceforge links with acspri links
+Fixed issue: Add display of questionnaireInfo title element
+Fixed issue: Fixes lp:1602105: Some attributes undocumented
+Fixed issue: Remove requirement for TCPDF eng config
+
+New feature: Allow for hidetitle and hideinfo attributes in a section
+New feature: Implement skip to index (for labelling of skip to based on variable names)
+New feature: Allow for font embedding to be set
+New feature: Added options for splitting pages
+
 queXML 1.6.0 - Changes since 1.5.0
 
 queXMLPDF: Allow basic styling tags (i,b,u) for response labels and categories
