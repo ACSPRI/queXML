@@ -2095,7 +2095,7 @@ class queXMLPDF extends TCPDF {
       if (isset($s['hidetitle']) && $s['hidetitle'] == "true") {
         $stmp['title'] = false;
       } else {
-        $stmp['title'] = gT("Section") . " " . $sl;
+        $stmp['title'] = "Section " . $sl;
       }
       $stmp['info'] = "";
       $stmp['text'] = "";
