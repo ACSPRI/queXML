@@ -1,3 +1,7 @@
+queXML 1.7.1 - Changes since 1.7.0
+
+Fixed issue: gT function referenced accidentally
+
 queXML 1.7.0 - Changes since 1.6.0
 
 Fixed issue: Setting and saving page orientation and format in the style document
