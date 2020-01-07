@@ -1725,6 +1725,9 @@ class queXMLPDF extends TCPDF {
       $this->AddFont('freeserif','I');
       $this->AddFont('freeserif','U');
       $this->AddFont('freeserif','BI');
+      if ($this->defaultFont != 'freesans' && $this->defaultFont != 'freeserif') {
+	$this->AddFont($this->defaultFont);
+      }
     }
     $this->SetFont($this->defaultFont);
     
