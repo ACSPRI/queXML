@@ -1764,6 +1764,36 @@ class queXMLPDF extends TCPDF {
   }
 
   /**
+   * Set the default font of the document
+   * 
+   * @param string $font The default font for the document
+   * 
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since  2020-01-07
+   */
+  public function setMainFont($font)
+  {
+     $this->getFontsList();
+     if (in_array($font,$this->fontlist)) {
+	     $this->defaultFont = $font;
+     }
+  }
+
+  /**
+   * Get the default font of the document
+   * 
+   * @return string The default font for the document
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since  2020-01-07
+   */
+  public function getMainFont()
+  {
+     return $this->defaultFont;
+  }
+
+
+  /**
    * Set the background wash of the page
    * 
    * @param mixed $type Optional, defaults to 'empty'. 
@@ -2031,6 +2061,13 @@ class queXMLPDF extends TCPDF {
     else
       return chr($number + 64);
   }
+
+  public function listFonts()
+  {
+    $this->getFontsList();
+    return $this->fontlist;
+  }
+
 
 
   /**

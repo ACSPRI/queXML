@@ -71,6 +71,7 @@ if(isset($_FILES['userfile']))
     $quexmlpdf->setResponseLabelFontSize(array($_POST['responseLabelFontSize'],$_POST['responseLabelFontSizeSmall']));
     $quexmlpdf->setCodeValuesFontSize($_POST['codeValuesFontSize']);
     $quexmlpdf->setQuestionTextRightMargin($_POST['questionTextRightMargin']);
+    $quexmlpdf->setMainFont($_POST['mainFont']);
   }
 
 	$quexmlpdf->create($quexmlpdf->createqueXML(file_get_contents($filename)));
@@ -131,6 +132,7 @@ else
       <div><label for="displayCodeValues">Display code values and variable names?</label><select name="displayCodeValues"><option value="false">No</option><option value="true">Yes</option></select></div>
       <div><label for="codeValuesFontSize">Code value font size</label><input name="codeValuesFontSize" type="text" value="<?php echo $quexmlpdf->getCodeValuesFontSize();?>"/></div>
       <div><label for="columns">Number of columns to display</label><select name="columns"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
+      <div><label for="mainFont">Default font</label><select name="mainFont"><?php $fonts = $quexmlpdf->listFonts(); $fonts = array_unique($fonts); sort($fonts); foreach($fonts as $f) { $sel = ""; if($f == "freeserif") {$sel = "selected='selected'";} print "<option $sel value='$f'>$f</option>"; }?></select></div>
 <?php 
       foreach($splitting as $s)
       {
