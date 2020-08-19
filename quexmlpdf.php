@@ -2845,9 +2845,12 @@ class queXMLPDF extends TCPDF {
             break;
           case 'longtext':
             $this->addBoxGroup(6,$varname,$rtext);
-            $stext = "";
+	    $stext = "";
+	    if (isset($response['text']) && !empty($response['text'])) {
+	      $stext .= $response['text'];
+	    }
             if ($this->displayCodeValues)
-              $stext = "[{$varname}]";
+              $stext .= "[{$varname}]";
             $this->drawLongText($response['width'],$defaultvalue,$stext);
             break;
           case 'number':
