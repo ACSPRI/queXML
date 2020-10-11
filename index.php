@@ -55,6 +55,7 @@ if(isset($_FILES['userfile']))
   	$quexmlpdf->setSingleResponseAreaHeight($_POST['singleResponseAreaHeight']);
   	$quexmlpdf->setSingleResponseHorizontalHeight($_POST['singleResponseHorizontalHeight']);
     $quexmlpdf->setQuestionnaireInfoMargin($_POST['questionnaireInfoMargin']);
+    $quexmlpdf->setTextResponseWidth($_POST['textResponseWidth']);
     $quexmlpdf->setColumns($_POST['columns']);
     if ($_POST['displayCodeValues'] == "true")
       $quexmlpdf->setDisplayCodeValues(true);
@@ -71,6 +72,9 @@ if(isset($_FILES['userfile']))
     $quexmlpdf->setResponseLabelFontSize(array($_POST['responseLabelFontSize'],$_POST['responseLabelFontSizeSmall']));
     $quexmlpdf->setCodeValuesFontSize($_POST['codeValuesFontSize']);
     $quexmlpdf->setQuestionTextRightMargin($_POST['questionTextRightMargin']);
+    $quexmlpdf->setSingleResponseVerticalAreaWidth($_POST['singleResponseVerticalAreaWidth']);
+    $quexmlpdf->setSingleResponseVerticalAreaWidthSmall($_POST['singleResponseVerticalAreaWidthSmall']);
+    $quexmlpdf->setSingleResponseHorizontalMax($_POST['singleResponseHorizontalMax']);
     $quexmlpdf->setMainFont($_POST['mainFont']);
   }
 
@@ -124,6 +128,10 @@ else
       <div><label for="questionTextRightMargin">Right hand margin of question text (mm)</label><input name="questionTextRightMargin" type="text" value="<?php echo $quexmlpdf->getQuestionTextRightMargin();?>"/></div>
       <div><label for="singleResponseAreaHeight">Minimum height of single choice response boxes</label><input name="singleResponseAreaHeight" type="text" value="<?php echo $quexmlpdf->getSingleResponseAreaHeight();?>"/></div>
       <div><label for="singleResponseHorizontalHeight">Minimum height of sub question items</label><input name="singleResponseHorizontalHeight" type="text" value="<?php echo $quexmlpdf->getSingleResponseHorizontalHeight();?>"/></div>
+      <div><label for="singleResponseVerticalAreaWidth">Gap between horizontally displayed single choice response boxes (where less than number to display before shrinking)</label><input name="singleResponseVerticalAreaWidth" type="text" value="<?php echo $quexmlpdf->getSingleResponseVerticalAreaWidth();?>"/></div>
+      <div><label for="singleResponseVerticalAreaWidthSmall">Gap between horizontally displayed single choice response boxes (when should shrink)</label><input name="singleResponseVerticalAreaWidthSmall" type="text" value="<?php echo $quexmlpdf->getSingleResponseVerticalAreaWidthSmall();?>"/></div>
+      <div><label for="singleResponseHorizontalMax">Number of horizontally displayed single choice items before shrinking gap between them</label><input name="singleResponseHorizontalMax" type="text" value="<?php echo $quexmlpdf->getSingleResponseHorizontalMax();?>"/></div>
+      <div><label for="textResponseWidth">Width of a text response box (single character) in mm</label><input name="textResponseWidth" type="text" value="<?php echo $quexmlpdf->getTextResponseWidth();?>"/></div>
       <div><label for="backgroundColourQuestion">Background colour for question (0 black - 255 white)</label><input name="backgroundColourQuestion" type="text" value="<?php echo $quexmlpdf->getBackgroundColourQuestion();?>"/></div>
       <div><label for="backgroundColourSection">Background colour for section (0 black - 255 white)</label><input name="backgroundColourSection" type="text" value="<?php echo $quexmlpdf->getBackgroundColourSection();?>"/></div>
       <div><label for="orientation">Page orientation</label><select name="orientation"><option value="P">Portrait</option><option value="L">Landscape</option></select></div>

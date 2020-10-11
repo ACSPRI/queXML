@@ -924,6 +924,95 @@ class queXMLPDF extends TCPDF {
   }
 
   /**
+   * Get the width between response boxes displayed
+   * 
+   * @param int $margin between 0 and 1000mm
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2020-10-01
+   */
+  public function setSingleResponseVerticalAreaWidth($margin)
+  {
+    $margin = floatval($margin);
+    if ($margin >= 0 && $margin <= 1000)
+      $this->singleResponseVerticalAreaWidth = $margin;
+  }
+
+  /**
+   * Get the width between responses boxes displayed
+   * 
+   * @return fload width in mm between 0 and 1000mm
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2020-10-01
+   */
+  public function getSingleResponseVerticalAreaWidth()
+  {
+      return $this->singleResponseVerticalAreaWidth;
+  }
+
+
+  /**
+   * Set the width between response boxes where there are more than singleResponseHorizontalMax
+   * 
+   * @param int $margin between 0 and 1000mm
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2020-10-01
+   */
+  public function setSingleResponseVerticalAreaWidthSmall($margin)
+  {
+    $margin = floatval($margin);
+    if ($margin >= 0 && $margin <= 1000)
+      $this->singleResponseVerticalAreaWidthSmall = $margin;
+  }
+
+  /**
+   * Get the width between response boxes displayed where there are more than singleResponseHorizontalMax
+   * 
+   * @return float width in mm between 0 and 1000mm
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2020-10-01
+   */
+  public function getSingleResponseVerticalAreaWidthSmall()
+  {
+      return $this->singleResponseVerticalAreaWidthSmall;
+  }
+
+
+  /**
+   * Set the number of boxes in a horizontal response box scenario before
+   * setting the width to smaller
+   *
+   * @param int $margin between 1 and 100
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2020-10-01
+   */
+  public function setSingleResponseHorizontalMax($margin)
+  {
+    $margin = intval($margin);
+    if ($margin >= 1 && $margin <= 100)
+      $this->singleResponseHorizontalMax = $margin;
+  }
+
+  /**
+   * Get the number of boxes in a horizontal response box scenario before
+   * setting the width to smaller
+   * 
+   * @return integer number of boxes between 1 and 100
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2020-10-01
+   */
+  public function getSingleResponseHorizontalMax()
+  {
+      return $this->singleResponseHorizontalMax;
+  }
+
+
+  /**
    * Set allow splitting
    * 
    * @param bool $allow Whether to allow or not (default true)
@@ -1064,6 +1153,34 @@ class queXMLPDF extends TCPDF {
   public function getQuestionnaireInfoMargin()
   {
       return $this->questionnaireInfoMargin;
+  }
+
+  /**
+   * Set the width of a text response box
+   * 
+   * @param float $width Height between 1 and 100mm
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2020-09-25
+   */
+  public function setTextResponseWidth($width)
+  {
+    $width = floatval($width);
+    if ($width >= 1 && $width <= 100)
+      $this->textResponseWidth = $width;
+  }
+
+  /**
+   * Get the width of a text response box
+   * 
+   * @return float width in mm between 1 and 100
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2020-09-25
+   */
+  public function getTextResponseWidth()
+  {
+      return $this->textResponseWidth;
   }
 
   /**
