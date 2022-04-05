@@ -2418,6 +2418,9 @@ class queXMLPDF extends TCPDF {
           if (isset($r['defaultValue'])) 
             $rstmp['defaultvalue'] = $r['defaultValue'];
 
+          if (isset($r['singleresponseareaheight'])) 
+            $rstmp['singleresponseareaheight'] = $r['singleresponseareaheight'];
+
           if (isset($r->fixed))
           {
             $rtmp['type'] = 'fixed';
@@ -2945,6 +2948,11 @@ class queXMLPDF extends TCPDF {
         if (isset($r['defaultvalue']))
           $defaultvalue = $r['defaultvalue'];
 
+        if (isset($r['singleresponseareaheight'])) {
+            $tmpsing = $this->singleResponseAreaHeight;
+            $this->singleResponseAreaHeight = floatval($r['singleresponseareaheight']);
+        }
+
         if (isset($response['text']) && !empty($response['text'])) 
           $rtext = $text .  $this->subQuestionTextSeparator .  $response['text'];
         else
@@ -3028,6 +3036,14 @@ class queXMLPDF extends TCPDF {
             $this->startTransaction(); //start a transaction to allow for splitting over pages if necessary
         }
       }
+
+      //restoresetting
+      if (isset($r['singleresponseareaheight'])) {
+            $this->singleResponseAreaHeight = $tmpsing;
+      }
+
+
+    
     }}
 
     //If there is some help text for after the question
