@@ -616,6 +616,14 @@ class queXMLPDF extends TCPDF {
   protected $columnCP = 0;
 
   /**
+   * Column RTL setting (if true, columns should go RTL instead of LTR)
+   *
+   * @var bool Defaults to false.
+   * @since 2022-05-14
+   */
+  protected $columnRTL = false;
+
+  /**
    * Background colour of a question
    * 
    * @var bool  Defaults to array(220,220,220). 
@@ -1324,6 +1332,35 @@ class queXMLPDF extends TCPDF {
   }
 
   /**
+   * Get status of column RTL
+   * 
+   * @return bool Whether to enable or not
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2022-05-14
+   */
+  public function getColumnRTL()
+  {
+    return $this->columnRTL;
+  }
+
+  /**
+   * Set status of column RTL
+   * 
+   * @param bool $set Whether to set or not (default false)
+   *
+   * @author Adam Zammit <adam.zammit@acspri.org.au>
+   * @since 2022-05-14
+   */
+  public function setColumnRTL($set = false)
+  {
+    if ($set)
+      $this->columnRTL = true;
+    else
+      $this->columnRTL = false;
+  }
+
+  /**
    * Get allow splitting
    * 
    * @return bool Whether to allow or not 
@@ -1959,9 +1996,13 @@ class queXMLPDF extends TCPDF {
   protected function getColumnX()
   {
     $border = 0;
-    if ($this->columnCP > 0) 
-      $border = $this->columnBorder;
-    return $this->getMainPageX() + ($this->columnCP  * ($this->getColumnWidth() + $border)) + $border;
+    $acol = $this->columnCP;
+    if ($this->getColumnRTL()) { //support RTL of columns
+        $acol = $this->columns - ($this->columnCP + 1);
+    }
+    if ($acol > 0) 
+        $border = $this->columnBorder;
+    return $this->getMainPageX() + ($acol  * ($this->getColumnWidth() + $border)) + $border;
   }
 
   /**
@@ -1986,7 +2027,11 @@ class queXMLPDF extends TCPDF {
   protected function getColumnWidth()
   {
     $border = 0;
-    if ($this->columnCP > 0) 
+    $acol = $this->columnCP;
+    if ($this->getColumnRTL()) { //support RTL of columns
+        $acol = $this->columns - ($this->columnCP + 1);
+    } 
+    if ($acol > 0) 
       $border = $this->columnBorder;
     return ((1 / $this->columns) * $this->getMainPageWidth()) - $border;
   }
@@ -2438,6 +2483,11 @@ class queXMLPDF extends TCPDF {
               $cat = array();
               $cat['text'] = current($c->label);
               $cat['value'] = current($c->value);
+
+              if ($c['blank'] == "true") {
+                  $cat['blank'] = "true";
+              }
+                  
               if (isset($c->skipTo))
               { 
                 $cat['skipto'] = current($c->skipTo);
@@ -3690,6 +3740,9 @@ class queXMLPDF extends TCPDF {
       //Check for styling to apply to font from text contents
       $rtext = $this->setStyleFromText($r['text']);
 
+      if (isset($r["blank"]))
+          $rtext = "";
+
       $this->MultiCell($rwidth,$this->responseLabelHeight,$rtext,0,'C',false,0,$x,$y,true,0,false,true,$this->responseLabelHeight,'B',true);
 
       //reset font
@@ -3821,9 +3874,9 @@ class queXMLPDF extends TCPDF {
       foreach ($categories as $r)
       {
         if ($total == 1) $num = 'only';
-        else if ($rnum == 1) $num = 'first';
+        else if ($rnum == 1 || (isset($categories[$rnum-2]) && isset($categories[$rnum-2]["blank"]))) $num = 'first';
+        else if ($rnum == $total || (isset($categories[$rnum]) && isset($categories[$rnum]["blank"]))) $num = 'last';
         else if ($rnum < $total) $num = 'middle';
-        else if ($rnum == $total) $num = 'last';
 
         $bfilled = false;
         if (isset($s['defaultvalue']) && $s['defaultvalue'] !== false && $s['defaultvalue'] == $r['value'])
@@ -3833,10 +3886,12 @@ class queXMLPDF extends TCPDF {
         if ($this->displayCodeValues)
           $cvalue = $r['value'];
 
-        $position = $this->drawHorizontalResponseBox(($this->getColumnX() + $textwidth + (($rnum - 1) * $rwidth)),$currentY + ($heightadjust/2), $num,$other,false,($total > $this->singleResponseHorizontalMax),$bfilled,$cvalue);
-    
-        //Add box to the current layout
-        $this->addBox($position[0],$position[1],$position[2],$position[3],$r['value'],$r['text']);
+        if (!isset($r["blank"])) { //don't draw if should be blank
+           $position = $this->drawHorizontalResponseBox(($this->getColumnX() + $textwidth + (($rnum - 1) * $rwidth)),$currentY + ($heightadjust/2), $num,$other,false,($total > $this->singleResponseHorizontalMax),$bfilled,$cvalue);
+       
+           //Add box to the current layout
+           $this->addBox($position[0],$position[1],$position[2],$position[3],$r['value'],$r['text']);
+        }
   
         $rnum++;
       }
@@ -4410,11 +4465,11 @@ class queXMLPDF extends TCPDF {
                 );
       $this->layoutCP = $barcodeValue;
   
-      $this->SetXY($cb + $this->cornerWidth, $cb + $this->cornerWidth);
+      $this->columnCP = 0; //reset column pointer
+      
+      $this->SetXY($this->getColumnX(),($this->cornerBorder + $this->cornerWidth));
   
       $this->setBackground('empty');
-
-      $this->columnCP = 0; //reset column pointer
     }
     else // move to a new column
     {
