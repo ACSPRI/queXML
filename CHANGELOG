@@ -1,3 +1,12 @@
+queXML 1.8.0 - Changes since 1.7.1
+
+New Feature: Support "blank" attribute in queXML
+New Feature: Support RTL columns
+New Feature: Support selecting default font
+Fixed issue: Expose more formatting functions
+Fixed issue: Support labelled longtext responses
+Fixed issue: Also embed default font if not already there
+
 queXML 1.7.1 - Changes since 1.7.0
 
 Fixed issue: gT function referenced accidentally
