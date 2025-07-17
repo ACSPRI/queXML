@@ -1,4 +1,4 @@
-#queXML
+# queXML
 
 An Open Source, XML, multi-mode questionnaire description toolkit
 
@@ -8,4 +8,4 @@ queXML is an XML schema that describes a questionnaire. queXML also includes rel
 
 The advantage of queXML is that by writing a stylesheet for your particular survey execution system, you may use existing queXML questionnaires - and be able to execute your questionnaire in multiple modes either simultaneously or separately. Also, queXML is compatible with the DDI standard - there is a stylesheet to convert an instrument in queXML to a description of that data that the survey execution system will collect. This means that the survey execution system need not be modified to be DDI compliant if the questionnaire was originally described in queXML.
 
-Development for queXML occurs on Launchpad: https://launchpad.net/quexml
+Development for queXML occurs on GitHub: https://github.com/ACSPRI/queXML
